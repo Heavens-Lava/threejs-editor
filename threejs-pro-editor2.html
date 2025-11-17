@@ -2254,6 +2254,37 @@
                             <input type="checkbox" id="has-collision" onchange="toggleObjectCollision()">
                             <label for="has-collision">Enable Collision</label>
                         </div>
+
+                        <!-- Collision Shape Selector -->
+                        <div id="collision-shape-options" style="margin-top: 10px; display: none;">
+                            <div class="property-label">Collision Shape</div>
+                            <select class="property-input" id="collision-shape" onchange="updateCollisionShape()">
+                                <option value="box">Box</option>
+                                <option value="sphere">Sphere</option>
+                                <option value="capsule">Capsule</option>
+                                <option value="mesh">Mesh (Exact)</option>
+                            </select>
+
+                            <!-- Trigger Checkbox -->
+                            <div class="checkbox-wrapper" style="margin-top: 10px;">
+                                <input type="checkbox" id="is-trigger" onchange="updateIsTrigger()">
+                                <label for="is-trigger" data-tooltip="Trigger volumes detect collisions but don't physically block objects">Is Trigger</label>
+                            </div>
+
+                            <!-- Collision Layer -->
+                            <div class="property-label" style="margin-top: 10px;">Collision Layer</div>
+                            <select class="property-input" id="collision-layer" onchange="updateCollisionLayer()">
+                                <option value="0">Default</option>
+                                <option value="1">Player</option>
+                                <option value="2">Enemy</option>
+                                <option value="3">Environment</option>
+                                <option value="4">Projectile</option>
+                                <option value="5">Pickup</option>
+                                <option value="6">Trigger</option>
+                                <option value="7">Custom 1</option>
+                                <option value="8">Custom 2</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="property-group">
@@ -3195,11 +3226,65 @@
             if (!selectedObject) return;
 
             const enabled = document.getElementById('has-collision').checked;
+            const optionsDiv = document.getElementById('collision-shape-options');
+
             if (enabled) {
                 addCollider(selectedObject);
+                optionsDiv.style.display = 'block';
+
+                // Initialize collision properties if not set
+                if (!selectedObject.userData.collisionShape) {
+                    selectedObject.userData.collisionShape = 'box';
+                }
+                if (selectedObject.userData.isTrigger === undefined) {
+                    selectedObject.userData.isTrigger = false;
+                }
+                if (selectedObject.userData.collisionLayer === undefined) {
+                    selectedObject.userData.collisionLayer = 0;
+                }
+
+                // Update UI
+                document.getElementById('collision-shape').value = selectedObject.userData.collisionShape;
+                document.getElementById('is-trigger').checked = selectedObject.userData.isTrigger;
+                document.getElementById('collision-layer').value = selectedObject.userData.collisionLayer;
+
+                rebuildColliderHelpers();
             } else {
                 removeCollider(selectedObject);
+                optionsDiv.style.display = 'none';
             }
+        }
+
+        // NEW: Update collision shape type
+        function updateCollisionShape() {
+            if (!selectedObject) return;
+
+            const shape = document.getElementById('collision-shape').value;
+            selectedObject.userData.collisionShape = shape;
+
+            console.log(`Collision shape changed to: ${shape}`);
+            rebuildColliderHelpers();
+        }
+
+        // NEW: Toggle trigger mode
+        function updateIsTrigger() {
+            if (!selectedObject) return;
+
+            const isTrigger = document.getElementById('is-trigger').checked;
+            selectedObject.userData.isTrigger = isTrigger;
+
+            console.log(`Trigger mode: ${isTrigger}`);
+            rebuildColliderHelpers();
+        }
+
+        // NEW: Update collision layer
+        function updateCollisionLayer() {
+            if (!selectedObject) return;
+
+            const layer = parseInt(document.getElementById('collision-layer').value);
+            selectedObject.userData.collisionLayer = layer;
+
+            console.log(`Collision layer changed to: ${layer}`);
         }
 
         function toggleAllColliders() {
@@ -3221,13 +3306,90 @@
 
             if (!showColliderHelpers) return;
 
-            // Create new helpers
+            // Create new helpers based on collision shape type
             colliderObjects.forEach(obj => {
-                const helper = new THREE.BoxHelper(obj, 0x00ff00);
-                helper.name = '_ColliderHelper';
-                scene.add(helper);
-                colliderHelpers.push(helper);
+                const shape = obj.userData.collisionShape || 'box';
+                const isTrigger = obj.userData.isTrigger || false;
+                const color = isTrigger ? 0x00ffff : 0x00ff00; // Cyan for triggers, green for colliders
+
+                let helper;
+
+                switch(shape) {
+                    case 'box':
+                        helper = new THREE.BoxHelper(obj, color);
+                        break;
+                    case 'sphere':
+                        helper = createSphereColliderHelper(obj, color);
+                        break;
+                    case 'capsule':
+                        helper = createCapsuleColliderHelper(obj, color);
+                        break;
+                    case 'mesh':
+                        // Use WireframeGeometry for exact mesh collision
+                        if (obj.geometry) {
+                            const wireframe = new THREE.WireframeGeometry(obj.geometry);
+                            const mat = new THREE.LineBasicMaterial({ color: color });
+                            helper = new THREE.LineSegments(wireframe, mat);
+                            helper.position.copy(obj.position);
+                            helper.rotation.copy(obj.rotation);
+                            helper.scale.copy(obj.scale);
+                        } else {
+                            // Fall back to box helper if no geometry
+                            helper = new THREE.BoxHelper(obj, color);
+                        }
+                        break;
+                }
+
+                if (helper) {
+                    helper.name = '_ColliderHelper';
+                    scene.add(helper);
+                    colliderHelpers.push(helper);
+                }
             });
+        }
+
+        // Helper function to create sphere collision wireframe
+        function createSphereColliderHelper(obj, color) {
+            // Calculate bounding sphere radius
+            const box = new THREE.Box3().setFromObject(obj);
+            const size = box.getSize(new THREE.Vector3());
+            const radius = Math.max(size.x, size.y, size.z) / 2;
+
+            // Create sphere wireframe
+            const geometry = new THREE.SphereGeometry(radius, 16, 12);
+            const wireframe = new THREE.WireframeGeometry(geometry);
+            const mat = new THREE.LineBasicMaterial({ color: color });
+            const helper = new THREE.LineSegments(wireframe, mat);
+
+            // Position at object center
+            const center = box.getCenter(new THREE.Vector3());
+            helper.position.copy(center);
+
+            return helper;
+        }
+
+        // Helper function to create capsule collision wireframe
+        function createCapsuleColliderHelper(obj, color) {
+            // Calculate capsule dimensions from bounding box
+            const box = new THREE.Box3().setFromObject(obj);
+            const size = box.getSize(new THREE.Vector3());
+
+            // Capsule is tallest dimension for height, average of others for radius
+            const height = Math.max(size.x, size.y, size.z);
+            const radius = (Math.min(size.x, size.z) + Math.max(size.x, size.z)) / 4;
+
+            // Create capsule geometry (cylinder + 2 hemispheres)
+            const cylinderHeight = Math.max(0.1, height - radius * 2);
+            const geometry = new THREE.CapsuleGeometry(radius, cylinderHeight, 8, 16);
+            const wireframe = new THREE.WireframeGeometry(geometry);
+            const mat = new THREE.LineBasicMaterial({ color: color });
+            const helper = new THREE.LineSegments(wireframe, mat);
+
+            // Position at object center
+            const center = box.getCenter(new THREE.Vector3());
+            helper.position.copy(center);
+
+            return helper;
         }
 
         function updateCollisionList() {
@@ -3394,7 +3556,28 @@
             }
 
             // Collision
-            document.getElementById('has-collision').checked = selectedObject.userData.hasCollision || false;
+            const hasCollision = selectedObject.userData.hasCollision || false;
+            document.getElementById('has-collision').checked = hasCollision;
+
+            // Show/hide collision options
+            const collisionOptions = document.getElementById('collision-shape-options');
+            if (hasCollision) {
+                collisionOptions.style.display = 'block';
+
+                // Update collision shape dropdown
+                const shape = selectedObject.userData.collisionShape || 'box';
+                document.getElementById('collision-shape').value = shape;
+
+                // Update trigger checkbox
+                const isTrigger = selectedObject.userData.isTrigger || false;
+                document.getElementById('is-trigger').checked = isTrigger;
+
+                // Update collision layer
+                const layer = selectedObject.userData.collisionLayer || 0;
+                document.getElementById('collision-layer').value = layer;
+            } else {
+                collisionOptions.style.display = 'none';
+            }
         }
 
         function updateObjectName() {
