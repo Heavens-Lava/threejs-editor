@@ -4982,213 +4982,106 @@
                 badge: 'popular',
                 icon: 'fa-crosshairs',
                 setup: function() {
-                    // ENHANCED FPS ARENA - Production Ready Template
-                    // This template creates a game-ready FPS arena with proper materials,
-                    // spawn points, cover system, and lighting
+                    // SIMPLE FPS ARENA - Clean and Organized
+                    // A basic but well-laid-out FPS arena perfect for game development
 
-                    // Arena Floor - Concrete texture style
+                    // Arena Floor
                     const floor = createAsset('floor');
                     if (floor) {
+                        floor.position.set(0, -0.25, 0);
                         floor.scale.set(30, 0.5, 30);
-                        floor.position.y = -0.25;
-                        floor.material.color.setHex(0x4a4a4a); // Dark gray concrete
+                        floor.material.color.setHex(0x4a4a4a);
                         floor.material.roughness = 0.9;
                         floor.material.metalness = 0.1;
                         floor.name = 'Arena Floor';
-                        floor.userData.hasCollision = true;
-                        floor.userData.isGround = true;
                     }
 
-                    // Perimeter Walls - Industrial metal look
-                    const wallPositions = [
-                        {x: 0, z: -15, ry: 0},      // North wall
-                        {x: 0, z: 15, ry: Math.PI}, // South wall
-                        {x: -15, z: 0, ry: Math.PI/2}, // West wall
-                        {x: 15, z: 0, ry: -Math.PI/2}  // East wall
+                    // Perimeter Walls
+                    const walls = [
+                        {x: 0, z: -15},    // North
+                        {x: 0, z: 15},     // South
+                        {x: -15, z: 0},    // West
+                        {x: 15, z: 0}      // East
                     ];
 
-                    wallPositions.forEach((pos, i) => {
+                    walls.forEach((pos, i) => {
                         const wall = createAsset('wall');
                         if (wall) {
                             wall.position.set(pos.x, 2.5, pos.z);
-                            wall.rotation.y = pos.ry;
+                            if (i >= 2) wall.rotation.y = Math.PI / 2;
                             wall.scale.set(30, 5, 1);
-                            wall.material.color.setHex(0x6b7280); // Cool gray
-                            wall.material.roughness = 0.7;
-                            wall.material.metalness = 0.3;
-                            wall.name = `Arena Wall ${['North', 'South', 'West', 'East'][i]}`;
-                            wall.userData.hasCollision = true;
+                            wall.material.color.setHex(0x6b7280);
+                            wall.name = `Wall ${['North', 'South', 'West', 'East'][i]}`;
                         }
                     });
 
-                    // Team Spawn Points with visual markers
-                    const spawnPoints = [
-                        {x: -10, z: -10, team: 'Red', color: 0xff4444},
-                        {x: 10, z: 10, team: 'Blue', color: 0x4444ff},
-                        {x: -10, z: 10, team: 'Red', color: 0xff4444},
-                        {x: 10, z: -10, team: 'Blue', color: 0x4444ff}
-                    ];
+                    // Red Team Spawn (left side)
+                    const redSpawn = createAsset('cylinder');
+                    if (redSpawn) {
+                        redSpawn.position.set(-10, 0.05, 0);
+                        redSpawn.scale.set(2, 0.1, 2);
+                        redSpawn.material.color.setHex(0xff4444);
+                        redSpawn.material.emissive.setHex(0xff4444);
+                        redSpawn.material.emissiveIntensity = 0.3;
+                        redSpawn.name = 'Red Team Spawn';
 
-                    spawnPoints.forEach(spawn => {
-                        // Spawn platform
-                        const platform = createAsset('cylinder');
-                        if (platform) {
-                            platform.scale.set(2, 0.1, 2);
-                            platform.position.set(spawn.x, 0.05, spawn.z);
-                            platform.material.color.setHex(spawn.color);
-                            platform.material.roughness = 0.4;
-                            platform.material.metalness = 0.6;
-                            platform.material.emissive.setHex(spawn.color);
-                            platform.material.emissiveIntensity = 0.3;
-                            platform.name = `${spawn.team} Spawn Platform`;
-                            platform.userData.spawnPoint = true;
-                            platform.userData.team = spawn.team;
-
-                            // Add pulsing animation
-                            platform.userData.animate = function(time) {
-                                this.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.2;
-                            };
-                        }
-
-                        // Spawn indicator light
-                        const light = createAsset('pointLight');
-                        if (light) {
-                            light.position.set(spawn.x, 3, spawn.z);
-                            light.color.setHex(spawn.color);
-                            light.intensity = 0.8;
-                            light.distance = 8;
-                            light.name = `${spawn.team} Spawn Light`;
-                        }
-                    });
-
-                    // Tactical Cover - Crates and barriers
-                    const coverPositions = [
-                        {x: 0, z: 0, type: 'crate'},     // Center
-                        {x: -5, z: -5, type: 'barrier'},  // Northwest
-                        {x: 5, z: -5, type: 'barrier'},   // Northeast
-                        {x: -5, z: 5, type: 'crate'},     // Southwest
-                        {x: 5, z: 5, type: 'crate'},      // Southeast
-                        {x: 0, z: -8, type: 'barrier'},   // North center
-                        {x: 0, z: 8, type: 'barrier'}     // South center
-                    ];
-
-                    coverPositions.forEach((cover, i) => {
-                        if (cover.type === 'crate') {
-                            // Wooden crates
-                            const crate = createAsset('box');
-                            if (crate) {
-                                crate.position.set(cover.x, 0.75, cover.z);
-                                crate.scale.set(1.5, 1.5, 1.5);
-                                crate.rotation.y = Math.random() * Math.PI * 2;
-                                crate.material.color.setHex(0x8b7355); // Wood brown
-                                crate.material.roughness = 0.85;
-                                crate.material.metalness = 0.05;
-                                crate.name = `Cover Crate ${i + 1}`;
-                                crate.userData.hasCollision = true;
-                                crate.userData.cover = true;
-                                crate.userData.coverHeight = 1.5;
-                            }
-                        } else {
-                            // Metal barriers
-                            const barrier = createAsset('box');
-                            if (barrier) {
-                                barrier.position.set(cover.x, 0.6, cover.z);
-                                barrier.scale.set(3, 1.2, 0.3);
-                                barrier.rotation.y = cover.x === 0 ? 0 : Math.PI / 2;
-                                barrier.material.color.setHex(0x5a6268); // Dark metal
-                                barrier.material.roughness = 0.6;
-                                barrier.material.metalness = 0.7;
-                                barrier.name = `Cover Barrier ${i + 1}`;
-                                barrier.userData.hasCollision = true;
-                                barrier.userData.cover = true;
-                                barrier.userData.coverHeight = 1.2;
-                            }
-                        }
-                    });
-
-                    // Elevated Platform - High ground advantage
-                    const platform = createAsset('box');
-                    if (platform) {
-                        platform.position.set(0, 1, 0);
-                        platform.scale.set(4, 0.3, 4);
-                        platform.material.color.setHex(0x2d3748);
-                        platform.material.roughness = 0.8;
-                        platform.material.metalness = 0.2;
-                        platform.name = 'Central Platform';
-                        platform.userData.hasCollision = true;
-                        platform.userData.platform = true;
+                        redSpawn.userData.animate = function(time) {
+                            this.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.2;
+                        };
                     }
 
-                    // Platform supports
-                    for (let i = 0; i < 4; i++) {
-                        const support = createAsset('cylinder');
-                        if (support) {
-                            const angle = (Math.PI / 2) * i + Math.PI / 4;
-                            support.position.set(
-                                Math.cos(angle) * 1.5,
-                                0.5,
-                                Math.sin(angle) * 1.5
-                            );
-                            support.scale.set(0.15, 1, 0.15);
-                            support.material.color.setHex(0x1a202c);
-                            support.material.roughness = 0.7;
-                            support.material.metalness = 0.4;
-                            support.name = `Platform Support ${i + 1}`;
-                        }
+                    // Blue Team Spawn (right side)
+                    const blueSpawn = createAsset('cylinder');
+                    if (blueSpawn) {
+                        blueSpawn.position.set(10, 0.05, 0);
+                        blueSpawn.scale.set(2, 0.1, 2);
+                        blueSpawn.material.color.setHex(0x4444ff);
+                        blueSpawn.material.emissive.setHex(0x4444ff);
+                        blueSpawn.material.emissiveIntensity = 0.3;
+                        blueSpawn.name = 'Blue Team Spawn';
+
+                        blueSpawn.userData.animate = function(time) {
+                            this.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.2;
+                        };
                     }
 
-                    // Arena Lighting - Dramatic overhead lights
-                    const lightPositions = [
-                        {x: -8, z: -8}, {x: 8, z: -8},
-                        {x: -8, z: 8}, {x: 8, z: 8},
-                        {x: 0, z: 0}  // Center light
+                    // Cover Crates (strategic positions)
+                    const crates = [
+                        {x: -5, z: -8},
+                        {x: 5, z: -8},
+                        {x: -5, z: 8},
+                        {x: 5, z: 8},
+                        {x: 0, z: 0}  // Center
                     ];
 
-                    lightPositions.forEach((pos, i) => {
-                        // Main light
-                        const areaLight = createAsset('pointLight');
-                        if (areaLight) {
-                            areaLight.position.set(pos.x, 8, pos.z);
-                            areaLight.color.setHex(0xffffff);
-                            areaLight.intensity = 1.2;
-                            areaLight.distance = 15;
-                            areaLight.name = `Arena Light ${i + 1}`;
-                        }
-
-                        // Light fixture (visual only)
-                        const fixture = createAsset('cylinder');
-                        if (fixture) {
-                            fixture.position.set(pos.x, 7.5, pos.z);
-                            fixture.scale.set(0.3, 0.5, 0.3);
-                            fixture.material.color.setHex(0x1a1a1a);
-                            fixture.material.emissive.setHex(0xffaa00);
-                            fixture.material.emissiveIntensity = 0.5;
-                            fixture.name = `Light Fixture ${i + 1}`;
+                    crates.forEach((pos, i) => {
+                        const crate = createAsset('box');
+                        if (crate) {
+                            crate.position.set(pos.x, 0.75, pos.z);
+                            crate.scale.set(1.5, 1.5, 1.5);
+                            crate.material.color.setHex(0x8b7355);
+                            crate.material.roughness = 0.85;
+                            crate.name = `Crate ${i + 1}`;
                         }
                     });
 
-                    // Weapon/Item spawn points (marked locations)
-                    const itemSpawns = [
-                        {x: -8, z: 0, item: 'Weapon'},
-                        {x: 8, z: 0, item: 'Weapon'},
-                        {x: 0, z: -8, item: 'Health'},
-                        {x: 0, z: 8, item: 'Ammo'}
+                    // Item Spawns (rotating markers)
+                    const items = [
+                        {x: 0, z: -10, color: 0x00ff88, name: 'Health'},
+                        {x: 0, z: 10, color: 0xffaa00, name: 'Ammo'}
                     ];
 
-                    itemSpawns.forEach(item => {
+                    items.forEach(item => {
                         const marker = createAsset('torus');
                         if (marker) {
-                            marker.position.set(item.x, 0.1, item.z);
-                            marker.scale.set(0.8, 0.8, 0.8);
+                            marker.position.set(item.x, 0.2, item.z);
+                            marker.scale.set(0.6, 0.6, 0.6);
                             marker.rotation.x = Math.PI / 2;
-                            marker.material.color.setHex(0x00ff88);
-                            marker.material.emissive.setHex(0x00ff88);
+                            marker.material.color.setHex(item.color);
+                            marker.material.emissive.setHex(item.color);
                             marker.material.emissiveIntensity = 0.5;
-                            marker.name = `${item.item} Spawn`;
-                            marker.userData.itemSpawn = true;
-                            marker.userData.itemType = item.item;
+                            marker.name = `${item.name} Pickup`;
 
-                            // Rotating animation
                             marker.userData.animate = function(time) {
                                 this.rotation.z = time * 0.5;
                                 this.material.emissiveIntensity = 0.5 + Math.sin(time * 3) * 0.3;
@@ -5196,8 +5089,27 @@
                         }
                     });
 
-                    console.log('✓ FPS Arena template loaded - Ready for game development!');
-                    console.log('Features: Team spawns, cover system, item spawns, tactical platform');
+                    // Overhead Lights
+                    const lights = [
+                        {x: -8, z: -8},
+                        {x: 8, z: -8},
+                        {x: -8, z: 8},
+                        {x: 8, z: 8}
+                    ];
+
+                    lights.forEach((pos, i) => {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(pos.x, 8, pos.z);
+                            light.intensity = 1.2;
+                            light.distance = 18;
+                            light.name = `Light ${i + 1}`;
+                        }
+                    });
+
+                    console.log('✓ FPS Arena loaded!');
+                    console.log('- Red spawn (left) & Blue spawn (right)');
+                    console.log('- 5 cover crates & 2 item pickups');
                 }
             },
             {
