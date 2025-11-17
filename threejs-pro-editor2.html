@@ -932,6 +932,11 @@
         /* BLUEPRINT QUESTIONNAIRE SYSTEM */
         /* ============================================ */
 
+        /* AI Assistant Group */
+        .ai-assistant-group {
+            margin-bottom: 15px;
+        }
+
         /* AI Assistant Button */
         .btn-ai-assistant {
             width: 100%;
@@ -2531,7 +2536,7 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="new-project-btn" onclick="showTemplateLibrary()" data-tooltip="Start a new project from template (Ctrl+N)">
+            <button type="button" class="new-project-btn" onclick="showTemplateLibrary()" data-tooltip="Start a new project from template (Ctrl+N)">
                 <i class="fas fa-file"></i>
                 <span>New Project</span>
             </button>
@@ -2540,7 +2545,7 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" id="mode-toggle" data-tooltip="Switch between edit and play mode to test your scene">
+            <button type="button" class="toolbar-btn" id="mode-toggle" data-tooltip="Switch between edit and play mode to test your scene">
                 <i class="fas fa-gamepad"></i>
                 <span id="mode-text">Play Mode</span>
             </button>
@@ -2549,10 +2554,10 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" onclick="undo()" data-tooltip="Undo the last action (Ctrl+Z)">
+            <button type="button" class="toolbar-btn" onclick="undo()" data-tooltip="Undo the last action (Ctrl+Z)">
                 <i class="fas fa-undo"></i> Undo
             </button>
-            <button class="toolbar-btn" onclick="redo()" data-tooltip="Redo the last undone action (Ctrl+Y)">
+            <button type="button" class="toolbar-btn" onclick="redo()" data-tooltip="Redo the last undone action (Ctrl+Y)">
                 <i class="fas fa-redo"></i> Redo
             </button>
         </div>
@@ -2560,13 +2565,13 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" onclick="saveScene()" data-tooltip="Save your scene to a JSON file">
+            <button type="button" class="toolbar-btn" onclick="saveScene()" data-tooltip="Save your scene to a JSON file">
                 <i class="fas fa-save"></i> Save
             </button>
-            <button class="toolbar-btn" onclick="loadScene()" data-tooltip="Load a previously saved scene from JSON">
+            <button type="button" class="toolbar-btn" onclick="loadScene()" data-tooltip="Load a previously saved scene from JSON">
                 <i class="fas fa-folder-open"></i> Load
             </button>
-            <button class="toolbar-btn" onclick="exportCode()" data-tooltip="Export your scene as standalone HTML code">
+            <button type="button" class="toolbar-btn" onclick="exportCode()" data-tooltip="Export your scene as standalone HTML code">
                 <i class="fas fa-code"></i> Export
             </button>
         </div>
@@ -2605,10 +2610,10 @@
 
         <!-- UI Mode Toggle -->
         <div class="ui-mode-toggle">
-            <button class="ui-mode-btn active" onclick="setUIMode('beginner')" data-tooltip="Beginner mode - simplified interface">
+            <button type="button" class="ui-mode-btn active" onclick="setUIMode('beginner')" data-tooltip="Beginner mode - simplified interface">
                 <i class="fas fa-user"></i> Beginner
             </button>
-            <button class="ui-mode-btn" onclick="setUIMode('advanced')" data-tooltip="Advanced mode - all features unlocked">
+            <button type="button" class="ui-mode-btn" onclick="setUIMode('advanced')" data-tooltip="Advanced mode - all features unlocked">
                 <i class="fas fa-user-cog"></i> Advanced
             </button>
         </div>
@@ -2750,10 +2755,10 @@
             <div class="sidebar-panel" id="panel-collisions">
                 <div class="section-title">Collision Objects</div>
                 <div id="collision-list"></div>
-                <button class="btn btn-secondary" onclick="toggleAllColliders()">
+                <button type="button" class="btn btn-secondary" onclick="toggleAllColliders()">
                     <i class="fas fa-eye"></i> Toggle Helpers
                 </button>
-                <button class="btn" onclick="rebuildColliders()">
+                <button type="button" class="btn" onclick="rebuildColliders()">
                     <i class="fas fa-sync"></i> Rebuild All
                 </button>
             </div>
@@ -2791,13 +2796,13 @@
                     <div class="property-group">
                         <div class="property-label">Transform Mode</div>
                         <div class="transform-mode-group">
-                            <button class="mode-btn active" id="mode-translate" onclick="setTransformMode('translate')">
+                            <button type="button" class="mode-btn active" id="mode-translate" onclick="setTransformMode('translate')">
                                 <i class="fas fa-arrows-alt"></i> Move
                             </button>
-                            <button class="mode-btn" id="mode-rotate" onclick="setTransformMode('rotate')">
+                            <button type="button" class="mode-btn" id="mode-rotate" onclick="setTransformMode('rotate')">
                                 <i class="fas fa-redo"></i> Rotate
                             </button>
-                            <button class="mode-btn" id="mode-scale" onclick="setTransformMode('scale')">
+                            <button type="button" class="mode-btn" id="mode-scale" onclick="setTransformMode('scale')">
                                 <i class="fas fa-expand"></i> Scale
                             </button>
                         </div>
@@ -2967,7 +2972,7 @@
                             <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
                                 <div class="property-label" style="display: flex; justify-content: space-between; align-items: center;">
                                     <span data-tooltip="Select which layers this object can collide with">Collides With</span>
-                                    <button onclick="toggleAllLayers()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">All</button>
+                                    <button type="button" onclick="toggleAllLayers()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">All</button>
                                 </div>
                                 <div id="collision-mask-checkboxes" style="margin-top: 8px; max-height: 150px; overflow-y: auto; font-size: 12px;">
                                     <!-- Layer checkboxes will be generated here -->
@@ -3090,7 +3095,7 @@
                             <div style="margin-bottom: 15px;">
                                 <div class="property-label" style="font-size: 12px;">
                                     onCollisionEnter
-                                    <button onclick="insertCallbackTemplate('enter')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                    <button type="button" onclick="insertCallbackTemplate('enter')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
                                 </div>
                                 <textarea class="property-input" id="callback-enter" rows="3" placeholder="console.log('Hit:', other.name);" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('enter')"></textarea>
                             </div>
@@ -3099,7 +3104,7 @@
                             <div style="margin-bottom: 15px;">
                                 <div class="property-label" style="font-size: 12px;">
                                     onCollisionStay
-                                    <button onclick="insertCallbackTemplate('stay')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                    <button type="button" onclick="insertCallbackTemplate('stay')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
                                 </div>
                                 <textarea class="property-input" id="callback-stay" rows="3" placeholder="// Runs every frame while colliding" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('stay')"></textarea>
                             </div>
@@ -3108,7 +3113,7 @@
                             <div style="margin-bottom: 15px;">
                                 <div class="property-label" style="font-size: 12px;">
                                     onCollisionExit
-                                    <button onclick="insertCallbackTemplate('exit')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                    <button type="button" onclick="insertCallbackTemplate('exit')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
                                 </div>
                                 <textarea class="property-input" id="callback-exit" rows="3" placeholder="// Runs when collision ends" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('exit')"></textarea>
                             </div>
@@ -3130,7 +3135,7 @@
                     </div>
 
                     <div class="property-group">
-                        <button class="btn btn-danger" onclick="deleteSelectedObject()">
+                        <button type="button" class="btn btn-danger" onclick="deleteSelectedObject()">
                             <i class="fas fa-trash"></i> Delete Object
                         </button>
                     </div>
@@ -3201,8 +3206,8 @@
 
                     <div id="blueprint-editor" style="display: none;">
                         <!-- AI Assistant Button -->
-                        <div class="property-group" style="margin-bottom: 15px;">
-                            <button class="btn-ai-assistant" onclick="openBlueprintQuestionnaire()">
+                        <div class="property-group ai-assistant-group">
+                            <button type="button" class="btn-ai-assistant" onclick="openBlueprintQuestionnaire()">
                                 <span class="ai-icon">🪄</span>
                                 <div class="ai-text">
                                     <div class="ai-title">Create with AI Assistant</div>
@@ -3215,7 +3220,7 @@
                         <div class="property-group" style="margin-bottom: 10px;">
                             <div class="property-label" style="margin-bottom: 8px;">
                                 Add Nodes
-                                <button class="btn btn-secondary" onclick="clearBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
+                                <button type="button" class="btn btn-secondary" onclick="clearBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
                                     <i class="fas fa-trash"></i> Clear All
                                 </button>
                             </div>
@@ -3226,16 +3231,16 @@
                                     📍 Events
                                 </summary>
                                 <div class="node-palette" id="event-nodes" style="padding: 8px 0;">
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Start')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('On Start')">
                                         📍 On Start
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Collision Enter')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('On Collision Enter')">
                                         📍 On Collision Enter
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Trigger Enter')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('On Trigger Enter')">
                                         📍 On Trigger Enter
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Click')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('On Click')">
                                         📍 On Click
                                     </button>
                                 </div>
@@ -3247,16 +3252,16 @@
                                     ⚡ Actions
                                 </summary>
                                 <div class="node-palette" id="action-nodes" style="padding: 8px 0;">
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Change Color')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Change Color')">
                                         ⚡ Change Color
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Move Object')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Move Object')">
                                         ⚡ Move Object
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Destroy Object')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Destroy Object')">
                                         ⚡ Destroy Object
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Log Message')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Log Message')">
                                         ⚡ Log Message
                                     </button>
                                 </div>
@@ -3268,10 +3273,10 @@
                                     🔀 Flow Control
                                 </summary>
                                 <div class="node-palette" id="flow-nodes" style="padding: 8px 0;">
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Branch')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Branch')">
                                         🔀 Branch (If)
                                     </button>
-                                    <button class="node-palette-btn" onclick="addBlueprintNode('Delay')">
+                                    <button type="button" class="node-palette-btn" onclick="addBlueprintNode('Delay')">
                                         🔀 Delay
                                     </button>
                                 </div>
@@ -3282,7 +3287,7 @@
                         <div class="property-group">
                             <div class="property-label" style="margin-bottom: 8px;">
                                 Blueprint Graph
-                                <button class="btn" onclick="testBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
+                                <button type="button" class="btn" onclick="testBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
                                     <i class="fas fa-play"></i> Test
                                 </button>
                             </div>
@@ -3337,7 +3342,7 @@
                     <span class="questionnaire-icon">🪄</span>
                     Blueprint AI Assistant
                 </div>
-                <button class="questionnaire-close" onclick="closeBlueprintQuestionnaire()">×</button>
+                <button type="button" class="questionnaire-close" onclick="closeBlueprintQuestionnaire()">×</button>
             </div>
 
             <!-- Progress Bar -->
@@ -3353,10 +3358,10 @@
 
             <!-- Navigation -->
             <div class="questionnaire-navigation">
-                <button class="btn-questionnaire-back" id="btn-questionnaire-back" onclick="questionnaireGoBack()">
+                <button type="button" class="btn-questionnaire-back" id="btn-questionnaire-back" onclick="questionnaireGoBack()">
                     ← Back
                 </button>
-                <button class="btn-questionnaire-next" id="btn-questionnaire-next" onclick="questionnaireNext()">
+                <button type="button" class="btn-questionnaire-next" id="btn-questionnaire-next" onclick="questionnaireNext()">
                     Next →
                 </button>
             </div>
@@ -5236,7 +5241,7 @@ console.log('No longer colliding with:', other.name);`
                 item.innerHTML = `
                     <div class="collision-item-header">
                         <span>${obj.name || 'Unnamed'}</span>
-                        <button class="collision-toggle enabled" onclick="removeCollider(sceneObjects.find(o => o.uuid === '${obj.uuid}'))">
+                        <button type="button" class="collision-toggle enabled" onclick="removeCollider(sceneObjects.find(o => o.uuid === '${obj.uuid}'))">
                             <i class="fas fa-check"></i> Enabled
                         </button>
                     </div>
@@ -12292,10 +12297,10 @@ console.log('No longer colliding with:', other.name);`
                         ${template.tags.map(tag => `<span class="template-tag">${tag}</span>`).join('')}
                     </div>
                     <div class="template-actions">
-                        <button class="template-btn" onclick="applyTemplate('${template.id}')">
+                        <button type="button" class="template-btn" onclick="applyTemplate('${template.id}')">
                             <i class="fas fa-check"></i> Use Template
                         </button>
-                        <button class="template-btn template-btn-secondary" onclick="previewTemplate('${template.id}')">
+                        <button type="button" class="template-btn template-btn-secondary" onclick="previewTemplate('${template.id}')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
@@ -12558,7 +12563,7 @@ console.log('No longer colliding with:', other.name);`
     </div>
 
     <!-- Settings Button -->
-    <button class="settings-btn" onclick="toggleShortcuts()" data-tooltip="Keyboard shortcuts (F1)">
+    <button type="button" class="settings-btn" onclick="toggleShortcuts()" data-tooltip="Keyboard shortcuts (F1)">
         <i class="fas fa-keyboard"></i>
     </button>
 
