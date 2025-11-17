@@ -1326,6 +1326,317 @@
         }
 
         /* ============================================ */
+        /* PHASE 2: TEMPLATE SYSTEM */
+        /* ============================================ */
+
+        /* Template Library Modal */
+        .template-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .template-modal.show {
+            display: flex;
+        }
+
+        .template-modal-content {
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .template-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #404040;
+        }
+
+        .template-modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .template-modal-close {
+            width: 36px;
+            height: 36px;
+            background: #3a3a3a;
+            border: 1px solid #505050;
+            border-radius: 6px;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .template-modal-close:hover {
+            background: #454545;
+            color: #e0e0e0;
+        }
+
+        .template-filters {
+            display: flex;
+            gap: 8px;
+            padding: 16px 24px;
+            border-bottom: 1px solid #404040;
+            flex-wrap: wrap;
+        }
+
+        .template-filter-btn {
+            padding: 8px 16px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            color: #999;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .template-filter-btn:hover {
+            background: #333;
+            border-color: #505050;
+            color: #e0e0e0;
+        }
+
+        .template-filter-btn.active {
+            background: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .template-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .template-category-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .template-card {
+            background: #252525;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .template-card:hover {
+            transform: translateY(-4px);
+            border-color: #0066cc;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.3);
+        }
+
+        .template-preview {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-preview i {
+            font-size: 48px;
+            color: #0066cc;
+            opacity: 0.5;
+        }
+
+        .template-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .template-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .template-badge.new {
+            background: #0066cc;
+            color: white;
+        }
+
+        .template-badge.popular {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        .template-badge.advanced {
+            background: #dc2626;
+            color: white;
+        }
+
+        .template-info {
+            padding: 16px;
+        }
+
+        .template-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 6px;
+        }
+
+        .template-description {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .template-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .template-tag {
+            padding: 3px 8px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .template-btn {
+            flex: 1;
+            padding: 10px;
+            background: #0066cc;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .template-btn:hover {
+            background: #0052a3;
+        }
+
+        .template-btn-secondary {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .template-btn-secondary:hover {
+            background: #454545;
+        }
+
+        /* New Project Button */
+        .new-project-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .new-project-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 102, 204, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .template-modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .template-filters {
+                padding: 12px 16px;
+            }
+
+            .template-grid-container {
+                padding: 16px;
+            }
+        }
+
+        /* ============================================ */
         /* RESPONSIVE BREAKPOINTS */
         /* ============================================ */
 
@@ -1592,6 +1903,15 @@
     <div class="top-toolbar">
         <div class="toolbar-title" data-tooltip="Three.js Professional World Builder">
             <i class="fas fa-cube"></i> World Builder
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-section">
+            <button class="new-project-btn" onclick="showTemplateLibrary()" data-tooltip="Start a new project from template (Ctrl+N)">
+                <i class="fas fa-file"></i>
+                <span>New Project</span>
+            </button>
         </div>
 
         <div class="toolbar-divider"></div>
@@ -4637,6 +4957,3452 @@
         }
 
         // ============================================
+        // PHASE 2: TEMPLATE SYSTEM
+        // ============================================
+
+        // Template Library Database
+        const templateLibrary = [
+            // GAME TEMPLATES
+            {
+                id: 'fps-arena',
+                name: 'FPS Arena',
+                category: 'game',
+                description: 'First-person shooter arena with spawn points, walls, and basic collision',
+                tags: ['FPS', 'Multiplayer', 'Shooter'],
+                difficulty: 'beginner',
+                badge: 'popular',
+                icon: 'fa-crosshairs',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('floor');
+                    if (floor) {
+                        floor.scale.set(30, 1, 30);
+                        floor.userData.hasCollision = true;
+                    }
+
+                    // Walls
+                    for (let i = 0; i < 4; i++) {
+                        const wall = createAsset('wall');
+                        if (wall) {
+                            const angle = (Math.PI / 2) * i;
+                            wall.position.set(Math.cos(angle) * 15, 2.5, Math.sin(angle) * 15);
+                            wall.rotation.y = angle;
+                            wall.scale.set(30, 5, 1);
+                            wall.userData.hasCollision = true;
+                        }
+                    }
+
+                    // Spawn point
+                    const spawn = createAsset('spawnPoint');
+                    if (spawn) {
+                        spawn.position.set(0, 1, 10);
+                    }
+
+                    // Some cover boxes
+                    for (let i = 0; i < 5; i++) {
+                        const box = createAsset('box');
+                        if (box) {
+                            box.position.set((Math.random() - 0.5) * 20, 0.5, (Math.random() - 0.5) * 20);
+                            box.userData.hasCollision = true;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'platformer',
+                name: 'Platformer Level',
+                category: 'game',
+                description: 'Classic platformer with platforms, collectibles, and hazards',
+                tags: ['Platformer', '2D', 'Side-Scrolling'],
+                difficulty: 'beginner',
+                badge: 'new',
+                icon: 'fa-running',
+                setup: function() {
+                    // Ground
+                    const ground = createAsset('plane');
+                    if (ground) {
+                        ground.rotation.x = -Math.PI / 2;
+                        ground.scale.set(50, 50, 1);
+                        ground.position.y = -1;
+                    }
+
+                    // Platforms
+                    for (let i = 0; i < 8; i++) {
+                        const platform = createAsset('box');
+                        if (platform) {
+                            platform.scale.set(4, 0.3, 2);
+                            platform.position.set(i * 6 - 20, i * 1.5, 0);
+                            platform.userData.hasCollision = true;
+                        }
+                    }
+
+                    // Collectibles
+                    for (let i = 0; i < 10; i++) {
+                        const coin = createAsset('sphere');
+                        if (coin) {
+                            coin.scale.set(0.3, 0.3, 0.3);
+                            coin.position.set((i % 5) * 4 - 8, (Math.floor(i / 5) + 1) * 3, 0);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'racing-track',
+                name: 'Racing Track',
+                category: 'game',
+                description: 'Circular racing track with checkpoints and barriers',
+                tags: ['Racing', 'Track', 'Vehicles'],
+                difficulty: 'intermediate',
+                icon: 'fa-flag-checkered',
+                setup: function() {
+                    // Track base
+                    const track = createAsset('cylinder');
+                    if (track) {
+                        track.scale.set(20, 0.2, 20);
+                        track.position.y = -0.1;
+                    }
+
+                    // Barriers
+                    for (let i = 0; i < 16; i++) {
+                        const angle = (Math.PI * 2 * i) / 16;
+                        const innerBarrier = createAsset('box');
+                        const outerBarrier = createAsset('box');
+
+                        if (innerBarrier) {
+                            innerBarrier.position.set(Math.cos(angle) * 12, 0.5, Math.sin(angle) * 12);
+                            innerBarrier.rotation.y = angle;
+                            innerBarrier.scale.set(3, 1, 0.3);
+                        }
+
+                        if (outerBarrier) {
+                            outerBarrier.position.set(Math.cos(angle) * 18, 0.5, Math.sin(angle) * 18);
+                            outerBarrier.rotation.y = angle;
+                            outerBarrier.scale.set(3, 1, 0.3);
+                        }
+                    }
+                }
+            },
+
+            // VISUALIZATION TEMPLATES
+            {
+                id: 'product-showcase',
+                name: 'Product Showcase',
+                category: 'visualization',
+                description: 'Rotating pedestal with lighting setup for product display',
+                tags: ['Product', 'Display', 'E-commerce'],
+                difficulty: 'beginner',
+                badge: 'popular',
+                icon: 'fa-box-open',
+                setup: function() {
+                    // Pedestal
+                    const pedestal = createAsset('cylinder');
+                    if (pedestal) {
+                        pedestal.scale.set(2, 0.3, 2);
+                        pedestal.position.y = 0;
+                    }
+
+                    // Product placeholder
+                    const product = createAsset('box');
+                    if (product) {
+                        product.position.set(0, 1, 0);
+                    }
+
+                    // Lighting
+                    const light1 = createAsset('spotLight');
+                    if (light1) {
+                        light1.position.set(3, 4, 3);
+                    }
+
+                    const light2 = createAsset('spotLight');
+                    if (light2) {
+                        light2.position.set(-3, 4, -3);
+                    }
+                }
+            },
+            {
+                id: 'gallery',
+                name: 'Virtual Gallery',
+                category: 'visualization',
+                description: 'Art gallery with frames and spotlights for exhibitions',
+                tags: ['Gallery', 'Museum', 'Art'],
+                difficulty: 'intermediate',
+                icon: 'fa-images',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(30, 20, 1);
+                    }
+
+                    // Walls
+                    for (let i = 0; i < 4; i++) {
+                        const wall = createAsset('wall');
+                        if (wall) {
+                            const angle = (Math.PI / 2) * i;
+                            wall.position.set(Math.cos(angle) * 15, 2.5, Math.sin(angle) * 10);
+                            wall.rotation.y = angle;
+                            wall.scale.set(20, 5, 0.5);
+                        }
+                    }
+
+                    // Art frames
+                    for (let i = 0; i < 6; i++) {
+                        const frame = createAsset('box');
+                        if (frame) {
+                            frame.scale.set(2, 1.5, 0.1);
+                            frame.position.set(-14, 2, -8 + i * 3);
+                        }
+                    }
+                }
+            },
+
+            // WEBSITE INTEGRATION TEMPLATES
+            {
+                id: 'hero-3d-bg',
+                name: '3D Hero Background',
+                category: 'website',
+                description: 'Animated 3D background perfect for website hero sections',
+                tags: ['Hero', 'Background', 'Landing'],
+                difficulty: 'beginner',
+                badge: 'popular',
+                icon: 'fa-layer-group',
+                setup: function() {
+                    // Floating geometric shapes
+                    for (let i = 0; i < 10; i++) {
+                        const shapes = ['box', 'sphere', 'torus', 'cone'];
+                        const shape = createAsset(shapes[Math.floor(Math.random() * shapes.length)]);
+                        if (shape) {
+                            shape.position.set(
+                                (Math.random() - 0.5) * 20,
+                                (Math.random() - 0.5) * 10,
+                                (Math.random() - 0.5) * 15
+                            );
+                            shape.scale.setScalar(Math.random() * 0.5 + 0.5);
+                            shape.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+                        }
+                    }
+
+                    // Lighting
+                    const light = createAsset('pointLight');
+                    if (light) {
+                        light.position.set(0, 5, 5);
+                    }
+                }
+            },
+            {
+                id: 'product-configurator',
+                name: 'Product Configurator',
+                category: 'website',
+                description: 'Interactive product with customizable colors and parts',
+                tags: ['E-commerce', 'Interactive', 'Configurator'],
+                difficulty: 'advanced',
+                badge: 'advanced',
+                icon: 'fa-palette',
+                setup: function() {
+                    // Main product
+                    const base = createAsset('box');
+                    if (base) {
+                        base.scale.set(2, 1, 1);
+                        base.position.y = 0.5;
+                    }
+
+                    const top = createAsset('box');
+                    if (top) {
+                        top.scale.set(1.8, 0.3, 0.9);
+                        top.position.y = 1.15;
+                    }
+
+                    // Pedestal
+                    const pedestal = createAsset('cylinder');
+                    if (pedestal) {
+                        pedestal.scale.set(1.5, 0.2, 1.5);
+                        pedestal.position.y = -0.1;
+                    }
+                }
+            },
+
+            // ENVIRONMENT TEMPLATES
+            {
+                id: 'nature-scene',
+                name: 'Nature Scene',
+                category: 'environment',
+                description: 'Outdoor environment with terrain, trees, and natural lighting',
+                tags: ['Nature', 'Outdoor', 'Terrain'],
+                difficulty: 'intermediate',
+                icon: 'fa-tree',
+                setup: function() {
+                    // Terrain
+                    const terrain = createAsset('plane');
+                    if (terrain) {
+                        terrain.rotation.x = -Math.PI / 2;
+                        terrain.scale.set(50, 50, 1);
+                        terrain.position.y = -0.5;
+                    }
+
+                    // "Trees" (simple cylinders with sphere tops)
+                    for (let i = 0; i < 8; i++) {
+                        const trunk = createAsset('cylinder');
+                        if (trunk) {
+                            trunk.scale.set(0.3, 2, 0.3);
+                            trunk.position.set((Math.random() - 0.5) * 20, 1, (Math.random() - 0.5) * 20);
+                        }
+
+                        const foliage = createAsset('sphere');
+                        if (foliage) {
+                            foliage.scale.set(1.5, 1.5, 1.5);
+                            foliage.position.set(trunk.position.x, 3, trunk.position.z);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'scifi-corridor',
+                name: 'Sci-Fi Corridor',
+                category: 'environment',
+                description: 'Futuristic hallway with lighting and metallic surfaces',
+                tags: ['Sci-Fi', 'Corridor', 'Futuristic'],
+                difficulty: 'advanced',
+                badge: 'new',
+                icon: 'fa-rocket',
+                setup: function() {
+                    // Floor and ceiling
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(5, 20, 1);
+                    }
+
+                    const ceiling = createAsset('plane');
+                    if (ceiling) {
+                        ceiling.rotation.x = Math.PI / 2;
+                        ceiling.scale.set(5, 20, 1);
+                        ceiling.position.y = 4;
+                    }
+
+                    // Walls
+                    const wall1 = createAsset('plane');
+                    if (wall1) {
+                        wall1.rotation.y = Math.PI / 2;
+                        wall1.scale.set(20, 4, 1);
+                        wall1.position.set(-2.5, 2, 0);
+                    }
+
+                    const wall2 = createAsset('plane');
+                    if (wall2) {
+                        wall2.rotation.y = -Math.PI / 2;
+                        wall2.scale.set(20, 4, 1);
+                        wall2.position.set(2.5, 2, 0);
+                    }
+
+                    // Corridor lights
+                    for (let i = 0; i < 5; i++) {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(0, 3.5, i * 4 - 8);
+                        }
+                    }
+                }
+            },
+
+            {
+                id: 'empty-scene',
+                name: 'Empty Scene',
+                category: 'game',
+                description: 'Blank canvas with just a floor and basic lighting',
+                tags: ['Blank', 'Starter', 'Custom'],
+                difficulty: 'beginner',
+                icon: 'fa-file',
+                setup: function() {
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(20, 20, 1);
+                    }
+                }
+            },
+            {
+                id: 'puzzle-game',
+                name: 'Puzzle Game',
+                category: 'game',
+                description: 'Grid-based puzzle setup with movable blocks and goal areas',
+                tags: ['Puzzle', 'Logic', 'Grid'],
+                difficulty: 'intermediate',
+                icon: 'fa-puzzle-piece',
+                setup: function() {
+                    // Floor grid
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(15, 15, 1);
+                    }
+
+                    // Create grid of squares
+                    for (let x = 0; x < 5; x++) {
+                        for (let z = 0; z < 5; z++) {
+                            const tile = createAsset('box');
+                            if (tile) {
+                                tile.scale.set(2.8, 0.1, 2.8);
+                                tile.position.set(x * 3 - 6, 0.05, z * 3 - 6);
+                            }
+                        }
+                    }
+
+                    // Movable blocks
+                    for (let i = 0; i < 4; i++) {
+                        const block = createAsset('box');
+                        if (block) {
+                            block.position.set((i % 2) * 3 - 3, 0.5, Math.floor(i / 2) * 3 - 3);
+                            block.userData.movable = true;
+                        }
+                    }
+
+                    // Goal areas (torus rings)
+                    for (let i = 0; i < 2; i++) {
+                        const goal = createAsset('torus');
+                        if (goal) {
+                            goal.scale.set(1.2, 1.2, 1.2);
+                            goal.position.set(3 + i * 3, 0.1, 3);
+                            goal.rotation.x = Math.PI / 2;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'tower-defense',
+                name: 'Tower Defense',
+                category: 'game',
+                description: 'Path with tower placement spots and enemy spawn/goal',
+                tags: ['Tower Defense', 'Strategy', 'Path'],
+                difficulty: 'intermediate',
+                badge: 'popular',
+                icon: 'fa-chess-rook',
+                setup: function() {
+                    // Ground
+                    const ground = createAsset('plane');
+                    if (ground) {
+                        ground.rotation.x = -Math.PI / 2;
+                        ground.scale.set(40, 40, 1);
+                    }
+
+                    // Enemy path
+                    const pathPoints = [
+                        {x: -15, z: -10}, {x: -5, z: -10}, {x: -5, z: 0},
+                        {x: 5, z: 0}, {x: 5, z: 10}, {x: 15, z: 10}
+                    ];
+
+                    for (let i = 0; i < pathPoints.length - 1; i++) {
+                        const p1 = pathPoints[i];
+                        const p2 = pathPoints[i + 1];
+                        const path = createAsset('box');
+                        if (path) {
+                            const length = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.z - p1.z, 2));
+                            path.scale.set(length, 0.1, 2);
+                            path.position.set((p1.x + p2.x) / 2, 0.05, (p1.z + p2.z) / 2);
+                            const angle = Math.atan2(p2.z - p1.z, p2.x - p1.x);
+                            path.rotation.y = angle;
+                        }
+                    }
+
+                    // Tower placement spots
+                    const towerSpots = [
+                        {x: -10, z: -5}, {x: 0, z: -5}, {x: 10, z: -5},
+                        {x: -10, z: 5}, {x: 0, z: 5}, {x: 10, z: 5}
+                    ];
+
+                    towerSpots.forEach(spot => {
+                        const platform = createAsset('cylinder');
+                        if (platform) {
+                            platform.scale.set(1.5, 0.2, 1.5);
+                            platform.position.set(spot.x, 0.1, spot.z);
+                        }
+                    });
+
+                    // Spawn point
+                    const spawn = createAsset('cone');
+                    if (spawn) {
+                        spawn.position.set(-15, 1, -10);
+                        spawn.scale.set(1, 2, 1);
+                    }
+
+                    // Goal/Base
+                    const goal = createAsset('sphere');
+                    if (goal) {
+                        goal.position.set(15, 1, 10);
+                        goal.scale.set(2, 2, 2);
+                    }
+                }
+            },
+            {
+                id: 'battle-royale',
+                name: 'Battle Royale Arena',
+                category: 'game',
+                description: 'Large outdoor arena with buildings, cover, and loot spawns',
+                tags: ['Battle Royale', 'Multiplayer', 'Survival'],
+                difficulty: 'advanced',
+                icon: 'fa-crosshairs',
+                setup: function() {
+                    // Large terrain
+                    const terrain = createAsset('plane');
+                    if (terrain) {
+                        terrain.rotation.x = -Math.PI / 2;
+                        terrain.scale.set(50, 50, 1);
+                    }
+
+                    // Buildings (simple box structures)
+                    const buildings = [
+                        {x: -15, z: -15, w: 5, h: 4, d: 5},
+                        {x: 15, z: -15, w: 4, h: 3, d: 6},
+                        {x: -15, z: 15, w: 6, h: 5, d: 4},
+                        {x: 15, z: 15, w: 5, h: 3, d: 5},
+                        {x: 0, z: 0, w: 8, h: 6, d: 8}
+                    ];
+
+                    buildings.forEach(b => {
+                        const building = createAsset('box');
+                        if (building) {
+                            building.scale.set(b.w, b.h, b.d);
+                            building.position.set(b.x, b.h / 2, b.z);
+                            building.userData.hasCollision = true;
+                        }
+                    });
+
+                    // Cover boxes scattered around
+                    for (let i = 0; i < 12; i++) {
+                        const cover = createAsset('box');
+                        if (cover) {
+                            cover.position.set(
+                                (Math.random() - 0.5) * 40,
+                                0.5,
+                                (Math.random() - 0.5) * 40
+                            );
+                            cover.scale.set(1.5, 1, 1.5);
+                            cover.userData.hasCollision = true;
+                        }
+                    }
+
+                    // Loot spawn points (spheres)
+                    for (let i = 0; i < 8; i++) {
+                        const loot = createAsset('sphere');
+                        if (loot) {
+                            loot.position.set(
+                                (Math.random() - 0.5) * 45,
+                                0.3,
+                                (Math.random() - 0.5) * 45
+                            );
+                            loot.scale.set(0.3, 0.3, 0.3);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'rpg-arena',
+                name: 'RPG Arena',
+                category: 'game',
+                description: 'Fantasy battle arena with pillars, altar, and circular design',
+                tags: ['RPG', 'Fantasy', 'Arena'],
+                difficulty: 'intermediate',
+                badge: 'new',
+                icon: 'fa-dragon',
+                setup: function() {
+                    // Circular floor
+                    const floor = createAsset('cylinder');
+                    if (floor) {
+                        floor.scale.set(15, 0.5, 15);
+                        floor.position.y = -0.25;
+                    }
+
+                    // Central altar
+                    const altar = createAsset('box');
+                    if (altar) {
+                        altar.scale.set(2, 1.5, 2);
+                        altar.position.y = 0.75;
+                    }
+
+                    const altarTop = createAsset('cylinder');
+                    if (altarTop) {
+                        altarTop.scale.set(1.5, 0.3, 1.5);
+                        altarTop.position.y = 1.65;
+                    }
+
+                    // Pillars around the arena
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (Math.PI * 2 * i) / 8;
+                        const pillar = createAsset('cylinder');
+                        if (pillar) {
+                            pillar.scale.set(0.8, 4, 0.8);
+                            pillar.position.set(
+                                Math.cos(angle) * 12,
+                                2,
+                                Math.sin(angle) * 12
+                            );
+                        }
+
+                        // Pillar top
+                        const capital = createAsset('box');
+                        if (capital) {
+                            capital.scale.set(1.2, 0.4, 1.2);
+                            capital.position.set(
+                                Math.cos(angle) * 12,
+                                4.2,
+                                Math.sin(angle) * 12
+                            );
+                        }
+                    }
+
+                    // Torches/lights
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (Math.PI * 2 * i) / 4;
+                        const torch = createAsset('pointLight');
+                        if (torch) {
+                            torch.position.set(
+                                Math.cos(angle) * 8,
+                                3,
+                                Math.sin(angle) * 8
+                            );
+                        }
+                    }
+                }
+            },
+            {
+                id: 'horror-scene',
+                name: 'Horror Scene',
+                category: 'game',
+                description: 'Dark atmospheric environment with eerie lighting and fog',
+                tags: ['Horror', 'Dark', 'Atmospheric'],
+                difficulty: 'intermediate',
+                icon: 'fa-ghost',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(25, 25, 1);
+                    }
+
+                    // Walls to create enclosed feeling
+                    for (let i = 0; i < 4; i++) {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            const angle = (Math.PI / 2) * i;
+                            wall.position.set(Math.cos(angle) * 12, 2.5, Math.sin(angle) * 12);
+                            wall.rotation.y = angle;
+                            wall.scale.set(25, 5, 0.5);
+                        }
+                    }
+
+                    // Scattered debris
+                    for (let i = 0; i < 10; i++) {
+                        const debris = createAsset('box');
+                        if (debris) {
+                            debris.position.set(
+                                (Math.random() - 0.5) * 20,
+                                0.3,
+                                (Math.random() - 0.5) * 20
+                            );
+                            debris.scale.set(
+                                Math.random() * 0.5 + 0.3,
+                                Math.random() * 0.5 + 0.3,
+                                Math.random() * 0.5 + 0.3
+                            );
+                            debris.rotation.set(
+                                Math.random() * Math.PI,
+                                Math.random() * Math.PI,
+                                Math.random() * Math.PI
+                            );
+                        }
+                    }
+
+                    // Flickering lights (point lights at low positions)
+                    const lightPositions = [
+                        {x: -8, z: -8}, {x: 8, z: -8}, {x: -8, z: 8}, {x: 8, z: 8}
+                    ];
+                    lightPositions.forEach(pos => {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(pos.x, 1.5, pos.z);
+                        }
+                    });
+                }
+            },
+            {
+                id: 'adventure-start',
+                name: 'Adventure Starting Area',
+                category: 'game',
+                description: 'Peaceful starting village with houses and NPCs',
+                tags: ['Adventure', 'Village', 'RPG'],
+                difficulty: 'beginner',
+                icon: 'fa-home',
+                setup: function() {
+                    // Ground
+                    const ground = createAsset('plane');
+                    if (ground) {
+                        ground.rotation.x = -Math.PI / 2;
+                        ground.scale.set(40, 40, 1);
+                    }
+
+                    // Simple houses (box base + pyramid roof)
+                    const housePositions = [
+                        {x: -10, z: -10}, {x: 10, z: -10}, {x: -10, z: 10}
+                    ];
+
+                    housePositions.forEach(pos => {
+                        // House base
+                        const base = createAsset('box');
+                        if (base) {
+                            base.scale.set(4, 3, 4);
+                            base.position.set(pos.x, 1.5, pos.z);
+                            base.userData.hasCollision = true;
+                        }
+
+                        // Roof
+                        const roof = createAsset('cone');
+                        if (roof) {
+                            roof.scale.set(3, 2, 3);
+                            roof.position.set(pos.x, 4, pos.z);
+                        }
+                    });
+
+                    // Central fountain/well
+                    const well = createAsset('cylinder');
+                    if (well) {
+                        well.scale.set(1.5, 1, 1.5);
+                        well.position.set(0, 0.5, 0);
+                    }
+
+                    const wellTop = createAsset('torus');
+                    if (wellTop) {
+                        wellTop.scale.set(1.8, 1.8, 1.8);
+                        wellTop.position.set(0, 1.2, 0);
+                        wellTop.rotation.x = Math.PI / 2;
+                    }
+
+                    // Trees around the village
+                    for (let i = 0; i < 6; i++) {
+                        const angle = (Math.PI * 2 * i) / 6;
+                        const trunk = createAsset('cylinder');
+                        if (trunk) {
+                            trunk.scale.set(0.4, 3, 0.4);
+                            trunk.position.set(Math.cos(angle) * 18, 1.5, Math.sin(angle) * 18);
+                        }
+
+                        const leaves = createAsset('sphere');
+                        if (leaves) {
+                            leaves.scale.set(2, 2, 2);
+                            leaves.position.set(Math.cos(angle) * 18, 4, Math.sin(angle) * 18);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'dungeon-room',
+                name: 'Dungeon Room',
+                category: 'game',
+                description: 'Stone dungeon chamber with pillars, treasure, and torches',
+                tags: ['Dungeon', 'RPG', 'Indoor'],
+                difficulty: 'intermediate',
+                icon: 'fa-dungeon',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(20, 0.5, 20);
+                        floor.position.y = -0.25;
+                    }
+
+                    // Walls
+                    const walls = [
+                        {x: 0, z: -10, ry: 0, sx: 20},
+                        {x: 0, z: 10, ry: 0, sx: 20},
+                        {x: -10, z: 0, ry: Math.PI/2, sx: 20},
+                        {x: 10, z: 0, ry: Math.PI/2, sx: 20}
+                    ];
+
+                    walls.forEach(w => {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(w.sx, 6, 0.5);
+                            wall.position.set(w.x, 3, w.z);
+                            wall.rotation.y = w.ry;
+                        }
+                    });
+
+                    // Ceiling
+                    const ceiling = createAsset('box');
+                    if (ceiling) {
+                        ceiling.scale.set(20, 0.5, 20);
+                        ceiling.position.y = 6.25;
+                    }
+
+                    // Stone pillars
+                    const pillarPositions = [
+                        {x: -6, z: -6}, {x: 6, z: -6}, {x: -6, z: 6}, {x: 6, z: 6}
+                    ];
+
+                    pillarPositions.forEach(pos => {
+                        const pillar = createAsset('box');
+                        if (pillar) {
+                            pillar.scale.set(1, 5, 1);
+                            pillar.position.set(pos.x, 2.5, pos.z);
+                        }
+                    });
+
+                    // Treasure chest (center)
+                    const chest = createAsset('box');
+                    if (chest) {
+                        chest.scale.set(1.5, 1, 1);
+                        chest.position.set(0, 0.5, 0);
+                    }
+
+                    // Wall torches
+                    const torchPositions = [
+                        {x: -8, z: -9.5}, {x: 8, z: -9.5}, {x: -8, z: 9.5}, {x: 8, z: 9.5}
+                    ];
+
+                    torchPositions.forEach(pos => {
+                        const torch = createAsset('pointLight');
+                        if (torch) {
+                            torch.position.set(pos.x, 3, pos.z);
+                        }
+                    });
+                }
+            },
+
+            // MORE VISUALIZATION TEMPLATES
+            {
+                id: 'data-dashboard',
+                name: 'Data Dashboard',
+                category: 'visualization',
+                description: '3D data visualization with bars, graphs, and info panels',
+                tags: ['Data', 'Analytics', 'Dashboard'],
+                difficulty: 'intermediate',
+                badge: 'popular',
+                icon: 'fa-chart-line',
+                setup: function() {
+                    // Floor/base
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(20, 20, 1);
+                    }
+
+                    // Bar chart representation
+                    const barHeights = [2, 4, 3, 6, 5, 7, 4, 8];
+                    for (let i = 0; i < barHeights.length; i++) {
+                        const bar = createAsset('box');
+                        if (bar) {
+                            bar.scale.set(0.8, barHeights[i], 0.8);
+                            bar.position.set(i * 2 - 7, barHeights[i] / 2, -5);
+                        }
+                    }
+
+                    // Info panels (flat boxes as screens)
+                    for (let i = 0; i < 3; i++) {
+                        const panel = createAsset('box');
+                        if (panel) {
+                            panel.scale.set(4, 3, 0.1);
+                            panel.position.set(i * 5 - 5, 3, 5);
+                        }
+                    }
+
+                    // Pie chart representation (cylinder segments)
+                    for (let i = 0; i < 4; i++) {
+                        const segment = createAsset('box');
+                        if (segment) {
+                            const angle = (Math.PI * 2 * i) / 4;
+                            segment.scale.set(2, 0.2, 1);
+                            segment.position.set(Math.cos(angle) * 1.5 + 5, 0.5, Math.sin(angle) * 1.5);
+                            segment.rotation.y = angle;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'timeline-viz',
+                name: 'Timeline Visualization',
+                category: 'visualization',
+                description: 'Interactive timeline with events and milestones in 3D space',
+                tags: ['Timeline', 'History', 'Events'],
+                difficulty: 'beginner',
+                icon: 'fa-stream',
+                setup: function() {
+                    // Timeline path
+                    const path = createAsset('box');
+                    if (path) {
+                        path.scale.set(30, 0.2, 0.5);
+                        path.position.set(0, 1, 0);
+                    }
+
+                    // Timeline events (spheres with pillars)
+                    for (let i = 0; i < 8; i++) {
+                        const height = (i % 2 === 0) ? 2 : 3;
+
+                        // Event pillar
+                        const pillar = createAsset('cylinder');
+                        if (pillar) {
+                            pillar.scale.set(0.15, height, 0.15);
+                            pillar.position.set(i * 4 - 14, 1 + height / 2, 0);
+                        }
+
+                        // Event marker
+                        const marker = createAsset('sphere');
+                        if (marker) {
+                            marker.scale.set(0.5, 0.5, 0.5);
+                            marker.position.set(i * 4 - 14, 1 + height, 0);
+                        }
+
+                        // Info card
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(1.5, 1, 0.1);
+                            card.position.set(i * 4 - 14, 1 + height + 1, 0);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'network-graph',
+                name: 'Network Graph',
+                category: 'visualization',
+                description: '3D network visualization with connected nodes',
+                tags: ['Network', 'Graph', 'Connections'],
+                difficulty: 'advanced',
+                icon: 'fa-project-diagram',
+                setup: function() {
+                    // Central node
+                    const center = createAsset('sphere');
+                    if (center) {
+                        center.position.set(0, 2, 0);
+                        center.scale.set(1.5, 1.5, 1.5);
+                    }
+
+                    // Surrounding nodes in a sphere pattern
+                    const nodeCount = 12;
+                    for (let i = 0; i < nodeCount; i++) {
+                        const phi = Math.acos(-1 + (2 * i) / nodeCount);
+                        const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+
+                        const node = createAsset('sphere');
+                        if (node) {
+                            node.scale.set(0.6, 0.6, 0.6);
+                            node.position.set(
+                                Math.cos(theta) * Math.sin(phi) * 8,
+                                Math.cos(phi) * 8 + 2,
+                                Math.sin(theta) * Math.sin(phi) * 8
+                            );
+                        }
+
+                        // Connection line (thin cylinder)
+                        const connection = createAsset('cylinder');
+                        if (connection) {
+                            const distance = node.position.distanceTo(center.position);
+                            connection.scale.set(0.05, distance / 2, 0.05);
+                            connection.position.copy(center.position).lerp(node.position, 0.5);
+                            connection.lookAt(node.position);
+                            connection.rotation.x += Math.PI / 2;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'chart-scene',
+                name: '3D Chart Scene',
+                category: 'visualization',
+                description: 'Multiple chart types displayed in 3D environment',
+                tags: ['Charts', 'Graphs', 'Statistics'],
+                difficulty: 'intermediate',
+                icon: 'fa-chart-area',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(30, 30, 1);
+                    }
+
+                    // Area chart (stepped boxes)
+                    const areaData = [1, 2.5, 2, 3.5, 3, 4, 3.5, 5];
+                    for (let i = 0; i < areaData.length; i++) {
+                        const bar = createAsset('box');
+                        if (bar) {
+                            bar.scale.set(1.2, areaData[i], 0.3);
+                            bar.position.set(i * 1.5 - 10, areaData[i] / 2, -8);
+                        }
+                    }
+
+                    // Donut chart (torus)
+                    const donut = createAsset('torus');
+                    if (donut) {
+                        donut.scale.set(3, 3, 3);
+                        donut.position.set(-8, 2, 5);
+                        donut.rotation.x = Math.PI / 2;
+                    }
+
+                    // Scatter plot (small spheres)
+                    for (let i = 0; i < 20; i++) {
+                        const point = createAsset('sphere');
+                        if (point) {
+                            point.scale.set(0.3, 0.3, 0.3);
+                            point.position.set(
+                                Math.random() * 8 + 4,
+                                Math.random() * 5 + 0.5,
+                                Math.random() * 8
+                            );
+                        }
+                    }
+                }
+            },
+            {
+                id: 'analytics-view',
+                name: 'Analytics Dashboard',
+                category: 'visualization',
+                description: 'Real-time analytics display with KPI cards and metrics',
+                tags: ['Analytics', 'KPI', 'Metrics'],
+                difficulty: 'beginner',
+                badge: 'new',
+                icon: 'fa-tachometer-alt',
+                setup: function() {
+                    // Background plane
+                    const bg = createAsset('plane');
+                    if (bg) {
+                        bg.rotation.x = -Math.PI / 2;
+                        bg.scale.set(25, 20, 1);
+                    }
+
+                    // KPI Cards (elevated boxes)
+                    const kpiPositions = [
+                        {x: -8, z: -6}, {x: 0, z: -6}, {x: 8, z: -6},
+                        {x: -8, z: 0}, {x: 0, z: 0}, {x: 8, z: 0}
+                    ];
+
+                    kpiPositions.forEach(pos => {
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(3, 2, 0.2);
+                            card.position.set(pos.x, 1.5, pos.z);
+                        }
+
+                        // Value indicator (small box on top)
+                        const indicator = createAsset('box');
+                        if (indicator) {
+                            indicator.scale.set(2, 0.5, 0.1);
+                            indicator.position.set(pos.x, 2.6, pos.z);
+                        }
+                    });
+
+                    // Growth arrows (cones)
+                    for (let i = 0; i < 3; i++) {
+                        const arrow = createAsset('cone');
+                        if (arrow) {
+                            arrow.scale.set(0.3, 1, 0.3);
+                            arrow.position.set(i * 8 - 8, 3.5, -6);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'infographic-3d',
+                name: '3D Infographic',
+                category: 'visualization',
+                description: 'Layered information display with icons and stats',
+                tags: ['Infographic', 'Information', 'Display'],
+                difficulty: 'intermediate',
+                icon: 'fa-info-circle',
+                setup: function() {
+                    // Central pillar with segments
+                    const segments = [3, 2.5, 2, 1.5];
+                    let yPos = 0;
+
+                    segments.forEach((height, i) => {
+                        const segment = createAsset('cylinder');
+                        if (segment) {
+                            const radius = 2 - (i * 0.3);
+                            segment.scale.set(radius, height, radius);
+                            segment.position.set(0, yPos + height / 2, 0);
+                        }
+
+                        // Info cards around each segment
+                        for (let j = 0; j < 4; j++) {
+                            const angle = (Math.PI * 2 * j) / 4;
+                            const card = createAsset('box');
+                            if (card) {
+                                card.scale.set(1.5, 1, 0.1);
+                                card.position.set(
+                                    Math.cos(angle) * 4,
+                                    yPos + height / 2,
+                                    Math.sin(angle) * 4
+                                );
+                                card.rotation.y = -angle + Math.PI / 2;
+                            }
+                        }
+
+                        yPos += height;
+                    });
+                }
+            },
+            {
+                id: 'presentation-3d',
+                name: '3D Presentation',
+                category: 'visualization',
+                description: 'Slide-style presentation setup with multiple panels',
+                tags: ['Presentation', 'Slides', 'Display'],
+                difficulty: 'beginner',
+                icon: 'fa-presentation',
+                setup: function() {
+                    // Main presentation screen
+                    const mainScreen = createAsset('box');
+                    if (mainScreen) {
+                        mainScreen.scale.set(12, 7, 0.2);
+                        mainScreen.position.set(0, 4, -8);
+                    }
+
+                    // Side panels
+                    const leftPanel = createAsset('box');
+                    if (leftPanel) {
+                        leftPanel.scale.set(4, 6, 0.1);
+                        leftPanel.position.set(-9, 3.5, -3);
+                        leftPanel.rotation.y = Math.PI / 6;
+                    }
+
+                    const rightPanel = createAsset('box');
+                    if (rightPanel) {
+                        rightPanel.scale.set(4, 6, 0.1);
+                        rightPanel.position.set(9, 3.5, -3);
+                        rightPanel.rotation.y = -Math.PI / 6;
+                    }
+
+                    // Stage/platform
+                    const stage = createAsset('box');
+                    if (stage) {
+                        stage.scale.set(20, 0.3, 12);
+                        stage.position.set(0, -0.15, -2);
+                    }
+
+                    // Spotlights
+                    for (let i = 0; i < 3; i++) {
+                        const light = createAsset('spotLight');
+                        if (light) {
+                            light.position.set(i * 8 - 8, 8, 5);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'portfolio-3d',
+                name: '3D Portfolio',
+                category: 'visualization',
+                description: 'Rotating portfolio display with project showcases',
+                tags: ['Portfolio', 'Showcase', 'Gallery'],
+                difficulty: 'intermediate',
+                icon: 'fa-folder-open',
+                setup: function() {
+                    // Central pedestal
+                    const pedestal = createAsset('cylinder');
+                    if (pedestal) {
+                        pedestal.scale.set(1, 0.5, 1);
+                        pedestal.position.y = 0.25;
+                    }
+
+                    // Rotating project displays in circle
+                    const projectCount = 6;
+                    for (let i = 0; i < projectCount; i++) {
+                        const angle = (Math.PI * 2 * i) / projectCount;
+
+                        // Project frame
+                        const frame = createAsset('box');
+                        if (frame) {
+                            frame.scale.set(3, 4, 0.2);
+                            frame.position.set(
+                                Math.cos(angle) * 8,
+                                2.5,
+                                Math.sin(angle) * 8
+                            );
+                            frame.rotation.y = -angle;
+                        }
+
+                        // Project title bar
+                        const titleBar = createAsset('box');
+                        if (titleBar) {
+                            titleBar.scale.set(3, 0.5, 0.1);
+                            titleBar.position.set(
+                                Math.cos(angle) * 8,
+                                4.75,
+                                Math.sin(angle) * 8
+                            );
+                            titleBar.rotation.y = -angle;
+                        }
+
+                        // Support pole
+                        const pole = createAsset('cylinder');
+                        if (pole) {
+                            pole.scale.set(0.1, 2, 0.1);
+                            pole.position.set(
+                                Math.cos(angle) * 8,
+                                1,
+                                Math.sin(angle) * 8
+                            );
+                        }
+                    }
+
+                    // Lighting
+                    const topLight = createAsset('pointLight');
+                    if (topLight) {
+                        topLight.position.set(0, 6, 0);
+                    }
+                }
+            },
+
+            // MORE WEBSITE INTEGRATION TEMPLATES
+            {
+                id: 'landing-hero-full',
+                name: 'Landing Page Hero',
+                category: 'website',
+                description: 'Full-screen hero section with animated elements',
+                tags: ['Landing', 'Hero', 'Marketing'],
+                difficulty: 'beginner',
+                badge: 'popular',
+                icon: 'fa-window-maximize',
+                setup: function() {
+                    // Background geometric shapes
+                    for (let i = 0; i < 8; i++) {
+                        const shape = createAsset(i % 2 === 0 ? 'sphere' : 'torus');
+                        if (shape) {
+                            shape.position.set(
+                                (Math.random() - 0.5) * 25,
+                                (Math.random() - 0.5) * 12,
+                                (Math.random() - 0.5) * 20 - 5
+                            );
+                            shape.scale.setScalar(Math.random() * 1.5 + 0.5);
+                            shape.rotation.set(
+                                Math.random() * Math.PI,
+                                Math.random() * Math.PI,
+                                Math.random() * Math.PI
+                            );
+                        }
+                    }
+
+                    // Accent lights
+                    const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d];
+                    colors.forEach((color, i) => {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set((i - 1) * 8, 5, 3);
+                        }
+                    });
+                }
+            },
+            {
+                id: 'about-section-3d',
+                name: 'About Section',
+                category: 'website',
+                description: 'Interactive about section with team members or features',
+                tags: ['About', 'Team', 'Features'],
+                difficulty: 'beginner',
+                icon: 'fa-users',
+                setup: function() {
+                    // Feature/team cards arranged in a grid
+                    const positions = [
+                        {x: -6, z: -3}, {x: 0, z: -3}, {x: 6, z: -3},
+                        {x: -6, z: 3}, {x: 0, z: 3}, {x: 6, z: 3}
+                    ];
+
+                    positions.forEach((pos, i) => {
+                        // Card base
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(3, 4, 0.3);
+                            card.position.set(pos.x, 2, pos.z);
+                        }
+
+                        // Avatar/icon (sphere on top)
+                        const avatar = createAsset('sphere');
+                        if (avatar) {
+                            avatar.scale.set(0.8, 0.8, 0.8);
+                            avatar.position.set(pos.x, 4.5, pos.z + 0.2);
+                        }
+
+                        // Info bars
+                        for (let j = 0; j < 3; j++) {
+                            const bar = createAsset('box');
+                            if (bar) {
+                                bar.scale.set(2.5, 0.2, 0.1);
+                                bar.position.set(pos.x, 2.8 - j * 0.6, pos.z + 0.25);
+                            }
+                        }
+                    });
+                }
+            },
+            {
+                id: 'services-grid',
+                name: 'Services Grid',
+                category: 'website',
+                description: 'Grid layout showcasing services or features',
+                tags: ['Services', 'Features', 'Grid'],
+                difficulty: 'beginner',
+                icon: 'fa-th',
+                setup: function() {
+                    // Floor platform
+                    const platform = createAsset('plane');
+                    if (platform) {
+                        platform.rotation.x = -Math.PI / 2;
+                        platform.scale.set(25, 20, 1);
+                    }
+
+                    // Service blocks in grid
+                    for (let row = 0; row < 2; row++) {
+                        for (let col = 0; col < 4; col++) {
+                            // Service card
+                            const card = createAsset('box');
+                            if (card) {
+                                card.scale.set(3, 3.5, 0.5);
+                                card.position.set(
+                                    col * 5 - 7.5,
+                                    2,
+                                    row * 6 - 3
+                                );
+                            }
+
+                            // Icon (sphere floating above)
+                            const icon = createAsset('torus');
+                            if (icon) {
+                                icon.scale.set(0.6, 0.6, 0.6);
+                                icon.position.set(
+                                    col * 5 - 7.5,
+                                    4.2,
+                                    row * 6 - 3
+                                );
+                                icon.rotation.x = Math.PI / 2;
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                id: 'team-showcase',
+                name: 'Team Showcase',
+                category: 'website',
+                description: 'Circular team member display with profiles',
+                tags: ['Team', 'People', 'About'],
+                difficulty: 'intermediate',
+                icon: 'fa-user-friends',
+                setup: function() {
+                    // Central logo/company symbol
+                    const logo = createAsset('torus');
+                    if (logo) {
+                        logo.scale.set(2, 2, 2);
+                        logo.position.set(0, 2, 0);
+                        logo.rotation.x = Math.PI / 2;
+                    }
+
+                    // Team members in circle
+                    const memberCount = 8;
+                    for (let i = 0; i < memberCount; i++) {
+                        const angle = (Math.PI * 2 * i) / memberCount;
+
+                        // Profile card
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(2, 2.5, 0.2);
+                            card.position.set(
+                                Math.cos(angle) * 8,
+                                2,
+                                Math.sin(angle) * 8
+                            );
+                            card.rotation.y = -angle + Math.PI;
+                        }
+
+                        // Avatar
+                        const avatar = createAsset('sphere');
+                        if (avatar) {
+                            avatar.scale.set(0.7, 0.7, 0.7);
+                            avatar.position.set(
+                                Math.cos(angle) * 8,
+                                3.5,
+                                Math.sin(angle) * 8
+                            );
+                        }
+
+                        // Connection line to center
+                        const line = createAsset('cylinder');
+                        if (line) {
+                            line.scale.set(0.03, 4, 0.03);
+                            line.position.set(
+                                Math.cos(angle) * 4,
+                                2,
+                                Math.sin(angle) * 4
+                            );
+                            line.rotation.z = Math.PI / 2;
+                            line.rotation.y = angle;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'testimonials-3d',
+                name: 'Testimonials Section',
+                category: 'website',
+                description: 'Rotating testimonial cards with quotes',
+                tags: ['Testimonials', 'Reviews', 'Social Proof'],
+                difficulty: 'beginner',
+                icon: 'fa-quote-right',
+                setup: function() {
+                    // Testimonial cards in a carousel layout
+                    for (let i = 0; i < 5; i++) {
+                        const offset = (i - 2) * 5;
+
+                        // Card
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(4, 3, 0.3);
+                            card.position.set(offset, 2, i === 2 ? -2 : 0);
+                            if (i !== 2) {
+                                card.rotation.y = (i < 2 ? 1 : -1) * Math.PI / 8;
+                            }
+                        }
+
+                        // Quote icon
+                        const quote = createAsset('torus');
+                        if (quote) {
+                            quote.scale.set(0.4, 0.4, 0.4);
+                            quote.position.set(offset - 1.5, 3.5, i === 2 ? -1.8 : 0.2);
+                        }
+
+                        // Avatar circle
+                        const avatar = createAsset('sphere');
+                        if (avatar) {
+                            avatar.scale.set(0.5, 0.5, 0.5);
+                            avatar.position.set(offset, 0.7, i === 2 ? -1.8 : 0.2);
+                        }
+
+                        // Rating stars (small spheres)
+                        for (let j = 0; j < 5; j++) {
+                            const star = createAsset('sphere');
+                            if (star) {
+                                star.scale.set(0.15, 0.15, 0.15);
+                                star.position.set(
+                                    offset - 1 + j * 0.5,
+                                    3.8,
+                                    i === 2 ? -1.7 : 0.3
+                                );
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                id: 'pricing-cards',
+                name: 'Pricing Cards',
+                category: 'website',
+                description: 'Three-tier pricing display with features',
+                tags: ['Pricing', 'Plans', 'E-commerce'],
+                difficulty: 'beginner',
+                badge: 'popular',
+                icon: 'fa-dollar-sign',
+                setup: function() {
+                    // Three pricing tiers
+                    const tiers = [
+                        {x: -7, height: 4, name: 'Basic'},
+                        {x: 0, height: 5, name: 'Pro'},
+                        {x: 7, height: 4, name: 'Enterprise'}
+                    ];
+
+                    tiers.forEach((tier, i) => {
+                        // Card base
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(3.5, tier.height, 0.4);
+                            card.position.set(tier.x, tier.height / 2, 0);
+                        }
+
+                        // Header section
+                        const header = createAsset('box');
+                        if (header) {
+                            header.scale.set(3.5, 0.8, 0.45);
+                            header.position.set(tier.x, tier.height - 0.4, 0);
+                        }
+
+                        // Price badge (cylinder)
+                        const badge = createAsset('cylinder');
+                        if (badge) {
+                            badge.scale.set(0.8, 0.3, 0.8);
+                            badge.position.set(tier.x, tier.height / 2, 0.5);
+                        }
+
+                        // Feature list (small boxes)
+                        const features = i === 1 ? 6 : 4;
+                        for (let j = 0; j < features; j++) {
+                            const feature = createAsset('box');
+                            if (feature) {
+                                feature.scale.set(2.8, 0.25, 0.1);
+                                feature.position.set(
+                                    tier.x,
+                                    (tier.height / 2) - 1 - j * 0.5,
+                                    0.45
+                                );
+                            }
+                        }
+
+                        // CTA button
+                        const button = createAsset('box');
+                        if (button) {
+                            button.scale.set(2.5, 0.6, 0.3);
+                            button.position.set(tier.x, -tier.height / 2 + 0.8, 0.5);
+                        }
+                    });
+                }
+            },
+            {
+                id: 'contact-form-3d',
+                name: 'Contact Form Section',
+                category: 'website',
+                description: 'Interactive contact section with form fields',
+                tags: ['Contact', 'Form', 'CTA'],
+                difficulty: 'beginner',
+                icon: 'fa-envelope',
+                setup: function() {
+                    // Background
+                    const bg = createAsset('plane');
+                    if (bg) {
+                        bg.rotation.x = -Math.PI / 2;
+                        bg.scale.set(20, 15, 1);
+                    }
+
+                    // Form container
+                    const formBg = createAsset('box');
+                    if (formBg) {
+                        formBg.scale.set(8, 6, 0.3);
+                        formBg.position.set(-3, 3, 0);
+                    }
+
+                    // Input fields
+                    const fields = ['Name', 'Email', 'Subject', 'Message'];
+                    fields.forEach((field, i) => {
+                        const input = createAsset('box');
+                        if (input) {
+                            const height = field === 'Message' ? 1.5 : 0.5;
+                            input.scale.set(6.5, height, 0.1);
+                            input.position.set(-3, 5 - i * 1.2, 0.2);
+                        }
+                    });
+
+                    // Submit button
+                    const submit = createAsset('box');
+                    if (submit) {
+                        submit.scale.set(3, 0.6, 0.15);
+                        submit.position.set(-3, 0.8, 0.25);
+                    }
+
+                    // Contact info cards (right side)
+                    const infoCards = [
+                        {icon: 'phone', y: 4.5},
+                        {icon: 'email', y: 2.5},
+                        {icon: 'location', y: 0.5}
+                    ];
+
+                    infoCards.forEach(card => {
+                        const cardBox = createAsset('box');
+                        if (cardBox) {
+                            cardBox.scale.set(3.5, 1.2, 0.2);
+                            cardBox.position.set(5, card.y, 0);
+                        }
+
+                        const icon = createAsset('sphere');
+                        if (icon) {
+                            icon.scale.set(0.4, 0.4, 0.4);
+                            icon.position.set(3.5, card.y, 0.3);
+                        }
+                    });
+                }
+            },
+            {
+                id: 'blog-hero',
+                name: 'Blog Hero Section',
+                category: 'website',
+                description: 'Blog header with featured posts and categories',
+                tags: ['Blog', 'Articles', 'Content'],
+                difficulty: 'intermediate',
+                icon: 'fa-blog',
+                setup: function() {
+                    // Featured post (large card)
+                    const featured = createAsset('box');
+                    if (featured) {
+                        featured.scale.set(8, 5, 0.3);
+                        featured.position.set(-4, 3, 0);
+                    }
+
+                    // Featured image area
+                    const featuredImg = createAsset('box');
+                    if (featuredImg) {
+                        featuredImg.scale.set(7.5, 3, 0.1);
+                        featuredImg.position.set(-4, 4, 0.2);
+                    }
+
+                    // Recent posts (smaller cards)
+                    for (let i = 0; i < 3; i++) {
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(3.5, 2.5, 0.25);
+                            card.position.set(4, 4.5 - i * 3, 0);
+                        }
+
+                        // Thumbnail
+                        const thumb = createAsset('box');
+                        if (thumb) {
+                            thumb.scale.set(3, 1.5, 0.1);
+                            thumb.position.set(4, 5 - i * 3, 0.15);
+                        }
+
+                        // Category tag
+                        const tag = createAsset('box');
+                        if (tag) {
+                            tag.scale.set(1, 0.3, 0.08);
+                            tag.position.set(2.8, 5.8 - i * 3, 0.2);
+                        }
+                    }
+
+                    // Category pills at bottom
+                    const categories = ['Tech', 'Design', 'Business', 'Life', 'Travel'];
+                    categories.forEach((cat, i) => {
+                        const pill = createAsset('cylinder');
+                        if (pill) {
+                            pill.scale.set(0.8, 0.25, 0.8);
+                            pill.position.set(i * 2.5 - 5, 0.25, 1);
+                            pill.rotation.x = Math.PI / 2;
+                        }
+                    });
+                }
+            },
+
+            // MORE ENVIRONMENT TEMPLATES
+            {
+                id: 'urban-street',
+                name: 'Urban Street',
+                category: 'environment',
+                description: 'City street with buildings, sidewalks, and urban elements',
+                tags: ['Urban', 'City', 'Street'],
+                difficulty: 'intermediate',
+                badge: 'popular',
+                icon: 'fa-city',
+                setup: function() {
+                    // Street/road
+                    const road = createAsset('box');
+                    if (road) {
+                        road.scale.set(8, 0.1, 50);
+                        road.position.set(0, -0.05, 0);
+                    }
+
+                    // Sidewalks
+                    for (let side = 0; side < 2; side++) {
+                        const sidewalk = createAsset('box');
+                        if (sidewalk) {
+                            sidewalk.scale.set(3, 0.15, 50);
+                            sidewalk.position.set((side === 0 ? -5.5 : 5.5), 0, 0);
+                        }
+                    }
+
+                    // Buildings on both sides
+                    for (let i = 0; i < 6; i++) {
+                        for (let side = 0; side < 2; side++) {
+                            const height = Math.random() * 10 + 8;
+                            const building = createAsset('box');
+                            if (building) {
+                                building.scale.set(5, height, 7);
+                                building.position.set(
+                                    (side === 0 ? -11 : 11),
+                                    height / 2,
+                                    i * 15 - 35
+                                );
+                                building.userData.hasCollision = true;
+                            }
+
+                            // Windows (small boxes)
+                            for (let w = 0; w < 3; w++) {
+                                const window = createAsset('box');
+                                if (window) {
+                                    window.scale.set(0.1, 0.8, 0.8);
+                                    window.position.set(
+                                        (side === 0 ? -8.5 : 8.5),
+                                        height * 0.7,
+                                        i * 15 - 35 + w * 2
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    // Street lights
+                    for (let i = 0; i < 8; i++) {
+                        const pole = createAsset('cylinder');
+                        if (pole) {
+                            pole.scale.set(0.1, 4, 0.1);
+                            pole.position.set(-7.5, 2, i * 12 - 42);
+                        }
+
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(-7.5, 4.5, i * 12 - 42);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'office-interior',
+                name: 'Office Interior',
+                category: 'environment',
+                description: 'Modern office space with desks, chairs, and meeting areas',
+                tags: ['Office', 'Interior', 'Workspace'],
+                difficulty: 'intermediate',
+                icon: 'fa-briefcase',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(25, 0.2, 20);
+                        floor.position.y = -0.1;
+                    }
+
+                    // Ceiling
+                    const ceiling = createAsset('box');
+                    if (ceiling) {
+                        ceiling.scale.set(25, 0.2, 20);
+                        ceiling.position.y = 4;
+                    }
+
+                    // Walls
+                    const walls = [
+                        {x: 0, z: -10, ry: 0, sx: 25, sz: 0.5},
+                        {x: 0, z: 10, ry: 0, sx: 25, sz: 0.5},
+                        {x: -12.5, z: 0, ry: Math.PI/2, sx: 20, sz: 0.5},
+                        {x: 12.5, z: 0, ry: Math.PI/2, sx: 20, sz: 0.5}
+                    ];
+
+                    walls.forEach(w => {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(w.sx, 4, w.sz);
+                            wall.position.set(w.x, 2, w.z);
+                            wall.rotation.y = w.ry;
+                        }
+                    });
+
+                    // Desk workstations (4x3 grid)
+                    for (let row = 0; row < 3; row++) {
+                        for (let col = 0; col < 4; col++) {
+                            // Desk
+                            const desk = createAsset('box');
+                            if (desk) {
+                                desk.scale.set(2.5, 0.1, 1.5);
+                                desk.position.set(
+                                    col * 5 - 7.5,
+                                    0.75,
+                                    row * 4 - 4
+                                );
+                            }
+
+                            // Chair (cylinder)
+                            const chair = createAsset('cylinder');
+                            if (chair) {
+                                chair.scale.set(0.4, 0.5, 0.4);
+                                chair.position.set(
+                                    col * 5 - 7.5,
+                                    0.5,
+                                    row * 4 - 4 + 1.2
+                                );
+                            }
+
+                            // Monitor (small box)
+                            const monitor = createAsset('box');
+                            if (monitor) {
+                                monitor.scale.set(0.8, 0.5, 0.1);
+                                monitor.position.set(
+                                    col * 5 - 7.5,
+                                    1.1,
+                                    row * 4 - 4 - 0.5
+                                );
+                            }
+                        }
+                    }
+
+                    // Meeting table (center back)
+                    const table = createAsset('box');
+                    if (table) {
+                        table.scale.set(5, 0.1, 2.5);
+                        table.position.set(0, 0.75, 7);
+                    }
+
+                    // Meeting chairs around table
+                    for (let i = 0; i < 6; i++) {
+                        const chair = createAsset('cylinder');
+                        if (chair) {
+                            chair.scale.set(0.4, 0.5, 0.4);
+                            const x = (i % 2 === 0 ? -2.5 : 2.5);
+                            const z = 6 + Math.floor(i / 2) * 1.5 - 1.5;
+                            chair.position.set(x, 0.5, z);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'warehouse',
+                name: 'Warehouse',
+                category: 'environment',
+                description: 'Industrial warehouse with storage racks and crates',
+                tags: ['Warehouse', 'Industrial', 'Storage'],
+                difficulty: 'beginner',
+                icon: 'fa-warehouse',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(40, 30, 1);
+                    }
+
+                    // Walls (high ceiling)
+                    for (let i = 0; i < 4; i++) {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            const angle = (Math.PI / 2) * i;
+                            wall.position.set(
+                                Math.cos(angle) * 20,
+                                5,
+                                Math.sin(angle) * 15
+                            );
+                            wall.rotation.y = angle;
+                            wall.scale.set(i % 2 === 0 ? 40 : 30, 10, 0.5);
+                        }
+                    }
+
+                    // Storage racks (3 rows)
+                    for (let rack = 0; rack < 3; rack++) {
+                        for (let section = 0; section < 6; section++) {
+                            // Vertical poles
+                            for (let pole = 0; pole < 2; pole++) {
+                                const support = createAsset('box');
+                                if (support) {
+                                    support.scale.set(0.2, 4, 0.2);
+                                    support.position.set(
+                                        rack * 10 - 10 + pole * 3,
+                                        2,
+                                        section * 4 - 12
+                                    );
+                                }
+                            }
+
+                            // Shelves (3 levels)
+                            for (let level = 0; level < 3; level++) {
+                                const shelf = createAsset('box');
+                                if (shelf) {
+                                    shelf.scale.set(3, 0.1, 1);
+                                    shelf.position.set(
+                                        rack * 10 - 8.5,
+                                        level * 1.5 + 0.5,
+                                        section * 4 - 12
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    // Scattered crates on floor
+                    for (let i = 0; i < 12; i++) {
+                        const crate = createAsset('box');
+                        if (crate) {
+                            crate.scale.set(1, 1, 1);
+                            crate.position.set(
+                                Math.random() * 30 - 15,
+                                0.5,
+                                Math.random() * 20 - 10
+                            );
+                            crate.rotation.y = Math.random() * Math.PI;
+                        }
+                    }
+
+                    // Overhead lights
+                    for (let i = 0; i < 12; i++) {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(
+                                (i % 4) * 10 - 15,
+                                8,
+                                Math.floor(i / 4) * 10 - 10
+                            );
+                        }
+                    }
+                }
+            },
+            {
+                id: 'retail-store',
+                name: 'Retail Store',
+                category: 'environment',
+                description: 'Shop interior with product displays and checkout counter',
+                tags: ['Retail', 'Store', 'Shopping'],
+                difficulty: 'intermediate',
+                icon: 'fa-store',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(20, 0.1, 15);
+                        floor.position.y = 0;
+                    }
+
+                    // Back wall
+                    const backWall = createAsset('box');
+                    if (backWall) {
+                        backWall.scale.set(20, 4, 0.3);
+                        backWall.position.set(0, 2, -7.5);
+                    }
+
+                    // Side walls
+                    for (let side = 0; side < 2; side++) {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(0.3, 4, 15);
+                            wall.position.set(side === 0 ? -10 : 10, 2, 0);
+                        }
+                    }
+
+                    // Product display shelves along walls
+                    for (let i = 0; i < 6; i++) {
+                        const shelf = createAsset('box');
+                        if (shelf) {
+                            shelf.scale.set(2.5, 2, 0.8);
+                            shelf.position.set(i * 3 - 7.5, 1, -6.5);
+                        }
+
+                        // Products on shelf (small boxes)
+                        for (let p = 0; p < 3; p++) {
+                            const product = createAsset('box');
+                            if (product) {
+                                product.scale.set(0.4, 0.4, 0.4);
+                                product.position.set(
+                                    i * 3 - 7.5 + (p - 1) * 0.6,
+                                    1.8,
+                                    -6.3
+                                );
+                            }
+                        }
+                    }
+
+                    // Center display tables
+                    for (let i = 0; i < 3; i++) {
+                        const table = createAsset('cylinder');
+                        if (table) {
+                            table.scale.set(1.5, 0.8, 1.5);
+                            table.position.set(i * 6 - 6, 0.8, 0);
+                        }
+
+                        // Display items
+                        for (let j = 0; j < 4; j++) {
+                            const item = createAsset('sphere');
+                            if (item) {
+                                const angle = (Math.PI * 2 * j) / 4;
+                                item.scale.set(0.3, 0.3, 0.3);
+                                item.position.set(
+                                    Math.cos(angle) * 0.8 + i * 6 - 6,
+                                    1.4,
+                                    Math.sin(angle) * 0.8
+                                );
+                            }
+                        }
+                    }
+
+                    // Checkout counter
+                    const counter = createAsset('box');
+                    if (counter) {
+                        counter.scale.set(4, 1, 1.5);
+                        counter.position.set(-7, 0.5, 6);
+                    }
+
+                    // Cash register
+                    const register = createAsset('box');
+                    if (register) {
+                        register.scale.set(0.5, 0.3, 0.4);
+                        register.position.set(-7, 1.15, 6);
+                    }
+                }
+            },
+            {
+                id: 'museum-hall',
+                name: 'Museum Hall',
+                category: 'environment',
+                description: 'Grand museum gallery with exhibits and pedestals',
+                tags: ['Museum', 'Gallery', 'Exhibition'],
+                difficulty: 'advanced',
+                icon: 'fa-landmark',
+                setup: function() {
+                    // Floor (marble effect would be nice)
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(30, 0.2, 25);
+                        floor.position.y = -0.1;
+                    }
+
+                    // Ceiling
+                    const ceiling = createAsset('box');
+                    if (ceiling) {
+                        ceiling.scale.set(30, 0.3, 25);
+                        ceiling.position.y = 8;
+                    }
+
+                    // Columns (6 on each side)
+                    for (let i = 0; i < 6; i++) {
+                        for (let side = 0; side < 2; side++) {
+                            const column = createAsset('cylinder');
+                            if (column) {
+                                column.scale.set(0.6, 7, 0.6);
+                                column.position.set(
+                                    side === 0 ? -12 : 12,
+                                    3.5,
+                                    i * 8 - 20
+                                );
+                            }
+
+                            // Capital (top of column)
+                            const capital = createAsset('box');
+                            if (capital) {
+                                capital.scale.set(1, 0.5, 1);
+                                capital.position.set(
+                                    side === 0 ? -12 : 12,
+                                    7.25,
+                                    i * 8 - 20
+                                );
+                            }
+                        }
+                    }
+
+                    // Center exhibit pedestals
+                    for (let i = 0; i < 5; i++) {
+                        const pedestal = createAsset('cylinder');
+                        if (pedestal) {
+                            pedestal.scale.set(1, 1.5, 1);
+                            pedestal.position.set(0, 0.75, i * 8 - 16);
+                        }
+
+                        // Exhibit item (sphere or box)
+                        const exhibit = createAsset(i % 2 === 0 ? 'sphere' : 'box');
+                        if (exhibit) {
+                            exhibit.scale.set(0.8, 0.8, 0.8);
+                            exhibit.position.set(0, 2, i * 8 - 16);
+                        }
+
+                        // Info plaque
+                        const plaque = createAsset('box');
+                        if (plaque) {
+                            plaque.scale.set(0.8, 0.4, 0.05);
+                            plaque.position.set(0, 0.3, i * 8 - 16 + 1.2);
+                        }
+
+                        // Spotlights
+                        const spotlight = createAsset('spotLight');
+                        if (spotlight) {
+                            spotlight.position.set(0, 6, i * 8 - 16);
+                        }
+                    }
+
+                    // Wall exhibits (paintings/frames)
+                    for (let i = 0; i < 8; i++) {
+                        for (let side = 0; side < 2; side++) {
+                            const frame = createAsset('box');
+                            if (frame) {
+                                frame.scale.set(2, 1.5, 0.1);
+                                frame.position.set(
+                                    side === 0 ? -14.5 : 14.5,
+                                    3,
+                                    i * 6 - 21
+                                );
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                id: 'outdoor-park',
+                name: 'Outdoor Park',
+                category: 'environment',
+                description: 'Park with trees, benches, pathways, and grass',
+                tags: ['Park', 'Outdoor', 'Nature'],
+                difficulty: 'beginner',
+                badge: 'new',
+                icon: 'fa-tree',
+                setup: function() {
+                    // Grass ground
+                    const ground = createAsset('plane');
+                    if (ground) {
+                        ground.rotation.x = -Math.PI / 2;
+                        ground.scale.set(50, 50, 1);
+                    }
+
+                    // Walking paths (cross pattern)
+                    const path1 = createAsset('box');
+                    if (path1) {
+                        path1.scale.set(3, 0.05, 50);
+                        path1.position.set(0, 0.025, 0);
+                    }
+
+                    const path2 = createAsset('box');
+                    if (path2) {
+                        path2.scale.set(50, 0.05, 3);
+                        path2.position.set(0, 0.025, 0);
+                    }
+
+                    // Trees scattered around
+                    for (let i = 0; i < 16; i++) {
+                        const x = (Math.random() - 0.5) * 40;
+                        const z = (Math.random() - 0.5) * 40;
+
+                        // Skip if too close to paths
+                        if (Math.abs(x) < 2 || Math.abs(z) < 2) continue;
+
+                        // Tree trunk
+                        const trunk = createAsset('cylinder');
+                        if (trunk) {
+                            trunk.scale.set(0.4, 3, 0.4);
+                            trunk.position.set(x, 1.5, z);
+                        }
+
+                        // Tree foliage
+                        const foliage = createAsset('sphere');
+                        if (foliage) {
+                            foliage.scale.set(2, 2, 2);
+                            foliage.position.set(x, 4, z);
+                        }
+                    }
+
+                    // Benches along paths
+                    for (let i = 0; i < 8; i++) {
+                        const bench = createAsset('box');
+                        if (bench) {
+                            bench.scale.set(1.5, 0.3, 0.6);
+                            const side = i % 4;
+                            if (side < 2) {
+                                bench.position.set((side === 0 ? -4 : 4), 0.4, (i - 0.5) * 8 - 12);
+                            } else {
+                                bench.position.set((i - 6.5) * 8, 0.4, (side === 2 ? -4 : 4));
+                                bench.rotation.y = Math.PI / 2;
+                            }
+                        }
+
+                        // Bench back
+                        const back = createAsset('box');
+                        if (back) {
+                            back.scale.set(1.5, 0.5, 0.1);
+                            const side = i % 4;
+                            if (side < 2) {
+                                back.position.set((side === 0 ? -4 : 4), 0.8, (i - 0.5) * 8 - 12 + 0.35);
+                            } else {
+                                back.position.set((i - 6.5) * 8 + 0.35, 0.8, (side === 2 ? -4 : 4));
+                                back.rotation.y = Math.PI / 2;
+                            }
+                        }
+                    }
+
+                    // Fountain in center
+                    const fountainBase = createAsset('cylinder');
+                    if (fountainBase) {
+                        fountainBase.scale.set(3, 0.5, 3);
+                        fountainBase.position.set(0, 0.25, 0);
+                    }
+
+                    const fountain = createAsset('cylinder');
+                    if (fountain) {
+                        fountain.scale.set(0.5, 2, 0.5);
+                        fountain.position.set(0, 1.5, 0);
+                    }
+                }
+            },
+            {
+                id: 'space-station',
+                name: 'Space Station',
+                category: 'environment',
+                description: 'Sci-fi space station interior with corridors and consoles',
+                tags: ['Sci-Fi', 'Space', 'Futuristic'],
+                difficulty: 'advanced',
+                badge: 'popular',
+                icon: 'fa-space-shuttle',
+                setup: function() {
+                    // Main corridor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(6, 0.3, 40);
+                        floor.position.set(0, -0.15, 0);
+                    }
+
+                    const ceiling = createAsset('box');
+                    if (ceiling) {
+                        ceiling.scale.set(6, 0.3, 40);
+                        ceiling.position.set(0, 4.15, 0);
+                    }
+
+                    // Walls with panels
+                    for (let side = 0; side < 2; side++) {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(0.3, 4, 40);
+                            wall.position.set(side === 0 ? -3 : 3, 2, 0);
+                        }
+
+                        // Wall panels (decorative)
+                        for (let i = 0; i < 8; i++) {
+                            const panel = createAsset('box');
+                            if (panel) {
+                                panel.scale.set(0.1, 1.5, 2);
+                                panel.position.set(
+                                    side === 0 ? -2.9 : 2.9,
+                                    2,
+                                    i * 9 - 28
+                                );
+                            }
+
+                            // Panel lights
+                            const light = createAsset('box');
+                            if (light) {
+                                light.scale.set(0.05, 0.2, 1.5);
+                                light.position.set(
+                                    side === 0 ? -2.85 : 2.85,
+                                    1.2,
+                                    i * 9 - 28
+                                );
+                            }
+                        }
+                    }
+
+                    // Ceiling lights
+                    for (let i = 0; i < 10; i++) {
+                        const lightStrip = createAsset('box');
+                        if (lightStrip) {
+                            lightStrip.scale.set(0.5, 0.1, 2);
+                            lightStrip.position.set(0, 3.9, i * 7 - 31);
+                        }
+
+                        const pointLight = createAsset('pointLight');
+                        if (pointLight) {
+                            pointLight.position.set(0, 3.5, i * 7 - 31);
+                        }
+                    }
+
+                    // Control consoles
+                    for (let i = 0; i < 4; i++) {
+                        const console = createAsset('box');
+                        if (console) {
+                            console.scale.set(1.5, 1.2, 0.6);
+                            console.position.set(2, 0.6, i * 18 - 27);
+                            console.rotation.y = -Math.PI / 4;
+                        }
+
+                        // Console screen
+                        const screen = createAsset('box');
+                        if (screen) {
+                            screen.scale.set(1.2, 0.8, 0.05);
+                            screen.position.set(1.8, 1.3, i * 18 - 27.2);
+                            screen.rotation.y = -Math.PI / 4;
+                            screen.rotation.x = -Math.PI / 12;
+                        }
+                    }
+
+                    // Bulkhead doors
+                    for (let i = 0; i < 3; i++) {
+                        const doorFrame = createAsset('torus');
+                        if (doorFrame) {
+                            doorFrame.scale.set(1.5, 1.5, 1.5);
+                            doorFrame.position.set(0, 2, i * 16 - 16);
+                            doorFrame.rotation.x = Math.PI / 2;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'underground-cave',
+                name: 'Underground Cave',
+                category: 'environment',
+                description: 'Dark cave system with stalactites, stalagmites, and crystals',
+                tags: ['Cave', 'Underground', 'Dark'],
+                difficulty: 'advanced',
+                icon: 'fa-mountain',
+                setup: function() {
+                    // Cave floor (uneven)
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(30, 25, 1);
+                    }
+
+                    // Cave walls (rough boxes)
+                    for (let i = 0; i < 12; i++) {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            const angle = (Math.PI * 2 * i) / 12;
+                            const distance = 12 + Math.random() * 3;
+                            wall.scale.set(
+                                3 + Math.random() * 2,
+                                4 + Math.random() * 2,
+                                1
+                            );
+                            wall.position.set(
+                                Math.cos(angle) * distance,
+                                2,
+                                Math.sin(angle) * distance
+                            );
+                            wall.rotation.y = -angle + Math.PI / 2;
+                        }
+                    }
+
+                    // Stalactites (ceiling cones)
+                    for (let i = 0; i < 15; i++) {
+                        const stalactite = createAsset('cone');
+                        if (stalactite) {
+                            stalactite.scale.set(
+                                0.3 + Math.random() * 0.4,
+                                1 + Math.random() * 2,
+                                0.3 + Math.random() * 0.4
+                            );
+                            stalactite.position.set(
+                                (Math.random() - 0.5) * 20,
+                                6,
+                                (Math.random() - 0.5) * 20
+                            );
+                            stalactite.rotation.x = Math.PI;
+                        }
+                    }
+
+                    // Stalagmites (floor cones)
+                    for (let i = 0; i < 15; i++) {
+                        const stalagmite = createAsset('cone');
+                        if (stalagmite) {
+                            stalagmite.scale.set(
+                                0.4 + Math.random() * 0.5,
+                                1.5 + Math.random() * 2.5,
+                                0.4 + Math.random() * 0.5
+                            );
+                            stalagmite.position.set(
+                                (Math.random() - 0.5) * 22,
+                                stalagmite.scale.y / 2,
+                                (Math.random() - 0.5) * 22
+                            );
+                        }
+                    }
+
+                    // Crystal formations (glowing)
+                    const crystalPositions = [
+                        {x: -8, z: -8}, {x: 8, z: -8}, {x: -8, z: 8}, {x: 8, z: 8}, {x: 0, z: 0}
+                    ];
+
+                    crystalPositions.forEach(pos => {
+                        // Crystal cluster
+                        for (let i = 0; i < 5; i++) {
+                            const crystal = createAsset('cone');
+                            if (crystal) {
+                                crystal.scale.set(0.3, 1.5, 0.3);
+                                crystal.position.set(
+                                    pos.x + (Math.random() - 0.5) * 2,
+                                    0.75,
+                                    pos.z + (Math.random() - 0.5) * 2
+                                );
+                                crystal.rotation.z = (Math.random() - 0.5) * Math.PI / 4;
+                            }
+                        }
+
+                        // Crystal glow light
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(pos.x, 1.5, pos.z);
+                        }
+                    });
+
+                    // Rocks scattered on floor
+                    for (let i = 0; i < 20; i++) {
+                        const rock = createAsset('sphere');
+                        if (rock) {
+                            rock.scale.set(
+                                0.5 + Math.random() * 0.8,
+                                0.4 + Math.random() * 0.6,
+                                0.5 + Math.random() * 0.8
+                            );
+                            rock.position.set(
+                                (Math.random() - 0.5) * 25,
+                                rock.scale.y / 2,
+                                (Math.random() - 0.5) * 25
+                            );
+                        }
+                    }
+                }
+            },
+
+            // SPECIALTY TEMPLATES
+            {
+                id: 'particle-system',
+                name: 'Particle System Demo',
+                category: 'specialty',
+                description: 'Interactive particle effects and emitters',
+                tags: ['Particles', 'Effects', 'Demo'],
+                difficulty: 'advanced',
+                badge: 'advanced',
+                icon: 'fa-star',
+                setup: function() {
+                    // Emitter sources
+                    for (let i = 0; i < 4; i++) {
+                        const emitter = createAsset('sphere');
+                        if (emitter) {
+                            const angle = (Math.PI * 2 * i) / 4;
+                            emitter.scale.set(0.5, 0.5, 0.5);
+                            emitter.position.set(
+                                Math.cos(angle) * 8,
+                                3,
+                                Math.sin(angle) * 8
+                            );
+                        }
+
+                        // Simulated particles (small spheres)
+                        for (let j = 0; j < 8; j++) {
+                            const particle = createAsset('sphere');
+                            if (particle) {
+                                particle.scale.set(0.1, 0.1, 0.1);
+                                particle.position.set(
+                                    Math.cos(angle) * 8 + (Math.random() - 0.5) * 3,
+                                    3 + Math.random() * 4,
+                                    Math.sin(angle) * 8 + (Math.random() - 0.5) * 3
+                                );
+                            }
+                        }
+
+                        // Light for glow effect
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(
+                                Math.cos(angle) * 8,
+                                3,
+                                Math.sin(angle) * 8
+                            );
+                        }
+                    }
+
+                    // Floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(25, 25, 1);
+                    }
+                }
+            },
+            {
+                id: 'physics-playground',
+                name: 'Physics Playground',
+                category: 'specialty',
+                description: 'Interactive physics demonstration with various shapes',
+                tags: ['Physics', 'Simulation', 'Interactive'],
+                difficulty: 'advanced',
+                icon: 'fa-bowling-ball',
+                setup: function() {
+                    // Ground plane
+                    const ground = createAsset('box');
+                    if (ground) {
+                        ground.scale.set(30, 0.5, 30);
+                        ground.position.y = -0.25;
+                        ground.userData.hasCollision = true;
+                    }
+
+                    // Ramp
+                    const ramp = createAsset('box');
+                    if (ramp) {
+                        ramp.scale.set(6, 0.5, 10);
+                        ramp.position.set(-10, 3, 0);
+                        ramp.rotation.z = -Math.PI / 6;
+                        ramp.userData.hasCollision = true;
+                    }
+
+                    // Stacked boxes (tower)
+                    for (let i = 0; i < 6; i++) {
+                        const box = createAsset('box');
+                        if (box) {
+                            box.scale.set(1.5, 1, 1.5);
+                            box.position.set(5, 0.5 + i * 1, 0);
+                            box.userData.hasPhysics = true;
+                        }
+                    }
+
+                    // Balls/spheres
+                    for (let i = 0; i < 5; i++) {
+                        const ball = createAsset('sphere');
+                        if (ball) {
+                            ball.scale.set(0.7, 0.7, 0.7);
+                            ball.position.set(-5 + i * 2, 6 + Math.random() * 2, -5);
+                            ball.userData.hasPhysics = true;
+                        }
+                    }
+
+                    // Pendulum
+                    const anchor = createAsset('sphere');
+                    if (anchor) {
+                        anchor.scale.set(0.3, 0.3, 0.3);
+                        anchor.position.set(0, 8, -8);
+                    }
+
+                    const pendulumBall = createAsset('sphere');
+                    if (pendulumBall) {
+                        pendulumBall.scale.set(1, 1, 1);
+                        pendulumBall.position.set(3, 3, -8);
+                    }
+
+                    // Rope (cylinder)
+                    const rope = createAsset('cylinder');
+                    if (rope) {
+                        rope.scale.set(0.05, 2.5, 0.05);
+                        rope.position.set(1.5, 5.5, -8);
+                        rope.rotation.z = Math.PI / 6;
+                    }
+                }
+            },
+            {
+                id: 'ar-preview',
+                name: 'AR Preview Scene',
+                category: 'specialty',
+                description: 'AR-ready product placement scene',
+                tags: ['AR', 'Mobile', 'Preview'],
+                difficulty: 'intermediate',
+                badge: 'new',
+                icon: 'fa-mobile-alt',
+                setup: function() {
+                    // Reference grid floor
+                    for (let x = -5; x <= 5; x++) {
+                        for (let z = -5; z <= 5; z++) {
+                            const gridCell = createAsset('box');
+                            if (gridCell) {
+                                gridCell.scale.set(0.95, 0.05, 0.95);
+                                gridCell.position.set(x, 0.025, z);
+                            }
+                        }
+                    }
+
+                    // AR marker (center)
+                    const marker = createAsset('torus');
+                    if (marker) {
+                        marker.scale.set(2, 2, 2);
+                        marker.position.set(0, 0.1, 0);
+                        marker.rotation.x = Math.PI / 2;
+                    }
+
+                    // Product pedestal
+                    const pedestal = createAsset('cylinder');
+                    if (pedestal) {
+                        pedestal.scale.set(1.5, 1, 1.5);
+                        pedestal.position.set(0, 0.5, 0);
+                    }
+
+                    // Sample product (box)
+                    const product = createAsset('box');
+                    if (product) {
+                        product.scale.set(1.2, 1.5, 1.2);
+                        product.position.set(0, 1.75, 0);
+                        product.rotation.y = Math.PI / 4;
+                    }
+
+                    // Info cards floating around
+                    const cardPositions = [
+                        {x: 3, z: 0}, {x: -3, z: 0}, {x: 0, z: 3}, {x: 0, z: -3}
+                    ];
+
+                    cardPositions.forEach(pos => {
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(1, 0.7, 0.05);
+                            card.position.set(pos.x, 2, pos.z);
+                        }
+                    });
+
+                    // Directional lights
+                    for (let i = 0; i < 3; i++) {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            const angle = (Math.PI * 2 * i) / 3;
+                            light.position.set(Math.cos(angle) * 5, 4, Math.sin(angle) * 5);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'vr-room',
+                name: 'VR Room Template',
+                category: 'specialty',
+                description: 'VR-ready room with interactive elements',
+                tags: ['VR', 'Virtual Reality', 'Interactive'],
+                difficulty: 'advanced',
+                badge: 'popular',
+                icon: 'fa-vr-cardboard',
+                setup: function() {
+                    // Room floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(10, 0.2, 10);
+                        floor.position.y = -0.1;
+                    }
+
+                    // Walls
+                    const walls = [
+                        {x: 0, z: -5, ry: 0},
+                        {x: 0, z: 5, ry: 0},
+                        {x: -5, z: 0, ry: Math.PI/2},
+                        {x: 5, z: 0, ry: Math.PI/2}
+                    ];
+
+                    walls.forEach(w => {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(10, 4, 0.3);
+                            wall.position.set(w.x, 2, w.z);
+                            wall.rotation.y = w.ry;
+                        }
+                    });
+
+                    // Ceiling
+                    const ceiling = createAsset('box');
+                    if (ceiling) {
+                        ceiling.scale.set(10, 0.2, 10);
+                        ceiling.position.y = 4.1;
+                    }
+
+                    // Interactive objects floating in space
+                    const objects = [
+                        {type: 'sphere', pos: {x: -2, y: 2, z: -2}},
+                        {type: 'box', pos: {x: 2, y: 2, z: -2}},
+                        {type: 'torus', pos: {x: -2, y: 2, z: 2}},
+                        {type: 'cone', pos: {x: 2, y: 2, z: 2}},
+                        {type: 'cylinder', pos: {x: 0, y: 2.5, z: 0}}
+                    ];
+
+                    objects.forEach(obj => {
+                        const object = createAsset(obj.type);
+                        if (object) {
+                            object.scale.set(0.8, 0.8, 0.8);
+                            object.position.set(obj.pos.x, obj.pos.y, obj.pos.z);
+                            object.userData.isInteractive = true;
+                        }
+                    });
+
+                    // Teleport markers (floor positions)
+                    const markers = [
+                        {x: -3, z: -3}, {x: 3, z: -3}, {x: -3, z: 3}, {x: 3, z: 3}
+                    ];
+
+                    markers.forEach(m => {
+                        const marker = createAsset('cylinder');
+                        if (marker) {
+                            marker.scale.set(0.5, 0.05, 0.5);
+                            marker.position.set(m.x, 0.05, m.z);
+                        }
+                    });
+                }
+            },
+            {
+                id: 'education-lab',
+                name: 'Education Lab',
+                category: 'specialty',
+                description: 'Interactive educational environment with demonstrations',
+                tags: ['Education', 'Learning', 'Science'],
+                difficulty: 'intermediate',
+                icon: 'fa-graduation-cap',
+                setup: function() {
+                    // Floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(20, 0.2, 15);
+                        floor.position.y = 0;
+                    }
+
+                    // Experiment stations (tables with equipment)
+                    for (let i = 0; i < 4; i++) {
+                        // Table
+                        const table = createAsset('box');
+                        if (table) {
+                            table.scale.set(3, 0.1, 2);
+                            table.position.set(i * 5 - 7.5, 0.8, -4);
+                        }
+
+                        // Equipment (beakers, apparatus)
+                        for (let j = 0; j < 3; j++) {
+                            const equipment = createAsset(j === 1 ? 'cylinder' : 'cone');
+                            if (equipment) {
+                                equipment.scale.set(0.3, 0.5, 0.3);
+                                equipment.position.set(
+                                    i * 5 - 7.5 + (j - 1) * 0.8,
+                                    1.2,
+                                    -4
+                                );
+                            }
+                        }
+                    }
+
+                    // Whiteboard
+                    const board = createAsset('box');
+                    if (board) {
+                        board.scale.set(6, 3, 0.1);
+                        board.position.set(0, 2.5, -7.4);
+                    }
+
+                    // Molecular model (atoms and bonds)
+                    const modelCenter = {x: 0, y: 2, z: 4};
+
+                    // Central atom
+                    const centerAtom = createAsset('sphere');
+                    if (centerAtom) {
+                        centerAtom.scale.set(0.6, 0.6, 0.6);
+                        centerAtom.position.set(modelCenter.x, modelCenter.y, modelCenter.z);
+                    }
+
+                    // Surrounding atoms
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (Math.PI * 2 * i) / 4;
+                        const atom = createAsset('sphere');
+                        if (atom) {
+                            atom.scale.set(0.4, 0.4, 0.4);
+                            atom.position.set(
+                                modelCenter.x + Math.cos(angle) * 2,
+                                modelCenter.y,
+                                modelCenter.z + Math.sin(angle) * 2
+                            );
+                        }
+
+                        // Bond (cylinder)
+                        const bond = createAsset('cylinder');
+                        if (bond) {
+                            bond.scale.set(0.05, 1, 0.05);
+                            bond.position.set(
+                                modelCenter.x + Math.cos(angle) * 1,
+                                modelCenter.y,
+                                modelCenter.z + Math.sin(angle) * 1
+                            );
+                            bond.rotation.z = Math.PI / 2;
+                            bond.rotation.y = angle;
+                        }
+                    }
+
+                    // Display screens on walls
+                    for (let i = 0; i < 3; i++) {
+                        const screen = createAsset('box');
+                        if (screen) {
+                            screen.scale.set(2.5, 1.5, 0.05);
+                            screen.position.set(i * 4 - 4, 2.5, 7.4);
+                        }
+                    }
+                }
+            },
+            {
+                id: 'medical-viz',
+                name: 'Medical Visualization',
+                category: 'specialty',
+                description: 'Medical/anatomy visualization environment',
+                tags: ['Medical', 'Healthcare', 'Science'],
+                difficulty: 'advanced',
+                icon: 'fa-heartbeat',
+                setup: function() {
+                    // Clean room floor
+                    const floor = createAsset('plane');
+                    if (floor) {
+                        floor.rotation.x = -Math.PI / 2;
+                        floor.scale.set(20, 20, 1);
+                    }
+
+                    // Central anatomy display (simplified skeleton)
+                    // Spine
+                    for (let i = 0; i < 8; i++) {
+                        const vertebra = createAsset('sphere');
+                        if (vertebra) {
+                            vertebra.scale.set(0.3, 0.4, 0.3);
+                            vertebra.position.set(0, 1 + i * 0.4, 0);
+                        }
+                    }
+
+                    // Skull
+                    const skull = createAsset('sphere');
+                    if (skull) {
+                        skull.scale.set(0.6, 0.7, 0.6);
+                        skull.position.set(0, 4.5, 0);
+                    }
+
+                    // Ribcage simulation
+                    for (let i = 0; i < 6; i++) {
+                        for (let side = 0; side < 2; side++) {
+                            const rib = createAsset('torus');
+                            if (rib) {
+                                rib.scale.set(0.4 + i * 0.1, 0.4 + i * 0.1, 0.4 + i * 0.1);
+                                rib.position.set(side === 0 ? -0.3 : 0.3, 3.5 - i * 0.3, 0);
+                                rib.rotation.y = (side === 0 ? 1 : -1) * Math.PI / 6;
+                                rib.rotation.x = Math.PI / 2;
+                            }
+                        }
+                    }
+
+                    // Organ displays (abstract representations)
+                    const organs = [
+                        {name: 'Heart', pos: {x: -4, z: -4}},
+                        {name: 'Lungs', pos: {x: 4, z: -4}},
+                        {name: 'Brain', pos: {x: -4, z: 4}},
+                        {name: 'Liver', pos: {x: 4, z: 4}}
+                    ];
+
+                    organs.forEach(organ => {
+                        // Pedestal
+                        const pedestal = createAsset('cylinder');
+                        if (pedestal) {
+                            pedestal.scale.set(0.8, 1, 0.8);
+                            pedestal.position.set(organ.pos.x, 0.5, organ.pos.z);
+                        }
+
+                        // Organ model (sphere)
+                        const model = createAsset('sphere');
+                        if (model) {
+                            model.scale.set(0.6, 0.6, 0.6);
+                            model.position.set(organ.pos.x, 1.5, organ.pos.z);
+                        }
+
+                        // Label
+                        const label = createAsset('box');
+                        if (label) {
+                            label.scale.set(1.2, 0.3, 0.05);
+                            label.position.set(organ.pos.x, 0.2, organ.pos.z + 1);
+                        }
+                    });
+
+                    // Information panels
+                    for (let i = 0; i < 4; i++) {
+                        const panel = createAsset('box');
+                        if (panel) {
+                            const angle = (Math.PI * 2 * i) / 4;
+                            panel.scale.set(2, 3, 0.1);
+                            panel.position.set(
+                                Math.cos(angle) * 8,
+                                2,
+                                Math.sin(angle) * 8
+                            );
+                            panel.rotation.y = -angle;
+                        }
+                    }
+                }
+            },
+            {
+                id: 'architectural',
+                name: 'Architectural Walkthrough',
+                category: 'specialty',
+                description: 'Building interior for architectural visualization',
+                tags: ['Architecture', 'Building', 'Real Estate'],
+                difficulty: 'intermediate',
+                badge: 'popular',
+                icon: 'fa-building',
+                setup: function() {
+                    // Main floor plan
+                    const mainFloor = createAsset('box');
+                    if (mainFloor) {
+                        mainFloor.scale.set(20, 0.2, 15);
+                        mainFloor.position.y = 0;
+                    }
+
+                    // Exterior walls
+                    const exteriorWalls = [
+                        {x: 0, z: -7.5, sx: 20, sz: 0.5},
+                        {x: 0, z: 7.5, sx: 20, sz: 0.5},
+                        {x: -10, z: 0, sx: 0.5, sz: 15},
+                        {x: 10, z: 0, sx: 0.5, sz: 15}
+                    ];
+
+                    exteriorWalls.forEach(wall => {
+                        const w = createAsset('box');
+                        if (w) {
+                            w.scale.set(wall.sx, 4, wall.sz);
+                            w.position.set(wall.x, 2, wall.z);
+                        }
+                    });
+
+                    // Interior partition walls
+                    const partitions = [
+                        {x: 0, z: 0, sx: 0.2, sz: 12},
+                        {x: -4, z: 0, sx: 0.2, sz: 6}
+                    ];
+
+                    partitions.forEach(part => {
+                        const wall = createAsset('box');
+                        if (wall) {
+                            wall.scale.set(part.sx, 4, part.sz);
+                            wall.position.set(part.x, 2, part.z);
+                        }
+                    });
+
+                    // Windows (transparent boxes)
+                    for (let i = 0; i < 5; i++) {
+                        const window = createAsset('box');
+                        if (window) {
+                            window.scale.set(1.5, 1.2, 0.1);
+                            window.position.set(i * 4 - 8, 2, -7.4);
+                        }
+                    }
+
+                    // Doorways (arches)
+                    const doorways = [
+                        {x: -4, z: -3}, {x: -4, z: 3}, {x: 0, z: -4}
+                    ];
+
+                    doorways.forEach(door => {
+                        const frame = createAsset('box');
+                        if (frame) {
+                            frame.scale.set(1.2, 2.5, 0.2);
+                            frame.position.set(door.x, 1.25, door.z);
+                        }
+                    });
+
+                    // Furniture
+                    // Living room sofa
+                    const sofa = createAsset('box');
+                    if (sofa) {
+                        sofa.scale.set(3, 0.8, 1.2);
+                        sofa.position.set(-6, 0.4, -4);
+                    }
+
+                    // Dining table
+                    const table = createAsset('box');
+                    if (table) {
+                        table.scale.set(2.5, 0.1, 1.5);
+                        table.position.set(6, 0.75, -4);
+                    }
+
+                    // Chairs around table
+                    for (let i = 0; i < 4; i++) {
+                        const chair = createAsset('box');
+                        if (chair) {
+                            chair.scale.set(0.5, 0.5, 0.5);
+                            const offset = i < 2 ? -1.2 : 1.2;
+                            chair.position.set(
+                                6 + (i % 2 === 0 ? -1.5 : 1.5),
+                                0.25,
+                                -4 + offset
+                            );
+                        }
+                    }
+
+                    // Ceiling lights
+                    for (let i = 0; i < 4; i++) {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(
+                                (i % 2 === 0 ? -5 : 5),
+                                3.5,
+                                (i < 2 ? -3 : 3)
+                            );
+                        }
+                    }
+                }
+            },
+            {
+                id: 'automotive',
+                name: 'Automotive Showcase',
+                category: 'specialty',
+                description: 'Car showroom environment with turntable',
+                tags: ['Automotive', 'Car', 'Showroom'],
+                difficulty: 'intermediate',
+                icon: 'fa-car',
+                setup: function() {
+                    // Showroom floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(25, 0.1, 20);
+                        floor.position.y = 0;
+                    }
+
+                    // Rotating platform/turntable
+                    const platform = createAsset('cylinder');
+                    if (platform) {
+                        platform.scale.set(5, 0.3, 5);
+                        platform.position.set(0, 0.15, 0);
+                    }
+
+                    // Simple car model (abstract)
+                    // Car body
+                    const carBody = createAsset('box');
+                    if (carBody) {
+                        carBody.scale.set(3, 1, 1.5);
+                        carBody.position.set(0, 0.8, 0);
+                    }
+
+                    // Car roof/cabin
+                    const cabin = createAsset('box');
+                    if (cabin) {
+                        cabin.scale.set(1.8, 0.8, 1.3);
+                        cabin.position.set(-0.2, 1.6, 0);
+                    }
+
+                    // Wheels
+                    const wheelPositions = [
+                        {x: 1, z: 1}, {x: 1, z: -1}, {x: -1, z: 1}, {x: -1, z: -1}
+                    ];
+
+                    wheelPositions.forEach(pos => {
+                        const wheel = createAsset('cylinder');
+                        if (wheel) {
+                            wheel.scale.set(0.4, 0.2, 0.4);
+                            wheel.position.set(pos.x, 0.4, pos.z);
+                            wheel.rotation.z = Math.PI / 2;
+                        }
+                    });
+
+                    // Spotlights focused on car
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (Math.PI * 2 * i) / 4;
+                        const light = createAsset('spotLight');
+                        if (light) {
+                            light.position.set(
+                                Math.cos(angle) * 8,
+                                5,
+                                Math.sin(angle) * 8
+                            );
+                        }
+                    }
+
+                    // Info displays around the room
+                    const displays = [
+                        {x: -10, z: -8}, {x: 10, z: -8}, {x: -10, z: 8}, {x: 10, z: 8}
+                    ];
+
+                    displays.forEach(disp => {
+                        // Display stand
+                        const stand = createAsset('box');
+                        if (stand) {
+                            stand.scale.set(0.5, 1.5, 0.5);
+                            stand.position.set(disp.x, 0.75, disp.z);
+                        }
+
+                        // Screen
+                        const screen = createAsset('box');
+                        if (screen) {
+                            screen.scale.set(2, 1.5, 0.1);
+                            screen.position.set(disp.x, 2, disp.z);
+                        }
+                    });
+
+                    // Velvet ropes/barriers
+                    for (let i = 0; i < 8; i++) {
+                        const angle = (Math.PI * 2 * i) / 8;
+                        const post = createAsset('cylinder');
+                        if (post) {
+                            post.scale.set(0.1, 1, 0.1);
+                            post.position.set(
+                                Math.cos(angle) * 6,
+                                0.5,
+                                Math.sin(angle) * 6
+                            );
+                        }
+                    }
+                }
+            },
+            {
+                id: 'fashion-show',
+                name: 'Fashion Runway',
+                category: 'specialty',
+                description: 'Fashion show runway with lighting and seating',
+                tags: ['Fashion', 'Runway', 'Event'],
+                difficulty: 'intermediate',
+                icon: 'fa-tshirt',
+                setup: function() {
+                    // Main floor
+                    const floor = createAsset('box');
+                    if (floor) {
+                        floor.scale.set(30, 0.1, 25);
+                        floor.position.y = 0;
+                    }
+
+                    // Runway
+                    const runway = createAsset('box');
+                    if (runway) {
+                        runway.scale.set(4, 0.15, 20);
+                        runway.position.set(0, 0.08, 0);
+                    }
+
+                    // Stage (T-shape end)
+                    const stage = createAsset('box');
+                    if (stage) {
+                        stage.scale.set(8, 0.15, 4);
+                        stage.position.set(0, 0.08, -10);
+                    }
+
+                    // Seating (both sides)
+                    for (let side = 0; side < 2; side++) {
+                        for (let row = 0; row < 3; row++) {
+                            for (let seat = 0; seat < 8; seat++) {
+                                const chair = createAsset('box');
+                                if (chair) {
+                                    chair.scale.set(0.6, 0.4, 0.6);
+                                    chair.position.set(
+                                        (side === 0 ? -4 : 4) - row * 1.2,
+                                        0.2,
+                                        seat * 2.5 - 8.75
+                                    );
+                                }
+
+                                // Chair back
+                                const back = createAsset('box');
+                                if (back) {
+                                    back.scale.set(0.6, 0.6, 0.1);
+                                    back.position.set(
+                                        (side === 0 ? -4 : 4) - row * 1.2,
+                                        0.5,
+                                        seat * 2.5 - 8.75 + (side === 0 ? -0.35 : 0.35)
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    // Runway edge lights
+                    for (let i = 0; i < 10; i++) {
+                        for (let side = 0; side < 2; side++) {
+                            const light = createAsset('cylinder');
+                            if (light) {
+                                light.scale.set(0.15, 0.2, 0.15);
+                                light.position.set(
+                                    side === 0 ? -2.2 : 2.2,
+                                    0.1,
+                                    i * 2 - 9
+                                );
+                            }
+
+                            const pointLight = createAsset('pointLight');
+                            if (pointLight) {
+                                pointLight.position.set(
+                                    side === 0 ? -2.2 : 2.2,
+                                    0.3,
+                                    i * 2 - 9
+                                );
+                            }
+                        }
+                    }
+
+                    // Overhead lighting rig
+                    for (let i = 0; i < 6; i++) {
+                        const rigLight = createAsset('spotLight');
+                        if (rigLight) {
+                            rigLight.position.set(
+                                (i % 2 === 0 ? -2 : 2),
+                                6,
+                                Math.floor(i / 2) * 6 - 6
+                            );
+                        }
+                    }
+
+                    // Backdrop at stage
+                    const backdrop = createAsset('box');
+                    if (backdrop) {
+                        backdrop.scale.set(10, 5, 0.2);
+                        backdrop.position.set(0, 2.5, -12);
+                    }
+
+                    // Logo/brand display
+                    const logo = createAsset('box');
+                    if (logo) {
+                        logo.scale.set(3, 1, 0.1);
+                        logo.position.set(0, 4, -11.95);
+                    }
+                }
+            },
+            {
+                id: 'event-stage',
+                name: 'Event Stage',
+                category: 'specialty',
+                description: 'Concert/event stage with lighting and equipment',
+                tags: ['Event', 'Concert', 'Stage'],
+                difficulty: 'advanced',
+                badge: 'new',
+                icon: 'fa-microphone',
+                setup: function() {
+                    // Stage platform
+                    const stage = createAsset('box');
+                    if (stage) {
+                        stage.scale.set(15, 1, 10);
+                        stage.position.set(0, 0.5, -8);
+                    }
+
+                    // Stage riser (elevated section)
+                    const riser = createAsset('box');
+                    if (riser) {
+                        riser.scale.set(10, 0.5, 6);
+                        riser.position.set(0, 1.25, -10);
+                    }
+
+                    // Backdrop/LED wall
+                    const backdrop = createAsset('box');
+                    if (backdrop) {
+                        backdrop.scale.set(14, 8, 0.5);
+                        backdrop.position.set(0, 4, -13);
+                    }
+
+                    // Speaker stacks (both sides)
+                    for (let side = 0; side < 2; side++) {
+                        for (let i = 0; i < 3; i++) {
+                            const speaker = createAsset('box');
+                            if (speaker) {
+                                speaker.scale.set(1.5, 1, 1.2);
+                                speaker.position.set(
+                                    side === 0 ? -7 : 7,
+                                    0.5 + i * 1,
+                                    -8
+                                );
+                            }
+
+                            // Speaker cones (cylinders)
+                            for (let c = 0; c < 2; c++) {
+                                const cone = createAsset('cylinder');
+                                if (cone) {
+                                    cone.scale.set(0.3, 0.1, 0.3);
+                                    cone.position.set(
+                                        side === 0 ? -7 : 7,
+                                        0.5 + i * 1 + (c === 0 ? -0.2 : 0.2),
+                                        -7.4
+                                    );
+                                    cone.rotation.x = Math.PI / 2;
+                                }
+                            }
+                        }
+                    }
+
+                    // Lighting truss
+                    const truss = createAsset('box');
+                    if (truss) {
+                        truss.scale.set(16, 0.3, 0.3);
+                        truss.position.set(0, 8, -8);
+                    }
+
+                    // Stage lights on truss
+                    for (let i = 0; i < 8; i++) {
+                        const lightFixture = createAsset('box');
+                        if (lightFixture) {
+                            lightFixture.scale.set(0.4, 0.6, 0.4);
+                            lightFixture.position.set(i * 2 - 7, 7.7, -8);
+                        }
+
+                        const light = createAsset('spotLight');
+                        if (light) {
+                            light.position.set(i * 2 - 7, 7.5, -8);
+                        }
+                    }
+
+                    // Equipment/gear on stage
+                    // Drum kit
+                    const drumPlatform = createAsset('cylinder');
+                    if (drumPlatform) {
+                        drumPlatform.scale.set(2, 0.2, 2);
+                        drumPlatform.position.set(0, 1.6, -11);
+                    }
+
+                    for (let i = 0; i < 5; i++) {
+                        const drum = createAsset('cylinder');
+                        if (drum) {
+                            const angle = (Math.PI * 2 * i) / 5;
+                            drum.scale.set(0.3, 0.4, 0.3);
+                            drum.position.set(
+                                Math.cos(angle) * 1.2,
+                                1.9,
+                                -11 + Math.sin(angle) * 1.2
+                            );
+                        }
+                    }
+
+                    // Microphone stands
+                    for (let i = 0; i < 3; i++) {
+                        const stand = createAsset('cylinder');
+                        if (stand) {
+                            stand.scale.set(0.05, 2, 0.05);
+                            stand.position.set(i * 3 - 3, 2, -8);
+                        }
+
+                        const mic = createAsset('sphere');
+                        if (mic) {
+                            mic.scale.set(0.2, 0.2, 0.2);
+                            mic.position.set(i * 3 - 3, 3, -8);
+                        }
+                    }
+
+                    // Amplifiers
+                    for (let i = 0; i < 4; i++) {
+                        const amp = createAsset('box');
+                        if (amp) {
+                            amp.scale.set(0.8, 1, 0.6);
+                            amp.position.set((i - 1.5) * 2, 1.5, -6);
+                        }
+                    }
+
+                    // Audience floor area
+                    const audienceFloor = createAsset('box');
+                    if (audienceFloor) {
+                        audienceFloor.scale.set(20, 0.1, 15);
+                        audienceFloor.position.set(0, 0, 5);
+                    }
+                }
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        // Template Manager Functions
+        function showTemplateLibrary() {
+            const modal = document.getElementById('template-modal');
+            modal.classList.add('show');
+            renderTemplates();
+        }
+
+        function hideTemplateLibrary() {
+            const modal = document.getElementById('template-modal');
+            modal.classList.remove('show');
+        }
+
+        function filterTemplates(category) {
+            currentFilter = category;
+
+            // Update active filter button
+            document.querySelectorAll('.template-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-category') === category) {
+                    btn.classList.add('active');
+                }
+            });
+
+            renderTemplates();
+        }
+
+        function renderTemplates() {
+            const container = document.getElementById('template-grid-container');
+            container.innerHTML = '';
+
+            // Filter templates
+            let filtered = currentFilter === 'all'
+                ? templateLibrary
+                : templateLibrary.filter(t => t.category === currentFilter);
+
+            // Group by category
+            const categories = {
+                game: { title: 'Game Templates', icon: 'fa-gamepad' },
+                visualization: { title: 'Visualization Templates', icon: 'fa-chart-bar' },
+                website: { title: 'Website Integration', icon: 'fa-globe' },
+                environment: { title: 'Environment Templates', icon: 'fa-tree' },
+                specialty: { title: 'Specialty Templates', icon: 'fa-magic' }
+            };
+
+            Object.keys(categories).forEach(cat => {
+                const categoryTemplates = filtered.filter(t => t.category === cat);
+                if (categoryTemplates.length === 0) return;
+
+                const categoryDiv = document.createElement('div');
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'template-category-title';
+                titleDiv.innerHTML = `<i class="fas ${categories[cat].icon}"></i> ${categories[cat].title}`;
+                categoryDiv.appendChild(titleDiv);
+
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'template-grid';
+
+                categoryTemplates.forEach(template => {
+                    const card = createTemplateCard(template);
+                    gridDiv.appendChild(card);
+                });
+
+                categoryDiv.appendChild(gridDiv);
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function createTemplateCard(template) {
+            const card = document.createElement('div');
+            card.className = 'template-card';
+
+            card.innerHTML = `
+                <div class="template-preview">
+                    <i class="fas ${template.icon}"></i>
+                    ${template.badge ? `<div class="template-badge ${template.badge}">${template.badge}</div>` : ''}
+                </div>
+                <div class="template-info">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-description">${template.description}</div>
+                    <div class="template-tags">
+                        ${template.tags.map(tag => `<span class="template-tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="template-actions">
+                        <button class="template-btn" onclick="applyTemplate('${template.id}')">
+                            <i class="fas fa-check"></i> Use Template
+                        </button>
+                        <button class="template-btn template-btn-secondary" onclick="previewTemplate('${template.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function applyTemplate(templateId) {
+            const template = templateLibrary.find(t => t.id === templateId);
+            if (!template) return;
+
+            // Clear current scene (except camera, lights, etc)
+            clearScene();
+
+            // Show loading
+            showLoadingBar();
+            updateLoadingProgress(0);
+
+            // Apply template setup
+            setTimeout(() => {
+                updateLoadingProgress(50);
+                if (template.setup) {
+                    template.setup();
+                }
+
+                updateLoadingProgress(100);
+                setTimeout(() => {
+                    hideLoadingBar();
+                    hideTemplateLibrary();
+
+                    // Show success message
+                    console.log(`Template "${template.name}" applied successfully!`);
+                }, 300);
+            }, 500);
+        }
+
+        function previewTemplate(templateId) {
+            // Future: Show preview/details modal
+            console.log('Preview template:', templateId);
+        }
+
+        function clearScene() {
+            // Remove all user-created objects
+            const objectsToRemove = [];
+            scene.traverse((object) => {
+                if (object.userData && object.userData.isUserObject) {
+                    objectsToRemove.push(object);
+                }
+            });
+
+            objectsToRemove.forEach(obj => {
+                scene.remove(obj);
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) {
+                        obj.material.forEach(mat => mat.dispose());
+                    } else {
+                        obj.material.dispose();
+                    }
+                }
+            });
+
+            sceneObjects = [];
+            selectedObject = null;
+        }
+
+        // Ctrl+N shortcut for new project
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                showTemplateLibrary();
+            }
+        });
+
+        // ============================================
         // START
         // ============================================
         init();
@@ -4877,6 +8643,46 @@
     <div class="quality-indicator" id="quality-indicator">
         <div class="quality-dot" id="quality-dot"></div>
         <span id="quality-text">High Quality</span>
+    </div>
+
+    <!-- Template Library Modal -->
+    <div class="template-modal" id="template-modal">
+        <div class="template-modal-content">
+            <div class="template-modal-header">
+                <div class="template-modal-title">
+                    <i class="fas fa-th-large"></i>
+                    Template Library
+                </div>
+                <div class="template-modal-close" onclick="hideTemplateLibrary()">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+
+            <div class="template-filters">
+                <div class="template-filter-btn active" onclick="filterTemplates('all')" data-category="all">
+                    <i class="fas fa-th"></i> All Templates
+                </div>
+                <div class="template-filter-btn" onclick="filterTemplates('game')" data-category="game">
+                    <i class="fas fa-gamepad"></i> Games
+                </div>
+                <div class="template-filter-btn" onclick="filterTemplates('visualization')" data-category="visualization">
+                    <i class="fas fa-chart-bar"></i> Visualization
+                </div>
+                <div class="template-filter-btn" onclick="filterTemplates('website')" data-category="website">
+                    <i class="fas fa-globe"></i> Website
+                </div>
+                <div class="template-filter-btn" onclick="filterTemplates('environment')" data-category="environment">
+                    <i class="fas fa-tree"></i> Environment
+                </div>
+                <div class="template-filter-btn" onclick="filterTemplates('specialty')" data-category="specialty">
+                    <i class="fas fa-magic"></i> Specialty
+                </div>
+            </div>
+
+            <div class="template-grid-container" id="template-grid-container">
+                <!-- Templates will be dynamically generated here -->
+            </div>
+        </div>
     </div>
 
 </body>
