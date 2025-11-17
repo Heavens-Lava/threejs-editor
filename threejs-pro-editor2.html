@@ -566,6 +566,415 @@
             font-size: 11px;
             color: #999;
         }
+
+        /* ============================================ */
+        /* MOBILE-FIRST RESPONSIVE SYSTEM */
+        /* ============================================ */
+
+        /* Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+            border-top: 1px solid #404040;
+            z-index: 2000;
+            padding: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            height: 100%;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .mobile-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: #999;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 8px;
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        .mobile-nav-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav-item.active {
+            color: #0066cc;
+        }
+
+        .mobile-nav-item i {
+            font-size: 20px;
+        }
+
+        .mobile-nav-item span {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* Hamburger Menu */
+        .hamburger-btn {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 44px;
+            height: 44px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 1500;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .hamburger-btn span {
+            width: 20px;
+            height: 2px;
+            background: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .hamburger-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Panel Overlay for Mobile */
+        .panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 500;
+        }
+
+        .panel-overlay.active {
+            display: block;
+        }
+
+        /* Tooltip System */
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 250px;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            border: 6px solid transparent;
+        }
+
+        .tooltip.top::before {
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .tooltip.bottom::before {
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .tooltip.left::before {
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .tooltip.right::before {
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.95);
+        }
+
+        /* Touch-optimized controls */
+        .touch-optimized {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* ============================================ */
+        /* RESPONSIVE BREAKPOINTS */
+        /* ============================================ */
+
+        /* Mobile Portrait: 320px - 480px */
+        @media (max-width: 480px) {
+            .mobile-bottom-nav {
+                display: block;
+            }
+
+            .hamburger-btn {
+                display: flex;
+            }
+
+            .top-toolbar {
+                padding: 0 50px;
+                height: 50px;
+            }
+
+            .toolbar-title {
+                font-size: 14px;
+            }
+
+            .toolbar-section {
+                display: none;
+            }
+
+            .left-sidebar {
+                left: -100%;
+                width: 85%;
+                max-width: 320px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+
+            .left-sidebar.mobile-open {
+                left: 0;
+            }
+
+            .right-sidebar {
+                right: -100%;
+                width: 85%;
+                max-width: 320px;
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+
+            .right-sidebar.mobile-open {
+                right: 0;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .sidebar-tab {
+                font-size: 10px;
+                padding: 10px 4px;
+            }
+
+            .property-group {
+                padding: 12px;
+            }
+
+            .vector-inputs,
+            .vector-labels {
+                gap: 4px;
+            }
+
+            /* Enlarge touch targets */
+            .toolbar-btn,
+            .btn,
+            .mode-btn,
+            .asset-item,
+            .hierarchy-item {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            .property-input,
+            .vector-input {
+                min-height: 44px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        /* Mobile Landscape: 481px - 767px */
+        @media (min-width: 481px) and (max-width: 767px) {
+            .mobile-bottom-nav {
+                display: block;
+            }
+
+            .hamburger-btn {
+                display: flex;
+            }
+
+            .top-toolbar {
+                padding: 0 50px;
+            }
+
+            .left-sidebar {
+                width: 280px;
+                left: -100%;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+
+            .left-sidebar.mobile-open {
+                left: 0;
+            }
+
+            .right-sidebar {
+                width: 300px;
+                right: -100%;
+                transition: right 0.3s ease;
+                z-index: 1000;
+            }
+
+            .right-sidebar.mobile-open {
+                right: 0;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            /* Touch targets */
+            .toolbar-btn,
+            .btn,
+            .mode-btn {
+                min-height: 44px;
+            }
+        }
+
+        /* Tablet Portrait: 768px - 1024px */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .left-sidebar {
+                width: 260px;
+            }
+
+            .right-sidebar {
+                width: 280px;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .top-toolbar {
+                padding: 0 15px;
+            }
+
+            .toolbar-section {
+                gap: 6px;
+            }
+
+            .toolbar-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Tablet Landscape: 1025px - 1366px */
+        @media (min-width: 1025px) and (max-width: 1366px) {
+            .left-sidebar {
+                width: 280px;
+            }
+
+            .right-sidebar {
+                width: 300px;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop: 1367px+ */
+        @media (min-width: 1367px) {
+            .left-sidebar {
+                width: 320px;
+            }
+
+            .right-sidebar {
+                width: 340px;
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .top-toolbar {
+                height: 40px;
+            }
+
+            .mobile-bottom-nav {
+                height: 50px;
+            }
+
+            .left-sidebar,
+            .right-sidebar {
+                top: 40px;
+            }
+        }
+
+        /* High DPI screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            /* Sharper rendering for high-DPI displays */
+            .toolbar-btn,
+            .btn,
+            .asset-item {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Dark mode support (system preference) */
+        @media (prefers-color-scheme: light) {
+            /* Future: Light theme support */
+        }
     </style>
 </head>
 <body>
@@ -573,14 +982,14 @@
 
     <!-- Top Toolbar -->
     <div class="top-toolbar">
-        <div class="toolbar-title">
+        <div class="toolbar-title" data-tooltip="Three.js Professional World Builder">
             <i class="fas fa-cube"></i> World Builder
         </div>
 
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" id="mode-toggle">
+            <button class="toolbar-btn" id="mode-toggle" data-tooltip="Switch between edit and play mode to test your scene">
                 <i class="fas fa-gamepad"></i>
                 <span id="mode-text">Play Mode</span>
             </button>
@@ -589,10 +998,10 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" onclick="undo()">
+            <button class="toolbar-btn" onclick="undo()" data-tooltip="Undo the last action (Ctrl+Z)">
                 <i class="fas fa-undo"></i> Undo
             </button>
-            <button class="toolbar-btn" onclick="redo()">
+            <button class="toolbar-btn" onclick="redo()" data-tooltip="Redo the last undone action (Ctrl+Y)">
                 <i class="fas fa-redo"></i> Redo
             </button>
         </div>
@@ -600,13 +1009,13 @@
         <div class="toolbar-divider"></div>
 
         <div class="toolbar-section">
-            <button class="toolbar-btn" onclick="saveScene()">
+            <button class="toolbar-btn" onclick="saveScene()" data-tooltip="Save your scene to a JSON file">
                 <i class="fas fa-save"></i> Save
             </button>
-            <button class="toolbar-btn" onclick="loadScene()">
+            <button class="toolbar-btn" onclick="loadScene()" data-tooltip="Load a previously saved scene from JSON">
                 <i class="fas fa-folder-open"></i> Load
             </button>
-            <button class="toolbar-btn" onclick="exportCode()">
+            <button class="toolbar-btn" onclick="exportCode()" data-tooltip="Export your scene as standalone HTML code">
                 <i class="fas fa-code"></i> Export
             </button>
         </div>
@@ -639,27 +1048,27 @@
             <div class="sidebar-panel active" id="panel-assets">
                 <div class="section-title">Primitives</div>
                 <div class="asset-grid">
-                    <div class="asset-item" onclick="createAsset('box')">
+                    <div class="asset-item" onclick="createAsset('box')" data-tooltip="Add a cube - perfect for building blocks, walls, and boxes">
                         <i class="fas fa-cube"></i>
                         <div class="asset-item-name">Cube</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('sphere')">
+                    <div class="asset-item" onclick="createAsset('sphere')" data-tooltip="Add a sphere - great for balls, planets, and rounded objects">
                         <i class="fas fa-circle"></i>
                         <div class="asset-item-name">Sphere</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('cylinder')">
+                    <div class="asset-item" onclick="createAsset('cylinder')" data-tooltip="Add a cylinder - useful for columns, pipes, and containers">
                         <i class="fas fa-database"></i>
                         <div class="asset-item-name">Cylinder</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('plane')">
+                    <div class="asset-item" onclick="createAsset('plane')" data-tooltip="Add a flat plane - ideal for floors, walls, and flat surfaces">
                         <i class="fas fa-square"></i>
                         <div class="asset-item-name">Plane</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('cone')">
+                    <div class="asset-item" onclick="createAsset('cone')" data-tooltip="Add a cone - perfect for pyramids, arrows, and pointed objects">
                         <i class="fas fa-play"></i>
                         <div class="asset-item-name">Cone</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('torus')">
+                    <div class="asset-item" onclick="createAsset('torus')" data-tooltip="Add a torus (donut shape) - great for rings and decorative elements">
                         <i class="fas fa-circle-notch"></i>
                         <div class="asset-item-name">Torus</div>
                     </div>
@@ -667,19 +1076,19 @@
 
                 <div class="section-title">Environment</div>
                 <div class="asset-grid">
-                    <div class="asset-item" onclick="createAsset('wall')">
+                    <div class="asset-item" onclick="createAsset('wall')" data-tooltip="Create a wall - vertical barrier for rooms and boundaries">
                         <i class="fas fa-bars"></i>
                         <div class="asset-item-name">Wall</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('floor')">
+                    <div class="asset-item" onclick="createAsset('floor')" data-tooltip="Create a floor - large horizontal surface for walking">
                         <i class="fas fa-border-all"></i>
                         <div class="asset-item-name">Floor</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('stairs')">
+                    <div class="asset-item" onclick="createAsset('stairs')" data-tooltip="Add stairs - for connecting different levels">
                         <i class="fas fa-stairs"></i>
                         <div class="asset-item-name">Stairs</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('door')">
+                    <div class="asset-item" onclick="createAsset('door')" data-tooltip="Add a door - entrance or exit point">
                         <i class="fas fa-door-open"></i>
                         <div class="asset-item-name">Door</div>
                     </div>
@@ -687,11 +1096,11 @@
 
                 <div class="section-title">Lights</div>
                 <div class="asset-grid">
-                    <div class="asset-item" onclick="createAsset('pointLight')">
+                    <div class="asset-item" onclick="createAsset('pointLight')" data-tooltip="Point light - emits light in all directions from a single point">
                         <i class="fas fa-lightbulb"></i>
                         <div class="asset-item-name">Point Light</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('spotLight')">
+                    <div class="asset-item" onclick="createAsset('spotLight')" data-tooltip="Spot light - focused beam of light like a flashlight">
                         <i class="fas fa-circle-notch"></i>
                         <div class="asset-item-name">Spot Light</div>
                     </div>
@@ -699,11 +1108,11 @@
 
                 <div class="section-title">Special</div>
                 <div class="asset-grid">
-                    <div class="asset-item" onclick="createAsset('spawnPoint')">
+                    <div class="asset-item" onclick="createAsset('spawnPoint')" data-tooltip="Spawn point - where the player starts in play mode">
                         <i class="fas fa-user"></i>
                         <div class="asset-item-name">Spawn Point</div>
                     </div>
-                    <div class="asset-item" onclick="createAsset('group')">
+                    <div class="asset-item" onclick="createAsset('group')" data-tooltip="Empty group - organize multiple objects together">
                         <i class="fas fa-object-group"></i>
                         <div class="asset-item-name">Group</div>
                     </div>
@@ -2674,9 +3083,299 @@
         }
 
         // ============================================
+        // MOBILE & TOOLTIP SYSTEM
+        // ============================================
+
+        // Mobile panel management
+        let currentMobilePanel = null;
+
+        function toggleHamburger() {
+            const hamburger = document.getElementById('hamburger-btn');
+            const leftSidebar = document.getElementById('left-sidebar');
+            const overlay = document.getElementById('panel-overlay');
+
+            hamburger.classList.toggle('active');
+            leftSidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+
+            if (leftSidebar.classList.contains('mobile-open')) {
+                currentMobilePanel = 'left';
+            } else {
+                currentMobilePanel = null;
+            }
+        }
+
+        function toggleMobilePanel(panel) {
+            const leftSidebar = document.getElementById('left-sidebar');
+            const rightSidebar = document.getElementById('right-sidebar');
+            const overlay = document.getElementById('panel-overlay');
+            const navItems = document.querySelectorAll('.mobile-nav-item');
+
+            // Remove active class from all nav items
+            navItems.forEach(item => item.classList.remove('active'));
+
+            if (panel === 'assets') {
+                event.currentTarget.classList.add('active');
+                leftSidebar.classList.add('mobile-open');
+                rightSidebar.classList.remove('mobile-open');
+                overlay.classList.add('active');
+                currentMobilePanel = 'left';
+                switchLeftTab('assets');
+            } else if (panel === 'tools') {
+                event.currentTarget.classList.add('active');
+                rightSidebar.classList.add('mobile-open');
+                leftSidebar.classList.remove('mobile-open');
+                overlay.classList.add('active');
+                currentMobilePanel = 'right';
+                switchRightTab('properties');
+            } else if (panel === 'properties') {
+                event.currentTarget.classList.add('active');
+                rightSidebar.classList.add('mobile-open');
+                leftSidebar.classList.remove('mobile-open');
+                overlay.classList.add('active');
+                currentMobilePanel = 'right';
+                switchRightTab('properties');
+            } else if (panel === 'menu') {
+                event.currentTarget.classList.add('active');
+                rightSidebar.classList.add('mobile-open');
+                leftSidebar.classList.remove('mobile-open');
+                overlay.classList.add('active');
+                currentMobilePanel = 'right';
+                switchRightTab('scene');
+            }
+        }
+
+        function togglePlayMode() {
+            const playBtn = document.getElementById('mode-toggle');
+            if (playBtn) {
+                playBtn.click();
+            }
+            closeMobilePanels();
+        }
+
+        function closeMobilePanels() {
+            const leftSidebar = document.getElementById('left-sidebar');
+            const rightSidebar = document.getElementById('right-sidebar');
+            const overlay = document.getElementById('panel-overlay');
+            const hamburger = document.getElementById('hamburger-btn');
+
+            leftSidebar.classList.remove('mobile-open');
+            rightSidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            hamburger.classList.remove('active');
+            currentMobilePanel = null;
+        }
+
+        // Tooltip System
+        const tooltipElement = document.getElementById('tooltip');
+        let tooltipTimeout = null;
+
+        function showTooltip(text, element, position = 'top') {
+            if (!text || !element) return;
+
+            clearTimeout(tooltipTimeout);
+
+            tooltipTimeout = setTimeout(() => {
+                tooltipElement.textContent = text;
+                tooltipElement.className = 'tooltip ' + position;
+
+                const rect = element.getBoundingClientRect();
+                let top, left;
+
+                switch(position) {
+                    case 'top':
+                        top = rect.top - tooltipElement.offsetHeight - 10;
+                        left = rect.left + (rect.width / 2) - (tooltipElement.offsetWidth / 2);
+                        break;
+                    case 'bottom':
+                        top = rect.bottom + 10;
+                        left = rect.left + (rect.width / 2) - (tooltipElement.offsetWidth / 2);
+                        break;
+                    case 'left':
+                        top = rect.top + (rect.height / 2) - (tooltipElement.offsetHeight / 2);
+                        left = rect.left - tooltipElement.offsetWidth - 10;
+                        break;
+                    case 'right':
+                        top = rect.top + (rect.height / 2) - (tooltipElement.offsetHeight / 2);
+                        left = rect.right + 10;
+                        break;
+                }
+
+                // Keep tooltip in viewport
+                if (top < 10) top = rect.bottom + 10;
+                if (left < 10) left = 10;
+                if (left + tooltipElement.offsetWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltipElement.offsetWidth - 10;
+                }
+
+                tooltipElement.style.top = top + 'px';
+                tooltipElement.style.left = left + 'px';
+                tooltipElement.classList.add('show');
+            }, 500); // 500ms delay before showing
+        }
+
+        function hideTooltip() {
+            clearTimeout(tooltipTimeout);
+            tooltipElement.classList.remove('show');
+        }
+
+        // Initialize tooltips on all elements with data-tooltip attribute
+        function initTooltips() {
+            document.querySelectorAll('[data-tooltip]').forEach(element => {
+                element.addEventListener('mouseenter', function(e) {
+                    const text = this.getAttribute('data-tooltip');
+                    const position = this.getAttribute('data-tooltip-position') || 'top';
+                    showTooltip(text, this, position);
+                });
+
+                element.addEventListener('mouseleave', hideTooltip);
+            });
+        }
+
+        // Touch gesture support
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let isPinching = false;
+        let initialPinchDistance = 0;
+
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchStartTime = Date.now();
+            } else if (e.touches.length === 2) {
+                isPinching = true;
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (isPinching && e.touches.length === 2) {
+                const currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const scale = currentDistance / initialPinchDistance;
+
+                // Zoom camera based on pinch
+                if (camera && !isPlayMode) {
+                    const newZ = Math.max(2, Math.min(50, camera.position.z / scale));
+                    camera.position.z = newZ;
+                }
+
+                initialPinchDistance = currentDistance;
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (e.touches.length < 2) {
+                isPinching = false;
+            }
+
+            if (e.touches.length === 0) {
+                const touchDuration = Date.now() - touchStartTime;
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+
+                // Detect swipe gestures
+                if (Math.abs(deltaX) > 100 && touchDuration < 300) {
+                    if (deltaX > 0 && currentMobilePanel === null) {
+                        // Swipe right - open left panel
+                        toggleMobilePanel('assets');
+                    } else if (deltaX < 0 && currentMobilePanel !== null) {
+                        // Swipe left - close panel
+                        closeMobilePanels();
+                    }
+                }
+            }
+        }
+
+        // Add touch event listeners
+        function initTouchGestures() {
+            const canvas = document.getElementById('canvas');
+            if (canvas) {
+                canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+                canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+                canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+            }
+        }
+
+        // Close mobile panels when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const leftSidebar = document.getElementById('left-sidebar');
+                const rightSidebar = document.getElementById('right-sidebar');
+                const hamburger = document.getElementById('hamburger-btn');
+
+                if (!leftSidebar.contains(e.target) &&
+                    !rightSidebar.contains(e.target) &&
+                    !hamburger.contains(e.target) &&
+                    !e.target.classList.contains('mobile-nav-item')) {
+                    closeMobilePanels();
+                }
+            }
+        });
+
+        // ESC key to close mobile panels
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && currentMobilePanel !== null) {
+                closeMobilePanels();
+            }
+        });
+
+        // ============================================
         // START
         // ============================================
         init();
+        initTooltips();
+        initTouchGestures();
     </script>
+
+    <!-- Hamburger Menu Button -->
+    <div class="hamburger-btn" id="hamburger-btn" onclick="toggleHamburger()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Panel Overlay (for mobile) -->
+    <div class="panel-overlay" id="panel-overlay" onclick="closeMobilePanels()"></div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <div class="mobile-nav-items">
+            <div class="mobile-nav-item active" onclick="toggleMobilePanel('assets')" data-tooltip="Assets & Objects">
+                <i class="fas fa-box"></i>
+                <span>Assets</span>
+            </div>
+            <div class="mobile-nav-item" onclick="toggleMobilePanel('tools')" data-tooltip="Transform Tools">
+                <i class="fas fa-tools"></i>
+                <span>Tools</span>
+            </div>
+            <div class="mobile-nav-item" onclick="togglePlayMode()" data-tooltip="Play/Test Mode">
+                <i class="fas fa-play"></i>
+                <span>Play</span>
+            </div>
+            <div class="mobile-nav-item" onclick="toggleMobilePanel('properties')" data-tooltip="Properties">
+                <i class="fas fa-sliders-h"></i>
+                <span>Props</span>
+            </div>
+            <div class="mobile-nav-item" onclick="toggleMobilePanel('menu')" data-tooltip="Menu">
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip Container -->
+    <div class="tooltip" id="tooltip"></div>
+
 </body>
 </html>
