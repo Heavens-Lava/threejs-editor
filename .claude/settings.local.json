@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -c:*)",
+      "Bash(for func in \"showNewProjectDialog\" \"closeNewProjectDialog\" \"selectTemplate\" \"exportStandaloneHTML\" \"exportEmbeddableCode\" \"exportJSON\")",
+      "Bash(do echo -n \"$func: \")",
+      "Bash(done)",
+      "Bash(for func in \"applyGameTemplate\" \"applyVisualizationTemplate\" \"applyMuseumTemplate\" \"applyArchitecturalTemplate\" \"applyProductTemplate\" \"clearScene\")",
+      "Bash(for func in \"setupDragAndDrop\" \"createDefaultAssetAtPosition\")",
+      "Bash(for func in \"downloadFile\" \"copyToClipboard\")",
+      "Bash(grep:*)",
+      "Bash(echo:*)",
+      "Bash(awk:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

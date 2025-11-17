@@ -1,0 +1,2682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Professional World Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Top Toolbar */
+        .top-toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+            border-bottom: 1px solid #404040;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .toolbar-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 30px;
+            background: #404040;
+        }
+
+        .toolbar-btn {
+            padding: 8px 16px;
+            background: #3a3a3a;
+            border: 1px solid #505050;
+            border-radius: 4px;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toolbar-btn:hover {
+            background: #454545;
+            border-color: #606060;
+        }
+
+        .toolbar-btn.active {
+            background: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .toolbar-btn i {
+            font-size: 14px;
+        }
+
+        .toolbar-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fbbf24;
+            margin-right: 10px;
+        }
+
+        /* Left Sidebar - Asset Library */
+        .left-sidebar {
+            position: absolute;
+            left: 0;
+            top: 50px;
+            bottom: 0;
+            width: 280px;
+            background: rgba(30, 30, 30, 0.98);
+            border-right: 1px solid #404040;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            background: #252525;
+            border-bottom: 1px solid #404040;
+        }
+
+        .sidebar-tab {
+            flex: 1;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #999;
+        }
+
+        .sidebar-tab:hover {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .sidebar-tab.active {
+            border-bottom-color: #0066cc;
+            color: #0066cc;
+            background: #2a2a2a;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .sidebar-panel {
+            display: none;
+        }
+
+        .sidebar-panel.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #888;
+            margin: 15px 0 10px 0;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .asset-item {
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 6px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .asset-item:hover {
+            background: #333;
+            border-color: #0066cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .asset-item i {
+            font-size: 24px;
+            color: #0066cc;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .asset-item-name {
+            font-size: 11px;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        /* Right Sidebar - Properties & Tools */
+        .right-sidebar {
+            position: absolute;
+            right: 0;
+            top: 50px;
+            bottom: 0;
+            width: 320px;
+            background: rgba(30, 30, 30, 0.98);
+            border-left: 1px solid #404040;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            padding: 12px 15px;
+            background: #252525;
+            border-bottom: 1px solid #404040;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-header i {
+            color: #0066cc;
+            font-size: 14px;
+        }
+
+        .property-group {
+            padding: 15px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .property-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 8px 10px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+
+        .property-input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .vector-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .vector-input {
+            padding: 8px 6px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .vector-input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+
+        .vector-labels {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .vector-label {
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #0066cc;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #0052a3;
+        }
+
+        .btn.btn-danger {
+            background: #dc2626;
+        }
+
+        .btn.btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn.btn-secondary {
+            background: #3a3a3a;
+            border: 1px solid #505050;
+        }
+
+        .btn.btn-secondary:hover {
+            background: #454545;
+        }
+
+        .transform-mode-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #999;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mode-btn:hover {
+            background: #333;
+            border-color: #0066cc;
+            color: #e0e0e0;
+        }
+
+        .mode-btn.active {
+            background: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .hierarchy-item {
+            padding: 8px 10px;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .hierarchy-item:hover {
+            background: #333;
+            border-color: #505050;
+        }
+
+        .hierarchy-item.selected {
+            background: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+
+        .hierarchy-item i {
+            font-size: 12px;
+            color: #0066cc;
+            width: 16px;
+        }
+
+        .hierarchy-item.selected i {
+            color: white;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 32px;
+            border-radius: 4px;
+            border: 1px solid #404040;
+            cursor: pointer;
+        }
+
+        input[type="color"] {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .no-selection {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Collision Items */
+        .collision-item {
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+
+        .collision-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .collision-toggle {
+            padding: 4px 8px;
+            background: #3a3a3a;
+            border: 1px solid #505050;
+            border-radius: 3px;
+            color: #999;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .collision-toggle.enabled {
+            background: #16a34a;
+            border-color: #16a34a;
+            color: white;
+        }
+
+        /* File input styling */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: #3a3a3a;
+            border: 1px solid #505050;
+            border-radius: 4px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .file-input-label:hover {
+            background: #454545;
+            border-color: #0066cc;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #505050;
+        }
+
+        /* Scene Settings */
+        .scene-setting {
+            margin-bottom: 15px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper label {
+            font-size: 12px;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        /* Play Mode Overlay */
+        .play-mode-overlay {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 102, 204, 0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .play-mode-overlay.active {
+            display: block;
+        }
+
+        /* Spawn Point Visual */
+        .spawn-point-info {
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <!-- Top Toolbar -->
+    <div class="top-toolbar">
+        <div class="toolbar-title">
+            <i class="fas fa-cube"></i> World Builder
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn" id="mode-toggle">
+                <i class="fas fa-gamepad"></i>
+                <span id="mode-text">Play Mode</span>
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn" onclick="undo()">
+                <i class="fas fa-undo"></i> Undo
+            </button>
+            <button class="toolbar-btn" onclick="redo()">
+                <i class="fas fa-redo"></i> Redo
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn" onclick="saveScene()">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <button class="toolbar-btn" onclick="loadScene()">
+                <i class="fas fa-folder-open"></i> Load
+            </button>
+            <button class="toolbar-btn" onclick="exportCode()">
+                <i class="fas fa-code"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Play Mode Overlay -->
+    <div class="play-mode-overlay" id="play-mode-overlay">
+        <i class="fas fa-gamepad"></i> PLAY MODE - Click to control | ESC to return to editor
+    </div>
+
+    <!-- Left Sidebar - Asset Library -->
+    <div class="left-sidebar" id="left-sidebar">
+        <div class="sidebar-tabs">
+            <div class="sidebar-tab active" onclick="switchLeftTab('assets')">
+                <i class="fas fa-box"></i><br>Assets
+            </div>
+            <div class="sidebar-tab" onclick="switchLeftTab('library')">
+                <i class="fas fa-book"></i><br>Library
+            </div>
+            <div class="sidebar-tab" onclick="switchLeftTab('objects')">
+                <i class="fas fa-layer-group"></i><br>Objects
+            </div>
+            <div class="sidebar-tab" onclick="switchLeftTab('collisions')">
+                <i class="fas fa-shield-alt"></i><br>Collision
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Assets Panel -->
+            <div class="sidebar-panel active" id="panel-assets">
+                <div class="section-title">Primitives</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createAsset('box')">
+                        <i class="fas fa-cube"></i>
+                        <div class="asset-item-name">Cube</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('sphere')">
+                        <i class="fas fa-circle"></i>
+                        <div class="asset-item-name">Sphere</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('cylinder')">
+                        <i class="fas fa-database"></i>
+                        <div class="asset-item-name">Cylinder</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('plane')">
+                        <i class="fas fa-square"></i>
+                        <div class="asset-item-name">Plane</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('cone')">
+                        <i class="fas fa-play"></i>
+                        <div class="asset-item-name">Cone</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('torus')">
+                        <i class="fas fa-circle-notch"></i>
+                        <div class="asset-item-name">Torus</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Environment</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createAsset('wall')">
+                        <i class="fas fa-bars"></i>
+                        <div class="asset-item-name">Wall</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('floor')">
+                        <i class="fas fa-border-all"></i>
+                        <div class="asset-item-name">Floor</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('stairs')">
+                        <i class="fas fa-stairs"></i>
+                        <div class="asset-item-name">Stairs</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('door')">
+                        <i class="fas fa-door-open"></i>
+                        <div class="asset-item-name">Door</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Lights</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createAsset('pointLight')">
+                        <i class="fas fa-lightbulb"></i>
+                        <div class="asset-item-name">Point Light</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('spotLight')">
+                        <i class="fas fa-circle-notch"></i>
+                        <div class="asset-item-name">Spot Light</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Special</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createAsset('spawnPoint')">
+                        <i class="fas fa-user"></i>
+                        <div class="asset-item-name">Spawn Point</div>
+                    </div>
+                    <div class="asset-item" onclick="createAsset('group')">
+                        <i class="fas fa-object-group"></i>
+                        <div class="asset-item-name">Group</div>
+                    </div>
+                </div>
+
+                <div class="section-title">3D Models</div>
+                <div class="file-input-wrapper">
+                    <input type="file" id="model-file-input" accept=".glb,.gltf" onchange="loadModel(event)">
+                    <label for="model-file-input" class="file-input-label">
+                        <i class="fas fa-upload"></i> Load GLB/GLTF
+                    </label>
+                </div>
+            </div>
+
+            <!-- Library Panel -->
+            <div class="sidebar-panel" id="panel-library">
+                <div class="section-title">Default Assets</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createDefaultAsset('grass')">
+                        <i class="fas fa-seedling"></i>
+                        <div class="asset-item-name">Grass Plane</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('pedestal')">
+                        <i class="fas fa-th-large"></i>
+                        <div class="asset-item-name">Pedestal</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('wall')">
+                        <i class="fas fa-border-all"></i>
+                        <div class="asset-item-name">Wall</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('frame')">
+                        <i class="fas fa-image"></i>
+                        <div class="asset-item-name">Art Frame</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('floor')">
+                        <i class="fas fa-square"></i>
+                        <div class="asset-item-name">Floor Tile</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('ceiling')">
+                        <i class="fas fa-minus"></i>
+                        <div class="asset-item-name">Ceiling</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Environment</div>
+                <div class="asset-grid">
+                    <div class="asset-item" onclick="createDefaultAsset('skybox')">
+                        <i class="fas fa-cloud"></i>
+                        <div class="asset-item-name">Sky</div>
+                    </div>
+                    <div class="asset-item" onclick="createDefaultAsset('ambientlight')">
+                        <i class="fas fa-sun"></i>
+                        <div class="asset-item-name">Ambient Light</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Objects Panel -->
+            <div class="sidebar-panel" id="panel-objects">
+                <div class="section-title">Scene Hierarchy</div>
+                <div id="hierarchy-list"></div>
+            </div>
+
+            <!-- Collisions Panel -->
+            <div class="sidebar-panel" id="panel-collisions">
+                <div class="section-title">Collision Objects</div>
+                <div id="collision-list"></div>
+                <button class="btn btn-secondary" onclick="toggleAllColliders()">
+                    <i class="fas fa-eye"></i> Toggle Helpers
+                </button>
+                <button class="btn" onclick="rebuildColliders()">
+                    <i class="fas fa-sync"></i> Rebuild All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar - Properties -->
+    <div class="right-sidebar" id="right-sidebar">
+        <div class="sidebar-tabs">
+            <div class="sidebar-tab active" onclick="switchRightTab('properties')">
+                <i class="fas fa-sliders-h"></i><br>Properties
+            </div>
+            <div class="sidebar-tab" onclick="switchRightTab('scene')">
+                <i class="fas fa-globe"></i><br>Scene
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <!-- Properties Panel -->
+            <div class="sidebar-panel active" id="panel-properties">
+                <div class="no-selection" id="no-selection">
+                    <i class="fas fa-mouse-pointer" style="font-size: 32px; color: #444; margin-bottom: 10px; display: block;"></i>
+                    Select an object to edit properties
+                </div>
+
+                <div id="properties-content" style="display: none;">
+                    <div class="property-group">
+                        <div class="property-label">Object Name</div>
+                        <input type="text" class="property-input" id="obj-name" oninput="updateObjectName()">
+                    </div>
+
+                    <div class="property-group">
+                        <div class="property-label">Transform Mode</div>
+                        <div class="transform-mode-group">
+                            <button class="mode-btn active" id="mode-translate" onclick="setTransformMode('translate')">
+                                <i class="fas fa-arrows-alt"></i> Move
+                            </button>
+                            <button class="mode-btn" id="mode-rotate" onclick="setTransformMode('rotate')">
+                                <i class="fas fa-redo"></i> Rotate
+                            </button>
+                            <button class="mode-btn" id="mode-scale" onclick="setTransformMode('scale')">
+                                <i class="fas fa-expand"></i> Scale
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="property-group">
+                        <div class="property-label">Position</div>
+                        <div class="vector-labels">
+                            <div class="vector-label">X</div>
+                            <div class="vector-label">Y</div>
+                            <div class="vector-label">Z</div>
+                        </div>
+                        <div class="vector-inputs">
+                            <input type="number" class="vector-input" id="pos-x" step="0.1" oninput="updatePosition('x', this.value)">
+                            <input type="number" class="vector-input" id="pos-y" step="0.1" oninput="updatePosition('y', this.value)">
+                            <input type="number" class="vector-input" id="pos-z" step="0.1" oninput="updatePosition('z', this.value)">
+                        </div>
+                    </div>
+
+                    <div class="property-group">
+                        <div class="property-label">Rotation (degrees)</div>
+                        <div class="vector-labels">
+                            <div class="vector-label">X</div>
+                            <div class="vector-label">Y</div>
+                            <div class="vector-label">Z</div>
+                        </div>
+                        <div class="vector-inputs">
+                            <input type="number" class="vector-input" id="rot-x" step="1" oninput="updateRotation('x', this.value)">
+                            <input type="number" class="vector-input" id="rot-y" step="1" oninput="updateRotation('y', this.value)">
+                            <input type="number" class="vector-input" id="rot-z" step="1" oninput="updateRotation('z', this.value)">
+                        </div>
+                    </div>
+
+                    <div class="property-group">
+                        <div class="property-label">Scale</div>
+                        <div class="vector-labels">
+                            <div class="vector-label">X</div>
+                            <div class="vector-label">Y</div>
+                            <div class="vector-label">Z</div>
+                        </div>
+                        <div class="vector-inputs">
+                            <input type="number" class="vector-input" id="scale-x" step="0.1" oninput="updateScale('x', this.value)">
+                            <input type="number" class="vector-input" id="scale-y" step="0.1" oninput="updateScale('y', this.value)">
+                            <input type="number" class="vector-input" id="scale-z" step="0.1" oninput="updateScale('z', this.value)">
+                        </div>
+                    </div>
+
+                    <div class="property-group" id="material-section">
+                        <div class="property-label">Material</div>
+                        <div class="color-picker-wrapper">
+                            <div class="color-preview" id="color-preview" onclick="document.getElementById('obj-color').click()"></div>
+                            <input type="color" id="obj-color" oninput="updateColor()">
+                            <input type="text" class="property-input" id="color-hex" style="flex: 1;" oninput="updateColorFromHex()" placeholder="#ffffff">
+                        </div>
+
+                        <div class="property-label" style="margin-top: 12px;">Roughness</div>
+                        <input type="range" min="0" max="1" step="0.01" value="0.5" id="obj-roughness" oninput="updateMaterial()" style="width: 100%;">
+
+                        <div class="property-label" style="margin-top: 12px;">Metalness</div>
+                        <input type="range" min="0" max="1" step="0.01" value="0.5" id="obj-metalness" oninput="updateMaterial()" style="width: 100%;">
+                    </div>
+
+                    <div class="property-group" id="light-section" style="display: none;">
+                        <div class="property-label">Light Color</div>
+                        <div class="color-picker-wrapper">
+                            <div class="color-preview" id="light-color-preview" onclick="document.getElementById('light-color').click()"></div>
+                            <input type="color" id="light-color" oninput="updateLightColor()">
+                        </div>
+
+                        <div class="property-label" style="margin-top: 12px;">Intensity</div>
+                        <input type="number" class="property-input" id="light-intensity" min="0" step="0.1" value="1" oninput="updateLightIntensity()">
+
+                        <div class="property-label">Distance (0 = infinite)</div>
+                        <input type="number" class="property-input" id="light-distance" min="0" step="1" value="0" oninput="updateLightDistance()">
+                    </div>
+
+                    <div class="property-group" id="collision-section">
+                        <div class="property-label">Collision</div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="has-collision" onchange="toggleObjectCollision()">
+                            <label for="has-collision">Enable Collision</label>
+                        </div>
+                    </div>
+
+                    <div class="property-group">
+                        <button class="btn btn-danger" onclick="deleteSelectedObject()">
+                            <i class="fas fa-trash"></i> Delete Object
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scene Settings Panel -->
+            <div class="sidebar-panel" id="panel-scene">
+                <div class="property-group">
+                    <div class="property-label">Background Color</div>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" id="bg-color-preview" onclick="document.getElementById('bg-color').click()"></div>
+                        <input type="color" id="bg-color" value="#2a2a2a" oninput="updateBackgroundColor()">
+                    </div>
+                </div>
+
+                <div class="property-group">
+                    <div class="property-label">Fog</div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="fog-enabled" checked onchange="updateFog()">
+                        <label for="fog-enabled">Enable Fog</label>
+                    </div>
+                    <div class="property-label" style="margin-top: 10px;">Fog Distance</div>
+                    <input type="number" class="property-input" id="fog-distance" value="200" oninput="updateFog()">
+                </div>
+
+                <div class="property-group">
+                    <div class="property-label">Grid (Press G to toggle)</div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="show-grid-checkbox" checked onchange="toggleGrid()">
+                        <label for="show-grid-checkbox">Show Grid</label>
+                    </div>
+                </div>
+
+                <div class="property-group">
+                    <div class="property-label">Ambient Light Intensity</div>
+                    <input type="range" min="0" max="2" step="0.1" value="0.4" id="ambient-intensity" oninput="updateAmbientLight()" style="width: 100%;">
+                </div>
+
+                <div class="property-group">
+                    <div class="property-label">Sun Light Intensity</div>
+                    <input type="range" min="0" max="2" step="0.1" value="0.8" id="sun-intensity" oninput="updateSunLight()" style="width: 100%;">
+                </div>
+
+                <div class="property-group">
+                    <div class="property-label">Spawn Point Info</div>
+                    <div class="spawn-point-info" id="spawn-info">
+                        No spawn point in scene. Add one from the Assets panel.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+
+    <script>
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        let scene, camera, renderer;
+        let orbitControls, transformControls;
+        let selectedObject = null;
+        let objectHighlight = null;
+        let sceneObjects = [];
+        let colliderObjects = [];
+        let colliderHelpers = [];
+        let showColliderHelpers = false;
+
+        // Scene elements
+        let gridHelper, ambientLight, directionalLight;
+        let spawnPoint = null;
+
+        // Undo/Redo
+        const MAX_UNDO_HISTORY = 50;
+        let undoStack = [];
+        let redoStack = [];
+
+        // Raycasting
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+
+        // Play mode
+        let isPlayMode = false;
+        let playModeCamera, editorCamera;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        let euler = new THREE.Euler(0, 0, 0, 'YXZ');
+        let isLocked = false;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x2a2a2a);
+            scene.fog = new THREE.Fog(0x2a2a2a, 0, 200);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(8, 6, 8);
+            camera.lookAt(0, 0, 0);
+            editorCamera = camera;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('canvas'),
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+
+            setupLighting();
+            setupGround();
+            loadEditorControls();
+
+            // Events
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onCanvasClick);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            document.getElementById('mode-toggle').addEventListener('click', togglePlayMode);
+
+            animate();
+        }
+
+        function setupLighting() {
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            ambientLight.name = '_AmbientLight';
+            scene.add(ambientLight);
+
+            directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 10);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 100;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.name = '_DirectionalLight';
+            scene.add(directionalLight);
+        }
+
+        function setupGround() {
+            gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x2a2a2a);
+            gridHelper.name = '_GridHelper';
+            gridHelper.visible = true;
+            scene.add(gridHelper);
+
+            const axesHelper = new THREE.AxesHelper(5);
+            axesHelper.name = '_AxesHelper';
+            scene.add(axesHelper);
+
+            const groundGeometry = new THREE.PlaneGeometry(100, 100);
+            const groundMaterial = new THREE.MeshStandardMaterial({
+                color: 0x1a1a1a,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.01;
+            ground.receiveShadow = true;
+            ground.name = '_Ground';
+            scene.add(ground);
+
+            // Add ground to colliders
+            addCollider(ground);
+        }
+
+        function toggleGrid() {
+            if (gridHelper) {
+                gridHelper.visible = !gridHelper.visible;
+                const checkbox = document.getElementById('show-grid-checkbox');
+                if (checkbox) {
+                    checkbox.checked = gridHelper.visible;
+                }
+                showNotification(gridHelper.visible ? 'Grid shown' : 'Grid hidden');
+            }
+        }
+
+        function loadEditorControls() {
+            const orbitScript = document.createElement('script');
+            orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js';
+            orbitScript.onload = () => {
+                orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+                orbitControls.enableDamping = true;
+                orbitControls.dampingFactor = 0.15;
+                orbitControls.screenSpacePanning = true;
+                orbitControls.minDistance = 1;
+                orbitControls.maxDistance = 200;
+                loadTransformControls();
+            };
+            document.head.appendChild(orbitScript);
+
+            // Load GLTF Loader
+            const gltfScript = document.createElement('script');
+            gltfScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+            document.head.appendChild(gltfScript);
+        }
+
+        function loadTransformControls() {
+            const transformScript = document.createElement('script');
+            transformScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js';
+            transformScript.onload = () => {
+                transformControls = new THREE.TransformControls(camera, renderer.domElement);
+                transformControls.setMode('translate');
+                transformControls.setSize(1.2);
+                scene.add(transformControls);
+
+                transformControls.addEventListener('dragging-changed', (event) => {
+                    orbitControls.enabled = !event.value;
+                    if (!event.value && selectedObject) {
+                        saveUndoState(selectedObject, 'transform');
+                        updatePropertiesPanel();
+                    }
+                });
+
+                transformControls.addEventListener('change', () => {
+                    if (objectHighlight && selectedObject) {
+                        objectHighlight.update();
+                    }
+                    if (selectedObject && selectedObject.userData.isSpawnPoint) {
+                        updateSpawnInfo();
+                    }
+                });
+            };
+            document.head.appendChild(transformScript);
+        }
+
+        // ============================================
+        // ASSET CREATION
+        // ============================================
+        function createAsset(type) {
+            let geometry, material, object;
+
+            switch(type) {
+                case 'box':
+                    geometry = new THREE.BoxGeometry(2, 2, 2);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Cube';
+                    break;
+
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(1, 32, 32);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Sphere';
+                    break;
+
+                case 'cylinder':
+                    geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Cylinder';
+                    break;
+
+                case 'plane':
+                    geometry = new THREE.PlaneGeometry(4, 4);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5,
+                        side: THREE.DoubleSide
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.receiveShadow = true;
+                    object.castShadow = true;
+                    object.name = 'Plane';
+                    break;
+
+                case 'cone':
+                    geometry = new THREE.ConeGeometry(1, 2, 32);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Cone';
+                    break;
+
+                case 'torus':
+                    geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+                    material = new THREE.MeshStandardMaterial({
+                        color: Math.random() * 0xffffff,
+                        roughness: 0.5,
+                        metalness: 0.5
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Torus';
+                    break;
+
+                case 'wall':
+                    geometry = new THREE.BoxGeometry(10, 5, 0.5);
+                    material = new THREE.MeshStandardMaterial({
+                        color: 0xcccccc,
+                        roughness: 0.8,
+                        metalness: 0.2
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Wall';
+                    addCollider(object);
+                    break;
+
+                case 'floor':
+                    geometry = new THREE.BoxGeometry(10, 0.5, 10);
+                    material = new THREE.MeshStandardMaterial({
+                        color: 0x8b7355,
+                        roughness: 0.9,
+                        metalness: 0.1
+                    });
+                    object = new THREE.Mesh(geometry, material);
+                    object.receiveShadow = true;
+                    object.castShadow = true;
+                    object.name = 'Floor';
+                    addCollider(object);
+                    break;
+
+                case 'stairs':
+                    object = createStairs();
+                    break;
+
+                case 'door':
+                    object = createDoor();
+                    break;
+
+                case 'pointLight':
+                    object = new THREE.PointLight(0xffffff, 1, 20);
+                    object.castShadow = true;
+                    object.name = 'Point Light';
+                    const sphereGeom = new THREE.SphereGeometry(0.2, 8, 8);
+                    const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                    const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+                    object.add(sphere);
+                    break;
+
+                case 'spotLight':
+                    object = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 6, 0.5);
+                    object.castShadow = true;
+                    object.name = 'Spot Light';
+                    const coneGeom = new THREE.ConeGeometry(0.3, 0.6, 8);
+                    const coneMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                    const cone = new THREE.Mesh(coneGeom, coneMat);
+                    cone.rotation.x = Math.PI;
+                    object.add(cone);
+                    break;
+
+                case 'spawnPoint':
+                    if (spawnPoint) {
+                        alert('Spawn point already exists! Select it to move it.');
+                        selectObject(spawnPoint);
+                        return;
+                    }
+                    object = createSpawnPoint();
+                    spawnPoint = object;
+                    updateSpawnInfo();
+                    break;
+
+                case 'group':
+                    object = new THREE.Group();
+                    object.name = 'Group';
+                    break;
+            }
+
+            if (object) {
+                object.position.set(
+                    (Math.random() - 0.5) * 8,
+                    type === 'floor' ? 0.25 : (type === 'wall' ? 2.5 : 2),
+                    (Math.random() - 0.5) * 8
+                );
+
+                scene.add(object);
+                sceneObjects.push(object);
+                updateHierarchy();
+                updateCollisionList();
+                selectObject(object);
+                saveUndoState(object, 'create');
+            }
+        }
+
+        // Create default assets from Library tab
+        function createDefaultAsset(type) {
+            let object;
+
+            switch(type) {
+                case 'grass':
+                    object = createGrassPlane();
+                    break;
+
+                case 'pedestal':
+                    object = createPedestal();
+                    break;
+
+                case 'wall':
+                    const wallGeometry = new THREE.BoxGeometry(10, 5, 0.5);
+                    const wallMaterial = new THREE.MeshStandardMaterial({
+                        color: 0xe8d5c4,
+                        roughness: 0.85,
+                        metalness: 0.1
+                    });
+                    object = new THREE.Mesh(wallGeometry, wallMaterial);
+                    object.castShadow = true;
+                    object.receiveShadow = true;
+                    object.name = 'Museum Wall';
+                    object.position.set(0, 2.5, 0);
+                    break;
+
+                case 'frame':
+                    object = createArtFrame();
+                    break;
+
+                case 'floor':
+                    const floorGeometry = new THREE.PlaneGeometry(20, 20);
+                    const floorMaterial = new THREE.MeshStandardMaterial({
+                        color: 0x8b7355,
+                        roughness: 0.9,
+                        metalness: 0.05
+                    });
+                    object = new THREE.Mesh(floorGeometry, floorMaterial);
+                    object.rotation.x = -Math.PI / 2;
+                    object.receiveShadow = true;
+                    object.name = 'Floor Tile';
+                    object.position.set(0, 0, 0);
+                    break;
+
+                case 'ceiling':
+                    const ceilingGeometry = new THREE.PlaneGeometry(20, 20);
+                    const ceilingMaterial = new THREE.MeshStandardMaterial({
+                        color: 0xf5f5f5,
+                        roughness: 0.8,
+                        metalness: 0.1
+                    });
+                    object = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+                    object.rotation.x = Math.PI / 2;
+                    object.receiveShadow = true;
+                    object.name = 'Ceiling';
+                    object.position.set(0, 8, 0);
+                    break;
+
+                case 'skybox':
+                    scene.background = new THREE.Color(0x87ceeb);
+                    showNotification('Sky color applied to scene');
+                    return;
+
+                case 'ambientlight':
+                    object = new THREE.AmbientLight(0xffffff, 0.6);
+                    object.name = 'Ambient Light';
+                    break;
+            }
+
+            if (object) {
+                scene.add(object);
+                sceneObjects.push(object);
+                updateHierarchy();
+                updateCollisionList();
+                selectObject(object);
+                saveUndoState(object, 'create');
+                showNotification('Added ' + object.name + ' to scene');
+            }
+        }
+
+        // Create enhanced grass plane with instanced blades
+        function createGrassPlane() {
+            const group = new THREE.Group();
+            group.name = 'Grass Plane';
+
+            // Canvas texture for broad grass color/variation
+            const cvs = document.createElement("canvas");
+            cvs.width = 1024;
+            cvs.height = 1024;
+            const ctx = cvs.getContext("2d");
+
+            // Base gradient - natural grass tones
+            const g = ctx.createLinearGradient(0, 0, 0, cvs.height);
+            g.addColorStop(0, "#2e5f2a");
+            g.addColorStop(0.6, "#274f22");
+            g.addColorStop(1, "#1f451b");
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+            // Add random blade strokes for micro-variation
+            ctx.strokeStyle = "rgba(30,70,30,0.16)";
+            for (let i = 0; i < 1400; i++) {
+                const x = Math.random() * cvs.width;
+                const y = Math.random() * cvs.height;
+                const h = 6 + Math.random() * 30;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.quadraticCurveTo(
+                    x + (Math.random() - 0.5) * 8,
+                    y - h / 2,
+                    x + (Math.random() - 0.5) * 6,
+                    y - h
+                );
+                ctx.stroke();
+            }
+
+            const grassTex = new THREE.CanvasTexture(cvs);
+            grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
+            grassTex.repeat.set(8, 4);
+            try {
+                grassTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            } catch (e) {}
+
+            // Main grass plane
+            const grassPlaneGeom = new THREE.PlaneGeometry(30, 30);
+            const grassPlaneMat = new THREE.MeshStandardMaterial({
+                map: grassTex,
+                roughness: 0.9,
+                metalness: 0.05,
+            });
+            const grassPlane = new THREE.Mesh(grassPlaneGeom, grassPlaneMat);
+            grassPlane.rotation.x = -Math.PI / 2;
+            grassPlane.receiveShadow = true;
+            group.add(grassPlane);
+
+            // Add instanced thin blades for depth and parallax
+            try {
+                // Create blade texture with alpha
+                const bladeCanvas = document.createElement("canvas");
+                bladeCanvas.width = 64;
+                bladeCanvas.height = 256;
+                const bctx = bladeCanvas.getContext("2d");
+
+                // Blade gradient
+                const g2 = bctx.createLinearGradient(0, 0, 0, bladeCanvas.height);
+                g2.addColorStop(0, "#66b86a");
+                g2.addColorStop(1, "#2f7a2f");
+                bctx.fillStyle = g2;
+                bctx.fillRect(0, 0, bladeCanvas.width, bladeCanvas.height);
+
+                // Alpha mask: triangular taper
+                bctx.globalCompositeOperation = "destination-in";
+                bctx.beginPath();
+                bctx.moveTo(bladeCanvas.width / 2, 0);
+                bctx.lineTo(bladeCanvas.width, bladeCanvas.height);
+                bctx.lineTo(0, bladeCanvas.height);
+                bctx.closePath();
+                bctx.fillStyle = "rgba(0,0,0,1)";
+                bctx.fill();
+
+                // Add subtle vein lines
+                bctx.globalCompositeOperation = "source-over";
+                bctx.strokeStyle = "rgba(20,60,20,0.12)";
+                bctx.lineWidth = 1.2;
+                for (let v = 0; v < 6; v++) {
+                    const sx = bladeCanvas.width / 2 + (Math.random() - 0.5) * 6;
+                    const sy = Math.random() * bladeCanvas.height * 0.1;
+                    const ex = bladeCanvas.width / 2 + (Math.random() - 0.5) * 10;
+                    const ey = bladeCanvas.height - Math.random() * bladeCanvas.height * 0.05;
+                    bctx.beginPath();
+                    bctx.moveTo(sx, sy);
+                    bctx.quadraticCurveTo(
+                        bladeCanvas.width / 2 + (Math.random() - 0.5) * 12,
+                        bladeCanvas.height * 0.5,
+                        ex,
+                        ey
+                    );
+                    bctx.stroke();
+                }
+
+                const bladeTex = new THREE.CanvasTexture(bladeCanvas);
+                try {
+                    bladeTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                } catch (e) {}
+                bladeTex.wrapS = bladeTex.wrapT = THREE.ClampToEdgeWrapping;
+
+                const perMeshCount = 400;
+                const planeGeom = new THREE.PlaneGeometry(0.06, 1.0);
+                const bladeMat = new THREE.MeshStandardMaterial({
+                    map: bladeTex,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                    alphaTest: 0.4,
+                    roughness: 0.95,
+                });
+
+                // Create two crossed instanced meshes
+                const bladesA = new THREE.InstancedMesh(planeGeom, bladeMat, perMeshCount);
+                const bladesB = new THREE.InstancedMesh(planeGeom, bladeMat, perMeshCount);
+                bladesA.receiveShadow = true;
+                bladesB.receiveShadow = true;
+
+                const dummy = new THREE.Object3D();
+                for (let i = 0; i < perMeshCount; i++) {
+                    const x = (Math.random() - 0.5) * 30;
+                    const z = (Math.random() - 0.5) * 30;
+                    const h = 0.15 + Math.random() * 0.45;
+                    const rotY = (Math.random() - 0.5) * 1.2;
+
+                    // bladesA
+                    dummy.position.set(x, h / 2, z);
+                    dummy.rotation.set(0, rotY, 0);
+                    dummy.scale.set(1, h, 1);
+                    dummy.updateMatrix();
+                    bladesA.setMatrixAt(i, dummy.matrix);
+
+                    // bladesB: crossed 90deg
+                    dummy.rotation.set(0, rotY + Math.PI / 2, 0);
+                    dummy.updateMatrix();
+                    bladesB.setMatrixAt(i, dummy.matrix);
+                }
+
+                bladesA.instanceMatrix.needsUpdate = true;
+                bladesB.instanceMatrix.needsUpdate = true;
+                group.add(bladesA);
+                group.add(bladesB);
+            } catch (e) {
+                console.warn("Instanced grass blades failed", e);
+            }
+
+            group.position.set(0, 0, 0);
+            return group;
+        }
+
+        // Create museum pedestal
+        function createPedestal() {
+            const group = new THREE.Group();
+            group.name = 'Pedestal';
+
+            // Base
+            const baseGeometry = new THREE.CylinderGeometry(1.2, 1.4, 0.3, 32);
+            const baseMaterial = new THREE.MeshStandardMaterial({
+                color: 0x4a4a4a,
+                roughness: 0.4,
+                metalness: 0.6
+            });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.castShadow = true;
+            base.receiveShadow = true;
+            base.position.y = 0.15;
+            group.add(base);
+
+            // Column
+            const columnGeometry = new THREE.CylinderGeometry(0.8, 0.8, 2, 32);
+            const columnMaterial = new THREE.MeshStandardMaterial({
+                color: 0xf5f5f5,
+                roughness: 0.7,
+                metalness: 0.2
+            });
+            const column = new THREE.Mesh(columnGeometry, columnMaterial);
+            column.castShadow = true;
+            column.receiveShadow = true;
+            column.position.y = 1.3;
+            group.add(column);
+
+            // Top
+            const topGeometry = new THREE.CylinderGeometry(1.1, 0.9, 0.2, 32);
+            const topMaterial = new THREE.MeshStandardMaterial({
+                color: 0x4a4a4a,
+                roughness: 0.4,
+                metalness: 0.6
+            });
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.castShadow = true;
+            top.receiveShadow = true;
+            top.position.y = 2.4;
+            group.add(top);
+
+            group.position.set(0, 0, 0);
+            return group;
+        }
+
+        // Create art frame
+        function createArtFrame() {
+            const group = new THREE.Group();
+            group.name = 'Art Frame';
+
+            // Frame border
+            const frameMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8b7355,
+                roughness: 0.6,
+                metalness: 0.3
+            });
+
+            const thickness = 0.15;
+            const width = 3;
+            const height = 4;
+            const border = 0.3;
+
+            // Top
+            const topGeom = new THREE.BoxGeometry(width + border * 2, border, thickness);
+            const top = new THREE.Mesh(topGeom, frameMaterial);
+            top.position.set(0, height / 2 + border / 2, 0);
+            group.add(top);
+
+            // Bottom
+            const bottom = new THREE.Mesh(topGeom, frameMaterial);
+            bottom.position.set(0, -height / 2 - border / 2, 0);
+            group.add(bottom);
+
+            // Left
+            const sideGeom = new THREE.BoxGeometry(border, height, thickness);
+            const left = new THREE.Mesh(sideGeom, frameMaterial);
+            left.position.set(-width / 2 - border / 2, 0, 0);
+            group.add(left);
+
+            // Right
+            const right = new THREE.Mesh(sideGeom, frameMaterial);
+            right.position.set(width / 2 + border / 2, 0, 0);
+            group.add(right);
+
+            // Canvas/backing
+            const canvasGeom = new THREE.PlaneGeometry(width, height);
+            const canvasMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                roughness: 0.9
+            });
+            const canvas = new THREE.Mesh(canvasGeom, canvasMaterial);
+            canvas.position.z = -thickness / 2;
+            group.add(canvas);
+
+            group.position.set(0, 3, 0);
+            group.castShadow = true;
+            group.receiveShadow = true;
+            return group;
+        }
+
+        function createStairs() {
+            const group = new THREE.Group();
+            group.name = 'Stairs';
+
+            const stepCount = 8;
+            const stepWidth = 4;
+            const stepHeight = 0.3;
+            const stepDepth = 1;
+
+            for (let i = 0; i < stepCount; i++) {
+                const geometry = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth);
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x8b7355,
+                    roughness: 0.9,
+                    metalness: 0.1
+                });
+                const step = new THREE.Mesh(geometry, material);
+                step.castShadow = true;
+                step.receiveShadow = true;
+                step.position.set(0, i * stepHeight, -i * stepDepth);
+                group.add(step);
+            }
+
+            addCollider(group);
+            return group;
+        }
+
+        function createDoor() {
+            const group = new THREE.Group();
+            group.name = 'Door';
+
+            // Frame
+            const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x654321, roughness: 0.8 });
+
+            const leftFrame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 0.2), frameMaterial);
+            leftFrame.position.set(-1.1, 2, 0);
+            leftFrame.castShadow = true;
+            group.add(leftFrame);
+
+            const rightFrame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 4, 0.2), frameMaterial);
+            rightFrame.position.set(1.1, 2, 0);
+            rightFrame.castShadow = true;
+            group.add(rightFrame);
+
+            const topFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 0.2), frameMaterial);
+            topFrame.position.set(0, 4, 0);
+            topFrame.castShadow = true;
+            group.add(topFrame);
+
+            // Door
+            const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.7 });
+            const door = new THREE.Mesh(new THREE.BoxGeometry(2, 3.8, 0.1), doorMaterial);
+            door.position.set(0, 1.9, 0);
+            door.castShadow = true;
+            door.receiveShadow = true;
+            group.add(door);
+
+            addCollider(group);
+            return group;
+        }
+
+        function createSpawnPoint() {
+            const group = new THREE.Group();
+            group.name = 'Spawn Point';
+            group.userData.isSpawnPoint = true;
+
+            // Body (capsule approximation)
+            const bodyGeom = new THREE.CylinderGeometry(0.3, 0.3, 1.6, 16);
+            const bodyMat = new THREE.MeshStandardMaterial({
+                color: 0x00ff00,
+                transparent: true,
+                opacity: 0.5,
+                emissive: 0x00ff00,
+                emissiveIntensity: 0.2
+            });
+            const body = new THREE.Mesh(bodyGeom, bodyMat);
+            body.position.y = 0.8;
+            group.add(body);
+
+            // Head
+            const headGeom = new THREE.SphereGeometry(0.3, 16, 16);
+            const head = new THREE.Mesh(headGeom, bodyMat);
+            head.position.y = 1.8;
+            group.add(head);
+
+            // Direction arrow
+            const arrowGeom = new THREE.ConeGeometry(0.2, 0.6, 8);
+            const arrowMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const arrow = new THREE.Mesh(arrowGeom, arrowMat);
+            arrow.rotation.x = Math.PI / 2;
+            arrow.position.set(0, 1, 0.6);
+            group.add(arrow);
+
+            // Base circle
+            const circleGeom = new THREE.RingGeometry(0.4, 0.5, 32);
+            const circleMat = new THREE.MeshBasicMaterial({
+                color: 0x00ff00,
+                side: THREE.DoubleSide
+            });
+            const circle = new THREE.Mesh(circleGeom, circleMat);
+            circle.rotation.x = -Math.PI / 2;
+            group.add(circle);
+
+            group.position.y = 0;
+            return group;
+        }
+
+        // ============================================
+        // MODEL LOADING
+        // ============================================
+        function loadModel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                const blob = new Blob([arrayBuffer]);
+                const url = URL.createObjectURL(blob);
+
+                const loader = new THREE.GLTFLoader();
+                loader.load(
+                    url,
+                    function(gltf) {
+                        const model = gltf.scene;
+                        model.name = file.name.replace(/\.[^/.]+$/, "");
+
+                        model.traverse((child) => {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                        });
+
+                        model.position.set(0, 1, 0);
+                        scene.add(model);
+                        sceneObjects.push(model);
+                        updateHierarchy();
+                        selectObject(model);
+                        saveUndoState(model, 'create');
+
+                        URL.revokeObjectURL(url);
+                    },
+                    undefined,
+                    function(error) {
+                        console.error('Error loading model:', error);
+                        alert('Error loading 3D model. Please check the file format.');
+                    }
+                );
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = '';
+        }
+
+        // ============================================
+        // COLLISION SYSTEM
+        // ============================================
+        function addCollider(obj) {
+            if (!colliderObjects.includes(obj)) {
+                colliderObjects.push(obj);
+                obj.userData.hasCollision = true;
+                updateCollisionList();
+            }
+        }
+
+        function removeCollider(obj) {
+            const index = colliderObjects.indexOf(obj);
+            if (index > -1) {
+                colliderObjects.splice(index, 1);
+                obj.userData.hasCollision = false;
+                updateCollisionList();
+            }
+        }
+
+        function toggleObjectCollision() {
+            if (!selectedObject) return;
+
+            const enabled = document.getElementById('has-collision').checked;
+            if (enabled) {
+                addCollider(selectedObject);
+            } else {
+                removeCollider(selectedObject);
+            }
+        }
+
+        function toggleAllColliders() {
+            showColliderHelpers = !showColliderHelpers;
+            rebuildColliderHelpers();
+        }
+
+        function rebuildColliders() {
+            rebuildColliderHelpers();
+            updateCollisionList();
+        }
+
+        function rebuildColliderHelpers() {
+            // Remove old helpers
+            colliderHelpers.forEach(helper => {
+                scene.remove(helper);
+            });
+            colliderHelpers = [];
+
+            if (!showColliderHelpers) return;
+
+            // Create new helpers
+            colliderObjects.forEach(obj => {
+                const helper = new THREE.BoxHelper(obj, 0x00ff00);
+                helper.name = '_ColliderHelper';
+                scene.add(helper);
+                colliderHelpers.push(helper);
+            });
+        }
+
+        function updateCollisionList() {
+            const list = document.getElementById('collision-list');
+            list.innerHTML = '';
+
+            if (colliderObjects.length === 0) {
+                list.innerHTML = '<div style="color: #666; font-size: 12px; text-align: center; padding: 20px;">No collision objects</div>';
+                return;
+            }
+
+            colliderObjects.forEach(obj => {
+                const item = document.createElement('div');
+                item.className = 'collision-item';
+                item.innerHTML = `
+                    <div class="collision-item-header">
+                        <span>${obj.name || 'Unnamed'}</span>
+                        <button class="collision-toggle enabled" onclick="removeCollider(sceneObjects.find(o => o.uuid === '${obj.uuid}'))">
+                            <i class="fas fa-check"></i> Enabled
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // OBJECT SELECTION & MANIPULATION
+        // ============================================
+        function onCanvasClick(event) {
+            if (!transformControls || isPlayMode) return;
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            if (intersects.length > 0) {
+                let object = intersects[0].object;
+
+                while (object.parent && object.parent !== scene) {
+                    if (sceneObjects.includes(object.parent)) {
+                        object = object.parent;
+                        break;
+                    }
+                    object = object.parent;
+                }
+
+                if (isSelectableObject(object)) {
+                    selectObject(object);
+                }
+            } else {
+                deselectObject();
+            }
+        }
+
+        function isSelectableObject(obj) {
+            if (!obj) return false;
+            if (obj.name && obj.name.startsWith('_')) return false;
+            return sceneObjects.includes(obj);
+        }
+
+        function selectObject(obj) {
+            if (selectedObject === obj) return;
+
+            deselectObject();
+            selectedObject = obj;
+
+            if (transformControls) {
+                transformControls.attach(obj);
+            }
+
+            createHighlight(obj);
+            updatePropertiesPanel();
+            updateHierarchy();
+        }
+
+        function deselectObject() {
+            if (!selectedObject) return;
+
+            if (transformControls) {
+                transformControls.detach();
+            }
+
+            removeHighlight();
+            selectedObject = null;
+
+            document.getElementById('no-selection').style.display = 'block';
+            document.getElementById('properties-content').style.display = 'none';
+            updateHierarchy();
+        }
+
+        function createHighlight(obj) {
+            removeHighlight();
+
+            if (obj.isLight) return;
+
+            objectHighlight = new THREE.BoxHelper(obj, 0x00ddff);
+            objectHighlight.material.linewidth = 2;
+            scene.add(objectHighlight);
+        }
+
+        function removeHighlight() {
+            if (objectHighlight) {
+                scene.remove(objectHighlight);
+                objectHighlight.geometry.dispose();
+                objectHighlight.material.dispose();
+                objectHighlight = null;
+            }
+        }
+
+        // ============================================
+        // PROPERTIES PANEL
+        // ============================================
+        function updatePropertiesPanel() {
+            if (!selectedObject) {
+                document.getElementById('no-selection').style.display = 'block';
+                document.getElementById('properties-content').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('no-selection').style.display = 'none';
+            document.getElementById('properties-content').style.display = 'block';
+
+            document.getElementById('obj-name').value = selectedObject.name || '';
+
+            document.getElementById('pos-x').value = selectedObject.position.x.toFixed(2);
+            document.getElementById('pos-y').value = selectedObject.position.y.toFixed(2);
+            document.getElementById('pos-z').value = selectedObject.position.z.toFixed(2);
+
+            document.getElementById('rot-x').value = THREE.MathUtils.radToDeg(selectedObject.rotation.x).toFixed(0);
+            document.getElementById('rot-y').value = THREE.MathUtils.radToDeg(selectedObject.rotation.y).toFixed(0);
+            document.getElementById('rot-z').value = THREE.MathUtils.radToDeg(selectedObject.rotation.z).toFixed(0);
+
+            document.getElementById('scale-x').value = selectedObject.scale.x.toFixed(2);
+            document.getElementById('scale-y').value = selectedObject.scale.y.toFixed(2);
+            document.getElementById('scale-z').value = selectedObject.scale.z.toFixed(2);
+
+            // Material or Light
+            if (selectedObject.isLight) {
+                document.getElementById('material-section').style.display = 'none';
+                document.getElementById('light-section').style.display = 'block';
+
+                const color = '#' + selectedObject.color.getHexString();
+                document.getElementById('light-color').value = color;
+                document.getElementById('light-color-preview').style.backgroundColor = color;
+                document.getElementById('light-intensity').value = selectedObject.intensity;
+                document.getElementById('light-distance').value = selectedObject.distance || 0;
+            } else if (selectedObject.material) {
+                document.getElementById('material-section').style.display = 'block';
+                document.getElementById('light-section').style.display = 'none';
+
+                const color = '#' + selectedObject.material.color.getHexString();
+                document.getElementById('obj-color').value = color;
+                document.getElementById('color-preview').style.backgroundColor = color;
+                document.getElementById('color-hex').value = color;
+                document.getElementById('obj-roughness').value = selectedObject.material.roughness || 0.5;
+                document.getElementById('obj-metalness').value = selectedObject.material.metalness || 0.5;
+            } else {
+                document.getElementById('material-section').style.display = 'none';
+                document.getElementById('light-section').style.display = 'none';
+            }
+
+            // Collision
+            document.getElementById('has-collision').checked = selectedObject.userData.hasCollision || false;
+        }
+
+        function updateObjectName() {
+            if (!selectedObject) return;
+            selectedObject.name = document.getElementById('obj-name').value;
+            updateHierarchy();
+            updateCollisionList();
+        }
+
+        function updatePosition(axis, value) {
+            if (!selectedObject) return;
+            selectedObject.position[axis] = parseFloat(value) || 0;
+            if (objectHighlight) objectHighlight.update();
+            if (selectedObject.userData.isSpawnPoint) updateSpawnInfo();
+        }
+
+        function updateRotation(axis, value) {
+            if (!selectedObject) return;
+            selectedObject.rotation[axis] = THREE.MathUtils.degToRad(parseFloat(value) || 0);
+            if (objectHighlight) objectHighlight.update();
+            if (selectedObject.userData.isSpawnPoint) updateSpawnInfo();
+        }
+
+        function updateScale(axis, value) {
+            if (!selectedObject) return;
+            selectedObject.scale[axis] = parseFloat(value) || 1;
+            if (objectHighlight) objectHighlight.update();
+        }
+
+        function updateColor() {
+            if (!selectedObject || !selectedObject.material) return;
+            const color = document.getElementById('obj-color').value;
+            selectedObject.material.color.setStyle(color);
+            document.getElementById('color-preview').style.backgroundColor = color;
+            document.getElementById('color-hex').value = color;
+        }
+
+        function updateColorFromHex() {
+            if (!selectedObject || !selectedObject.material) return;
+            const hex = document.getElementById('color-hex').value;
+            try {
+                selectedObject.material.color.setStyle(hex);
+                document.getElementById('obj-color').value = hex;
+                document.getElementById('color-preview').style.backgroundColor = hex;
+            } catch(e) {}
+        }
+
+        function updateMaterial() {
+            if (!selectedObject || !selectedObject.material) return;
+            selectedObject.material.roughness = parseFloat(document.getElementById('obj-roughness').value);
+            selectedObject.material.metalness = parseFloat(document.getElementById('obj-metalness').value);
+        }
+
+        function updateLightColor() {
+            if (!selectedObject || !selectedObject.isLight) return;
+            const color = document.getElementById('light-color').value;
+            selectedObject.color.setStyle(color);
+            document.getElementById('light-color-preview').style.backgroundColor = color;
+        }
+
+        function updateLightIntensity() {
+            if (!selectedObject || !selectedObject.isLight) return;
+            selectedObject.intensity = parseFloat(document.getElementById('light-intensity').value);
+        }
+
+        function updateLightDistance() {
+            if (!selectedObject || !selectedObject.isLight) return;
+            selectedObject.distance = parseFloat(document.getElementById('light-distance').value);
+        }
+
+        function setTransformMode(mode) {
+            if (!transformControls) return;
+            transformControls.setMode(mode);
+
+            document.getElementById('mode-translate').classList.remove('active');
+            document.getElementById('mode-rotate').classList.remove('active');
+            document.getElementById('mode-scale').classList.remove('active');
+            document.getElementById('mode-' + mode).classList.add('active');
+        }
+
+        function deleteSelectedObject() {
+            if (!selectedObject) return;
+
+            if (selectedObject.userData.isSpawnPoint) {
+                spawnPoint = null;
+                updateSpawnInfo();
+            }
+
+            saveUndoState(selectedObject, 'delete');
+            scene.remove(selectedObject);
+
+            if (selectedObject.geometry) selectedObject.geometry.dispose();
+            if (selectedObject.material) {
+                if (Array.isArray(selectedObject.material)) {
+                    selectedObject.material.forEach(m => m.dispose());
+                } else {
+                    selectedObject.material.dispose();
+                }
+            }
+
+            const index = sceneObjects.indexOf(selectedObject);
+            if (index > -1) sceneObjects.splice(index, 1);
+
+            removeCollider(selectedObject);
+            deselectObject();
+            updateHierarchy();
+        }
+
+        // ============================================
+        // HIERARCHY
+        // ============================================
+        function updateHierarchy() {
+            const list = document.getElementById('hierarchy-list');
+            list.innerHTML = '';
+
+            if (sceneObjects.length === 0) {
+                list.innerHTML = '<div style="color: #666; font-size: 12px; text-align: center; padding: 20px;">No objects in scene</div>';
+                return;
+            }
+
+            sceneObjects.forEach(obj => {
+                const item = document.createElement('div');
+                item.className = 'hierarchy-item';
+                if (obj === selectedObject) item.classList.add('selected');
+
+                let icon = 'fa-cube';
+                if (obj.isLight) icon = 'fa-lightbulb';
+                if (obj.userData.isSpawnPoint) icon = 'fa-user';
+                if (obj.type === 'Group') icon = 'fa-object-group';
+
+                item.innerHTML = `<i class="fas ${icon}"></i><span>${obj.name || obj.type}</span>`;
+                item.onclick = () => selectObject(obj);
+                list.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // SCENE SETTINGS
+        // ============================================
+        function updateBackgroundColor() {
+            const color = document.getElementById('bg-color').value;
+            scene.background.setStyle(color);
+            document.getElementById('bg-color-preview').style.backgroundColor = color;
+            if (scene.fog) scene.fog.color.setStyle(color);
+        }
+
+        function updateFog() {
+            const enabled = document.getElementById('fog-enabled').checked;
+            const distance = parseFloat(document.getElementById('fog-distance').value);
+
+            if (enabled) {
+                const color = scene.background.getHex();
+                scene.fog = new THREE.Fog(color, 0, distance);
+            } else {
+                scene.fog = null;
+            }
+        }
+
+        function updateGrid() {
+            const enabled = document.getElementById('grid-enabled').checked;
+            gridHelper.visible = enabled;
+        }
+
+        function updateAmbientLight() {
+            const intensity = parseFloat(document.getElementById('ambient-intensity').value);
+            ambientLight.intensity = intensity;
+        }
+
+        function updateSunLight() {
+            const intensity = parseFloat(document.getElementById('sun-intensity').value);
+            directionalLight.intensity = intensity;
+        }
+
+        function updateSpawnInfo() {
+            const info = document.getElementById('spawn-info');
+            if (!spawnPoint) {
+                info.innerHTML = 'No spawn point in scene. Add one from the Assets panel.';
+                return;
+            }
+
+            const pos = spawnPoint.position;
+            const rot = spawnPoint.rotation;
+            info.innerHTML = `
+                Position: (${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)})<br>
+                Rotation: ${THREE.MathUtils.radToDeg(rot.y).toFixed(0)}°
+            `;
+        }
+
+        // ============================================
+        // SIDEBAR TABS
+        // ============================================
+        function switchLeftTab(tab) {
+            document.querySelectorAll('.left-sidebar .sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.left-sidebar .sidebar-panel').forEach(p => p.classList.remove('active'));
+
+            event.target.closest('.sidebar-tab').classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        function switchRightTab(tab) {
+            document.querySelectorAll('.right-sidebar .sidebar-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.right-sidebar .sidebar-panel').forEach(p => p.classList.remove('active'));
+
+            event.target.closest('.sidebar-tab').classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        }
+
+        // ============================================
+        // PLAY MODE
+        // ============================================
+        function togglePlayMode() {
+            isPlayMode = !isPlayMode;
+
+            const overlay = document.getElementById('play-mode-overlay');
+            const modeText = document.getElementById('mode-text');
+            const modeBtn = document.getElementById('mode-toggle');
+            const leftSidebar = document.getElementById('left-sidebar');
+            const rightSidebar = document.getElementById('right-sidebar');
+
+            if (isPlayMode) {
+                overlay.classList.add('active');
+                modeText.textContent = 'Exit Play';
+                modeBtn.classList.add('active');
+                leftSidebar.style.display = 'none';
+                rightSidebar.style.display = 'none';
+
+                if (transformControls) transformControls.enabled = false;
+                if (orbitControls) orbitControls.enabled = false;
+
+                // Hide grid in play mode (save previous state)
+                if (gridHelper) {
+                    window.gridWasVisible = gridHelper.visible;
+                    gridHelper.visible = false;
+                }
+
+                // Setup play camera
+                if (spawnPoint) {
+                    camera.position.copy(spawnPoint.position);
+                    camera.position.y += 1.6;
+                    camera.rotation.y = spawnPoint.rotation.y;
+                }
+
+                renderer.domElement.addEventListener('click', requestPointerLock);
+            } else {
+                overlay.classList.remove('active');
+                modeText.textContent = 'Play Mode';
+                modeBtn.classList.remove('active');
+                leftSidebar.style.display = 'flex';
+                rightSidebar.style.display = 'flex';
+
+                if (transformControls) transformControls.enabled = true;
+                if (orbitControls) orbitControls.enabled = true;
+
+                // Restore grid visibility from before play mode
+                if (gridHelper && window.gridWasVisible !== undefined) {
+                    gridHelper.visible = window.gridWasVisible;
+                    const checkbox = document.getElementById('show-grid-checkbox');
+                    if (checkbox) {
+                        checkbox.checked = gridHelper.visible;
+                    }
+                }
+
+                exitPointerLock();
+            }
+        }
+
+        function requestPointerLock() {
+            if (!isPlayMode) return;
+            renderer.domElement.requestPointerLock();
+        }
+
+        function exitPointerLock() {
+            if (document.pointerLockElement) {
+                document.exitPointerLock();
+            }
+        }
+
+        document.addEventListener('pointerlockchange', () => {
+            isLocked = document.pointerLockElement === renderer.domElement;
+        });
+
+        document.addEventListener('mousemove', (event) => {
+            if (!isLocked || !isPlayMode) return;
+
+            const movementX = event.movementX || 0;
+            const movementY = event.movementY || 0;
+
+            euler.setFromQuaternion(camera.quaternion);
+            euler.y -= movementX * 0.002;
+            euler.x -= movementY * 0.002;
+            euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
+            camera.quaternion.setFromEuler(euler);
+        });
+
+        function onKeyDown(event) {
+            if (isPlayMode) {
+                switch(event.code) {
+                    case 'KeyW': case 'ArrowUp': moveForward = true; break;
+                    case 'KeyS': case 'ArrowDown': moveBackward = true; break;
+                    case 'KeyA': case 'ArrowLeft': moveLeft = true; break;
+                    case 'KeyD': case 'ArrowRight': moveRight = true; break;
+                    case 'Escape': togglePlayMode(); break;
+                }
+            } else {
+                // Editor shortcuts
+                if (event.ctrlKey && event.key === 'z') {
+                    event.preventDefault();
+                    undo();
+                }
+                if (event.ctrlKey && event.key === 'y') {
+                    event.preventDefault();
+                    redo();
+                }
+                if (event.ctrlKey && event.key === 's') {
+                    event.preventDefault();
+                    saveScene();
+                }
+                if (event.key === 'Delete' && selectedObject) {
+                    deleteSelectedObject();
+                }
+                if (event.key === 'g' && !event.ctrlKey) {
+                    event.preventDefault();
+                    toggleGrid();
+                }
+                if (event.key === 'w' && !event.ctrlKey) setTransformMode('translate');
+                if (event.key === 'e' && !event.ctrlKey) setTransformMode('rotate');
+                if (event.key === 'r' && !event.ctrlKey) setTransformMode('scale');
+            }
+        }
+
+        function onKeyUp(event) {
+            if (!isPlayMode) return;
+
+            switch(event.code) {
+                case 'KeyW': case 'ArrowUp': moveForward = false; break;
+                case 'KeyS': case 'ArrowDown': moveBackward = false; break;
+                case 'KeyA': case 'ArrowLeft': moveLeft = false; break;
+                case 'KeyD': case 'ArrowRight': moveRight = false; break;
+            }
+        }
+
+        // ============================================
+        // UNDO/REDO
+        // ============================================
+        function saveUndoState(object, actionType = 'transform') {
+            const state = {
+                object: object,
+                objectId: object.uuid,
+                name: object.name || object.type,
+                actionType: actionType,
+                position: object.position.clone(),
+                rotation: new THREE.Euler().copy(object.rotation),
+                scale: object.scale.clone(),
+                timestamp: Date.now()
+            };
+
+            undoStack.push(state);
+            if (undoStack.length > MAX_UNDO_HISTORY) undoStack.shift();
+            redoStack = [];
+        }
+
+        function undo() {
+            if (undoStack.length === 0) return;
+
+            const state = undoStack.pop();
+            const redoState = {
+                object: state.object,
+                objectId: state.objectId,
+                name: state.name,
+                actionType: state.actionType,
+                position: state.object.position.clone(),
+                rotation: new THREE.Euler().copy(state.object.rotation),
+                scale: state.object.scale.clone(),
+                timestamp: Date.now()
+            };
+            redoStack.push(redoState);
+
+            state.object.position.copy(state.position);
+            state.object.rotation.copy(state.rotation);
+            state.object.scale.copy(state.scale);
+
+            if (selectedObject === state.object) {
+                updatePropertiesPanel();
+                if (objectHighlight) objectHighlight.update();
+            }
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+
+            const state = redoStack.pop();
+            const undoState = {
+                object: state.object,
+                objectId: state.objectId,
+                name: state.name,
+                actionType: state.actionType,
+                position: state.object.position.clone(),
+                rotation: new THREE.Euler().copy(state.object.rotation),
+                scale: state.object.scale.clone(),
+                timestamp: Date.now()
+            };
+            undoStack.push(undoState);
+
+            state.object.position.copy(state.position);
+            state.object.rotation.copy(state.rotation);
+            state.object.scale.copy(state.scale);
+
+            if (selectedObject === state.object) {
+                updatePropertiesPanel();
+                if (objectHighlight) objectHighlight.update();
+            }
+        }
+
+        // ============================================
+        // SAVE/LOAD
+        // ============================================
+        function saveScene() {
+            const sceneData = {
+                version: '1.0',
+                objects: sceneObjects.map(obj => {
+                    const data = {
+                        type: obj.type,
+                        name: obj.name,
+                        position: obj.position.toArray(),
+                        rotation: obj.rotation.toArray(),
+                        scale: obj.scale.toArray(),
+                        userData: obj.userData,
+                        isLight: obj.isLight || false
+                    };
+
+                    if (obj.geometry) {
+                        data.geometryType = obj.geometry.type;
+                        data.geometryParams = obj.geometry.parameters;
+                    }
+
+                    if (obj.material) {
+                        data.material = {
+                            color: obj.material.color.getHex(),
+                            roughness: obj.material.roughness,
+                            metalness: obj.material.metalness,
+                            side: obj.material.side
+                        };
+                    }
+
+                    if (obj.isLight) {
+                        data.lightColor = obj.color.getHex();
+                        data.lightIntensity = obj.intensity;
+                        data.lightDistance = obj.distance;
+                    }
+
+                    return data;
+                }),
+                scene: {
+                    backgroundColor: '#' + scene.background.getHexString(),
+                    fog: scene.fog ? {
+                        enabled: true,
+                        distance: document.getElementById('fog-distance').value
+                    } : { enabled: false },
+                    ambientLightIntensity: ambientLight.intensity,
+                    sunLightIntensity: directionalLight.intensity
+                },
+                camera: {
+                    position: camera.position.toArray(),
+                    rotation: camera.rotation.toArray()
+                }
+            };
+
+            const json = JSON.stringify(sceneData, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'scene-' + Date.now() + '.json';
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        function loadScene() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const sceneData = JSON.parse(e.target.result);
+
+                        // Clear scene
+                        while(sceneObjects.length > 0) {
+                            const obj = sceneObjects[0];
+                            scene.remove(obj);
+                            sceneObjects.shift();
+                        }
+                        colliderObjects = [];
+                        spawnPoint = null;
+
+                        // Restore objects
+                        sceneData.objects.forEach(data => {
+                            let object;
+
+                            if (data.isLight) {
+                                if (data.type === 'PointLight') {
+                                    object = new THREE.PointLight(data.lightColor, data.lightIntensity, data.lightDistance);
+                                    const sphere = new THREE.Mesh(
+                                        new THREE.SphereGeometry(0.2, 8, 8),
+                                        new THREE.MeshBasicMaterial({ color: 0xffff00 })
+                                    );
+                                    object.add(sphere);
+                                } else if (data.type === 'SpotLight') {
+                                    object = new THREE.SpotLight(data.lightColor, data.lightIntensity, data.lightDistance);
+                                    const cone = new THREE.Mesh(
+                                        new THREE.ConeGeometry(0.3, 0.6, 8),
+                                        new THREE.MeshBasicMaterial({ color: 0xffff00 })
+                                    );
+                                    cone.rotation.x = Math.PI;
+                                    object.add(cone);
+                                }
+                                object.castShadow = true;
+                            } else if (data.userData.isSpawnPoint) {
+                                object = createSpawnPoint();
+                                spawnPoint = object;
+                            } else if (data.type === 'Group') {
+                                object = new THREE.Group();
+                            } else if (data.type === 'Mesh') {
+                                // Recreate geometry
+                                let geometry;
+                                // ... (geometry recreation logic)
+
+                                const material = new THREE.MeshStandardMaterial(data.material);
+                                object = new THREE.Mesh(geometry, material);
+                                object.castShadow = true;
+                                object.receiveShadow = true;
+                            }
+
+                            if (object) {
+                                object.name = data.name;
+                                object.position.fromArray(data.position);
+                                object.rotation.fromArray(data.rotation);
+                                object.scale.fromArray(data.scale);
+                                object.userData = data.userData;
+
+                                if (data.userData.hasCollision) {
+                                    addCollider(object);
+                                }
+
+                                scene.add(object);
+                                sceneObjects.push(object);
+                            }
+                        });
+
+                        // Restore scene settings
+                        if (sceneData.scene) {
+                            scene.background.setStyle(sceneData.scene.backgroundColor);
+                            document.getElementById('bg-color').value = sceneData.scene.backgroundColor;
+
+                            if (sceneData.scene.fog.enabled) {
+                                document.getElementById('fog-enabled').checked = true;
+                                document.getElementById('fog-distance').value = sceneData.scene.fog.distance;
+                                updateFog();
+                            }
+
+                            ambientLight.intensity = sceneData.scene.ambientLightIntensity;
+                            directionalLight.intensity = sceneData.scene.sunLightIntensity;
+                        }
+
+                        // Restore camera
+                        if (sceneData.camera) {
+                            camera.position.fromArray(sceneData.camera.position);
+                            camera.rotation.fromArray(sceneData.camera.rotation);
+                        }
+
+                        updateHierarchy();
+                        updateCollisionList();
+                        updateSpawnInfo();
+                        deselectObject();
+                    } catch (err) {
+                        alert('Error loading scene: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        function exportCode() {
+            alert('Code export feature coming soon! This will generate a standalone HTML file with your scene.');
+        }
+
+        // ============================================
+        // ANIMATION LOOP
+        // ============================================
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = 0.016; // ~60fps
+
+            if (isPlayMode && isLocked) {
+                // Play mode movement
+                velocity.x -= velocity.x * 10.0 * delta;
+                velocity.z -= velocity.z * 10.0 * delta;
+
+                direction.z = Number(moveForward) - Number(moveBackward);
+                direction.x = Number(moveLeft) - Number(moveRight);  // FIXED: was reversed
+                direction.normalize();
+
+                const speed = 50;  // INCREASED: was 10, now much faster
+                if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+                if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+                camera.translateX(velocity.x * delta);
+                camera.translateZ(velocity.z * delta);
+            } else {
+                if (orbitControls) orbitControls.update();
+            }
+
+            // Update collider helpers
+            if (showColliderHelpers) {
+                colliderHelpers.forEach(helper => helper.update());
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ============================================
+        // START
+        // ============================================
+        init();
+    </script>
+</body>
+</html>
