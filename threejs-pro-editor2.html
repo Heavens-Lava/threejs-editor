@@ -2271,6 +2271,58 @@
                                 <label for="is-trigger" data-tooltip="Trigger volumes detect collisions but don't physically block objects">Is Trigger</label>
                             </div>
 
+                            <!-- Trigger Behavior Options (shown only when Is Trigger is checked) -->
+                            <div id="trigger-behavior-options" style="margin-top: 10px; display: none;">
+                                <div class="property-label">Trigger Behavior</div>
+                                <select class="property-input" id="trigger-behavior" onchange="updateTriggerBehavior()">
+                                    <option value="none">None (Custom Code)</option>
+                                    <option value="checkpoint">Checkpoint (Save Position)</option>
+                                    <option value="damage">Damage Zone (Hurt Player)</option>
+                                    <option value="heal">Healing Zone (Heal Player)</option>
+                                    <option value="teleport">Teleporter (Move to Target)</option>
+                                    <option value="speedboost">Speed Boost Zone</option>
+                                    <option value="killzone">Kill Zone (Reset Level)</option>
+                                    <option value="collect">Collectible (Disappear on Touch)</option>
+                                    <option value="door">Door Trigger (Open/Close)</option>
+                                    <option value="message">Show Message</option>
+                                </select>
+
+                                <!-- Behavior-Specific Parameters -->
+                                <div id="trigger-params" style="margin-top: 8px;">
+                                    <!-- Damage Amount (for damage/heal zones) -->
+                                    <div id="param-damage" style="display: none;">
+                                        <div class="property-label" style="font-size: 11px; margin-top: 5px;">Damage/Heal Amount</div>
+                                        <input type="number" class="property-input" id="trigger-damage-amount" value="10" onchange="updateTriggerParams()" style="font-size: 12px;">
+                                    </div>
+
+                                    <!-- Teleport Target (for teleporter) -->
+                                    <div id="param-teleport" style="display: none;">
+                                        <div class="property-label" style="font-size: 11px; margin-top: 5px;">Teleport To (Object Name)</div>
+                                        <input type="text" class="property-input" id="trigger-teleport-target" placeholder="TargetPoint" onchange="updateTriggerParams()" style="font-size: 12px;">
+                                    </div>
+
+                                    <!-- Speed Boost (for speed zones) -->
+                                    <div id="param-speed" style="display: none;">
+                                        <div class="property-label" style="font-size: 11px; margin-top: 5px;">Speed Multiplier</div>
+                                        <input type="number" class="property-input" id="trigger-speed-mult" value="2" step="0.1" onchange="updateTriggerParams()" style="font-size: 12px;">
+                                    </div>
+
+                                    <!-- Message (for message triggers) -->
+                                    <div id="param-message" style="display: none;">
+                                        <div class="property-label" style="font-size: 11px; margin-top: 5px;">Message Text</div>
+                                        <input type="text" class="property-input" id="trigger-message-text" placeholder="Enter message..." onchange="updateTriggerParams()" style="font-size: 12px;">
+                                    </div>
+                                </div>
+
+                                <!-- Trigger Event Log -->
+                                <div style="margin-top: 10px; font-size: 11px; color: #888;">
+                                    <div class="checkbox-wrapper">
+                                        <input type="checkbox" id="trigger-log-events" onchange="updateTriggerParams()" checked>
+                                        <label for="trigger-log-events" style="font-size: 11px;">Log Events to Console</label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Collision Layer -->
                             <div class="property-label" style="margin-top: 10px;">Collision Layer</div>
                             <select class="property-input" id="collision-layer" onchange="updateCollisionLayer()">
@@ -3325,8 +3377,98 @@
             const isTrigger = document.getElementById('is-trigger').checked;
             selectedObject.userData.isTrigger = isTrigger;
 
+            // Show/hide trigger behavior options
+            const behaviorOptions = document.getElementById('trigger-behavior-options');
+            if (isTrigger) {
+                behaviorOptions.style.display = 'block';
+                // Initialize trigger behavior if not set
+                if (!selectedObject.userData.triggerBehavior) {
+                    selectedObject.userData.triggerBehavior = 'none';
+                    selectedObject.userData.triggerParams = {};
+                }
+                updateTriggerBehaviorUI();
+            } else {
+                behaviorOptions.style.display = 'none';
+            }
+
             console.log(`Trigger mode: ${isTrigger}`);
             rebuildColliderHelpers();
+        }
+
+        // NEW: Update trigger behavior type
+        function updateTriggerBehavior() {
+            if (!selectedObject) return;
+
+            const behavior = document.getElementById('trigger-behavior').value;
+            selectedObject.userData.triggerBehavior = behavior;
+
+            // Show/hide parameter sections based on behavior
+            document.getElementById('param-damage').style.display =
+                (behavior === 'damage' || behavior === 'heal') ? 'block' : 'none';
+            document.getElementById('param-teleport').style.display =
+                (behavior === 'teleport') ? 'block' : 'none';
+            document.getElementById('param-speed').style.display =
+                (behavior === 'speedboost') ? 'block' : 'none';
+            document.getElementById('param-message').style.display =
+                (behavior === 'message') ? 'block' : 'none';
+
+            console.log(`Trigger behavior: ${behavior}`);
+        }
+
+        // NEW: Update trigger parameters
+        function updateTriggerParams() {
+            if (!selectedObject) return;
+
+            if (!selectedObject.userData.triggerParams) {
+                selectedObject.userData.triggerParams = {};
+            }
+
+            const params = selectedObject.userData.triggerParams;
+            const behavior = selectedObject.userData.triggerBehavior;
+
+            // Save behavior-specific parameters
+            if (behavior === 'damage' || behavior === 'heal') {
+                params.amount = parseFloat(document.getElementById('trigger-damage-amount').value) || 10;
+            } else if (behavior === 'teleport') {
+                params.targetName = document.getElementById('trigger-teleport-target').value;
+            } else if (behavior === 'speedboost') {
+                params.speedMultiplier = parseFloat(document.getElementById('trigger-speed-mult').value) || 2;
+            } else if (behavior === 'message') {
+                params.messageText = document.getElementById('trigger-message-text').value;
+            }
+
+            // Log events setting
+            params.logEvents = document.getElementById('trigger-log-events').checked;
+
+            console.log('Trigger params updated:', params);
+        }
+
+        // NEW: Update trigger behavior UI from object data
+        function updateTriggerBehaviorUI() {
+            if (!selectedObject) return;
+
+            const behavior = selectedObject.userData.triggerBehavior || 'none';
+            const params = selectedObject.userData.triggerParams || {};
+
+            // Set behavior dropdown
+            document.getElementById('trigger-behavior').value = behavior;
+
+            // Set parameters
+            if (behavior === 'damage' || behavior === 'heal') {
+                document.getElementById('trigger-damage-amount').value = params.amount || 10;
+            } else if (behavior === 'teleport') {
+                document.getElementById('trigger-teleport-target').value = params.targetName || '';
+            } else if (behavior === 'speedboost') {
+                document.getElementById('trigger-speed-mult').value = params.speedMultiplier || 2;
+            } else if (behavior === 'message') {
+                document.getElementById('trigger-message-text').value = params.messageText || '';
+            }
+
+            // Log events checkbox
+            document.getElementById('trigger-log-events').checked = params.logEvents !== false;
+
+            // Show correct parameter section
+            updateTriggerBehavior();
         }
 
         // NEW: Update collision layer
@@ -3432,10 +3574,10 @@
             return layerColors[layer] || 0x00ff00;
         }
 
-        // NEW: Simple AABB collision detection (will be replaced by Cannon.js in Phase 3.2)
+        // NEW: Simple AABB collision detection with trigger event system
         function detectCollisions() {
-            // Track current collisions
-            const currentCollisions = new Set();
+            // Track current frame's collisions
+            const currentFrameCollisions = new Map();
 
             // Check all pairs of collision objects
             for (let i = 0; i < colliderObjects.length; i++) {
@@ -3454,28 +3596,170 @@
 
                     if (box1.intersectsBox(box2)) {
                         const collisionKey = `${obj1.uuid}-${obj2.uuid}`;
-                        currentCollisions.add(collisionKey);
+                        currentFrameCollisions.set(collisionKey, { obj1, obj2 });
 
-                        // Fire collision events (will be enhanced in Phase 3.3)
-                        // For now, just log to console
-                        if (!obj1.userData.activeCollisions) obj1.userData.activeCollisions = new Set();
-                        if (!obj2.userData.activeCollisions) obj2.userData.activeCollisions = new Set();
+                        // Initialize previous collision tracking if needed
+                        if (!obj1.userData.activeTriggers) obj1.userData.activeTriggers = new Set();
+                        if (!obj2.userData.activeTriggers) obj2.userData.activeTriggers = new Set();
 
-                        if (!obj1.userData.activeCollisions.has(obj2.uuid)) {
-                            console.log(`Collision: ${obj1.name || 'Unnamed'} <-> ${obj2.name || 'Unnamed'}`);
-                            obj1.userData.activeCollisions.add(obj2.uuid);
-                            obj2.userData.activeCollisions.add(obj1.uuid);
+                        // Check if this is a new collision (onTriggerEnter)
+                        const wasColliding1 = obj1.userData.activeTriggers.has(obj2.uuid);
+                        const wasColliding2 = obj2.userData.activeTriggers.has(obj1.uuid);
+
+                        if (!wasColliding1 && !wasColliding2) {
+                            // TRIGGER ENTER
+                            fireTriggerEvent(obj1, obj2, 'enter');
+                            fireTriggerEvent(obj2, obj1, 'enter');
+                        } else {
+                            // TRIGGER STAY
+                            fireTriggerEvent(obj1, obj2, 'stay');
+                            fireTriggerEvent(obj2, obj1, 'stay');
                         }
+
+                        // Mark as active
+                        obj1.userData.activeTriggers.add(obj2.uuid);
+                        obj2.userData.activeTriggers.add(obj1.uuid);
                     }
                 }
             }
 
-            // Clean up old collisions
+            // Check for exits (objects no longer colliding)
             colliderObjects.forEach(obj => {
-                if (obj.userData.activeCollisions) {
-                    obj.userData.activeCollisions = new Set();
-                }
+                if (!obj.userData.activeTriggers) return;
+
+                const previousTriggers = new Set(obj.userData.activeTriggers);
+                previousTriggers.forEach(otherUuid => {
+                    // Find if still colliding
+                    let stillColliding = false;
+                    currentFrameCollisions.forEach(({ obj1, obj2 }) => {
+                        if ((obj1.uuid === obj.uuid && obj2.uuid === otherUuid) ||
+                            (obj2.uuid === obj.uuid && obj1.uuid === otherUuid)) {
+                            stillColliding = true;
+                        }
+                    });
+
+                    if (!stillColliding) {
+                        // TRIGGER EXIT
+                        const otherObj = colliderObjects.find(o => o.uuid === otherUuid);
+                        if (otherObj) {
+                            fireTriggerEvent(obj, otherObj, 'exit');
+                        }
+                        obj.userData.activeTriggers.delete(otherUuid);
+                    }
+                });
             });
+        }
+
+        // NEW: Fire trigger events and execute behaviors
+        function fireTriggerEvent(trigger, other, eventType) {
+            // Only fire if trigger object is marked as trigger
+            if (!trigger.userData.isTrigger) return;
+
+            const params = trigger.userData.triggerParams || {};
+            const behavior = trigger.userData.triggerBehavior || 'none';
+
+            // Log events if enabled
+            if (params.logEvents !== false) {
+                console.log(`[Trigger ${eventType.toUpperCase()}] ${trigger.name || 'Unnamed'} <-> ${other.name || 'Unnamed'}`);
+            }
+
+            // Execute trigger behavior (only on enter event to avoid spam)
+            if (eventType === 'enter') {
+                executeTriggerBehavior(trigger, other, behavior, params);
+            }
+        }
+
+        // NEW: Execute trigger behavior based on type
+        function executeTriggerBehavior(trigger, other, behavior, params) {
+            switch (behavior) {
+                case 'checkpoint':
+                    // Save checkpoint position
+                    if (camera && isPlayMode) {
+                        trigger.userData.savedPosition = camera.position.clone();
+                        console.log(`💾 Checkpoint saved at (${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)})`);
+                    }
+                    break;
+
+                case 'damage':
+                    // Apply damage (would need health system)
+                    const damageAmount = params.amount || 10;
+                    console.log(`💥 Damage: -${damageAmount} HP`);
+                    break;
+
+                case 'heal':
+                    // Apply healing
+                    const healAmount = params.amount || 10;
+                    console.log(`💚 Heal: +${healAmount} HP`);
+                    break;
+
+                case 'teleport':
+                    // Teleport to target
+                    if (camera && isPlayMode && params.targetName) {
+                        const targetObj = sceneObjects.find(obj => obj.name === params.targetName);
+                        if (targetObj) {
+                            camera.position.copy(targetObj.position);
+                            console.log(`✨ Teleported to ${params.targetName}`);
+                        } else {
+                            console.warn(`⚠️ Teleport target '${params.targetName}' not found`);
+                        }
+                    }
+                    break;
+
+                case 'speedboost':
+                    // Speed boost (would need to modify player speed)
+                    const speedMult = params.speedMultiplier || 2;
+                    console.log(`⚡ Speed Boost: ${speedMult}x`);
+                    break;
+
+                case 'killzone':
+                    // Reset to spawn/checkpoint
+                    if (camera && isPlayMode) {
+                        // Find last checkpoint or spawn point
+                        const checkpoint = colliderObjects.find(obj =>
+                            obj.userData.isTrigger &&
+                            obj.userData.triggerBehavior === 'checkpoint' &&
+                            obj.userData.savedPosition
+                        );
+                        if (checkpoint && checkpoint.userData.savedPosition) {
+                            camera.position.copy(checkpoint.userData.savedPosition);
+                            console.log(`☠️ Kill Zone! Respawning at checkpoint...`);
+                        } else {
+                            camera.position.set(0, 10, 20);
+                            console.log(`☠️ Kill Zone! Respawning at spawn...`);
+                        }
+                    }
+                    break;
+
+                case 'collect':
+                    // Hide collected object
+                    trigger.visible = false;
+                    console.log(`⭐ Collected: ${trigger.name || 'Item'}`);
+                    break;
+
+                case 'door':
+                    // Toggle door visibility/position
+                    trigger.userData.doorOpen = !trigger.userData.doorOpen;
+                    if (trigger.userData.doorOpen) {
+                        trigger.position.y += 5;
+                        console.log(`🚪 Door opened`);
+                    } else {
+                        trigger.position.y -= 5;
+                        console.log(`🚪 Door closed`);
+                    }
+                    break;
+
+                case 'message':
+                    // Show message
+                    const message = params.messageText || 'Trigger activated!';
+                    console.log(`📢 ${message}`);
+                    // Could show on-screen UI message here
+                    break;
+
+                case 'none':
+                default:
+                    // Custom code - no built-in behavior
+                    break;
+            }
         }
 
         function toggleAllColliders() {
@@ -3763,6 +4047,15 @@
                 // Update trigger checkbox
                 const isTrigger = selectedObject.userData.isTrigger || false;
                 document.getElementById('is-trigger').checked = isTrigger;
+
+                // Show/hide trigger behavior options
+                const behaviorOptions = document.getElementById('trigger-behavior-options');
+                if (isTrigger) {
+                    behaviorOptions.style.display = 'block';
+                    updateTriggerBehaviorUI();
+                } else {
+                    behaviorOptions.style.display = 'none';
+                }
 
                 // Update collision layer
                 const layer = selectedObject.userData.collisionLayer || 0;
@@ -4404,6 +4697,22 @@
             // Basic collision detection (respects layer/mask filtering)
             if (isPlayMode && colliderObjects.length > 0) {
                 detectCollisions();
+            }
+
+            // Visual feedback for active triggers
+            if (showColliderHelpers && isPlayMode) {
+                colliderHelpers.forEach((helper, index) => {
+                    const obj = colliderObjects[index];
+                    if (obj && obj.userData.isTrigger && obj.userData.activeTriggers && obj.userData.activeTriggers.size > 0) {
+                        // Pulse active triggers
+                        const pulse = Math.sin(time * 5) * 0.3 + 0.7;
+                        helper.material.opacity = pulse;
+                        helper.material.transparent = true;
+                    } else if (helper.material) {
+                        helper.material.opacity = 1.0;
+                        helper.material.transparent = false;
+                    }
+                });
             }
 
             // TEMPLATE ANIMATION SYSTEM
