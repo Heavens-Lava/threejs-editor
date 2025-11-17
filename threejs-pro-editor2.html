@@ -2443,6 +2443,66 @@
                         </div>
                     </div>
 
+                    <!-- Collision Callbacks Section -->
+                    <div class="property-group" id="callbacks-section">
+                        <div class="property-label">
+                            <span>Collision Callbacks</span>
+                            <span style="font-size: 10px; color: #888; font-weight: normal;"> (JavaScript)</span>
+                        </div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="has-callbacks" onchange="toggleCallbacks()">
+                            <label for="has-callbacks" data-tooltip="Add custom JavaScript code that runs on collision events">Enable Custom Callbacks</label>
+                        </div>
+
+                        <!-- Callback Code Editor -->
+                        <div id="callbacks-editor" style="margin-top: 10px; display: none;">
+                            <div style="font-size: 11px; color: #aaa; margin-bottom: 8px;">
+                                Write JavaScript code to run on collision events. Use <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 2px;">other</code> to access the other object.
+                            </div>
+
+                            <!-- onCollisionEnter -->
+                            <div style="margin-bottom: 15px;">
+                                <div class="property-label" style="font-size: 12px;">
+                                    onCollisionEnter
+                                    <button onclick="insertCallbackTemplate('enter')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                </div>
+                                <textarea class="property-input" id="callback-enter" rows="3" placeholder="console.log('Hit:', other.name);" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('enter')"></textarea>
+                            </div>
+
+                            <!-- onCollisionStay -->
+                            <div style="margin-bottom: 15px;">
+                                <div class="property-label" style="font-size: 12px;">
+                                    onCollisionStay
+                                    <button onclick="insertCallbackTemplate('stay')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                </div>
+                                <textarea class="property-input" id="callback-stay" rows="3" placeholder="// Runs every frame while colliding" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('stay')"></textarea>
+                            </div>
+
+                            <!-- onCollisionExit -->
+                            <div style="margin-bottom: 15px;">
+                                <div class="property-label" style="font-size: 12px;">
+                                    onCollisionExit
+                                    <button onclick="insertCallbackTemplate('exit')" style="float: right; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #888; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Template</button>
+                                </div>
+                                <textarea class="property-input" id="callback-exit" rows="3" placeholder="// Runs when collision ends" style="font-family: 'Courier New', monospace; font-size: 11px; resize: vertical;" oninput="updateCallback('exit')"></textarea>
+                            </div>
+
+                            <!-- Error Display -->
+                            <div id="callback-error" style="display: none; background: rgba(255,0,0,0.2); border: 1px solid rgba(255,0,0,0.5); padding: 8px; border-radius: 4px; font-size: 11px; margin-top: 10px;">
+                                <strong>⚠️ Error:</strong> <span id="callback-error-text"></span>
+                            </div>
+
+                            <!-- Available Variables -->
+                            <div style="margin-top: 15px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 10px; color: #888;">
+                                <strong>Available in callbacks:</strong><br>
+                                • <code>other</code> - The other object involved in collision<br>
+                                • <code>this</code> - This object (current object)<br>
+                                • <code>collision</code> - Collision data (contact points, normal, etc.)<br>
+                                • All scene objects accessible via global scope
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="property-group">
                         <button class="btn btn-danger" onclick="deleteSelectedObject()">
                             <i class="fas fa-trash"></i> Delete Object
@@ -2774,6 +2834,33 @@
             // Apply gravity setting
             body.allowGravity = userData.useGravity !== false;
 
+            // Store reference to THREE.js object on physics body
+            body.threejsObject = obj;
+
+            // Add collision event listeners for callbacks
+            body.addEventListener('collide', (event) => {
+                const otherBody = event.body;
+                const otherObj = otherBody.threejsObject;
+
+                if (otherObj) {
+                    // Track collisions
+                    if (!obj.userData.physicsCollisions) {
+                        obj.userData.physicsCollisions = new Set();
+                    }
+
+                    const isNewCollision = !obj.userData.physicsCollisions.has(otherObj.uuid);
+
+                    if (isNewCollision) {
+                        // onCollisionEnter
+                        obj.userData.physicsCollisions.add(otherObj.uuid);
+                        executeCallback(obj, 'enter', otherObj, event.contact);
+                    } else {
+                        // onCollisionStay
+                        executeCallback(obj, 'stay', otherObj, event.contact);
+                    }
+                }
+            });
+
             // Add to physics world
             physicsWorld.addBody(body);
             physicsBodies.set(obj.uuid, body);
@@ -2917,6 +3004,110 @@
             // Show/hide mass for non-dynamic bodies
             document.getElementById('physics-mass-group').style.display =
                 userData.bodyType === 'dynamic' ? 'block' : 'none';
+        }
+
+        // ============================================
+        // COLLISION CALLBACKS SYSTEM
+        // ============================================
+
+        function toggleCallbacks() {
+            if (!selectedObject) return;
+
+            const enabled = document.getElementById('has-callbacks').checked;
+            const editorDiv = document.getElementById('callbacks-editor');
+
+            if (enabled) {
+                selectedObject.userData.hasCallbacks = true;
+                selectedObject.userData.callbacks = selectedObject.userData.callbacks || {
+                    enter: '',
+                    stay: '',
+                    exit: ''
+                };
+
+                // Show editor and load code
+                editorDiv.style.display = 'block';
+                loadCallbacksUI();
+            } else {
+                selectedObject.userData.hasCallbacks = false;
+                editorDiv.style.display = 'none';
+            }
+        }
+
+        function updateCallback(type) {
+            if (!selectedObject || !selectedObject.userData.callbacks) return;
+
+            const code = document.getElementById(`callback-${type}`).value;
+            selectedObject.userData.callbacks[type] = code;
+
+            // Try to compile/validate the code
+            try {
+                if (code.trim()) {
+                    // Test compile the function
+                    new Function('other', 'collision', code);
+                }
+                hideCallbackError();
+            } catch (error) {
+                showCallbackError(`${type}: ${error.message}`);
+            }
+        }
+
+        function loadCallbacksUI() {
+            if (!selectedObject || !selectedObject.userData.callbacks) return;
+
+            const callbacks = selectedObject.userData.callbacks;
+            document.getElementById('callback-enter').value = callbacks.enter || '';
+            document.getElementById('callback-stay').value = callbacks.stay || '';
+            document.getElementById('callback-exit').value = callbacks.exit || '';
+        }
+
+        function insertCallbackTemplate(type) {
+            const templates = {
+                enter: `// Example: Log collision and change color
+console.log('Collision with:', other.name);
+this.material.color.setHex(0xff0000);`,
+
+                stay: `// Example: Apply continuous damage
+if (other.userData.health) {
+    other.userData.health -= 0.1;
+    console.log(other.name + ' health:', other.userData.health);
+}`,
+
+                exit: `// Example: Reset color when collision ends
+this.material.color.setHex(0x00ff00);
+console.log('No longer colliding with:', other.name);`
+            };
+
+            if (templates[type]) {
+                document.getElementById(`callback-${type}`).value = templates[type];
+                updateCallback(type);
+            }
+        }
+
+        function showCallbackError(message) {
+            const errorDiv = document.getElementById('callback-error');
+            const errorText = document.getElementById('callback-error-text');
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideCallbackError() {
+            document.getElementById('callback-error').style.display = 'none';
+        }
+
+        // Execute a callback safely with error handling
+        function executeCallback(obj, type, other, collision) {
+            if (!obj || !obj.userData.hasCallbacks || !obj.userData.callbacks) return;
+
+            const code = obj.userData.callbacks[type];
+            if (!code || !code.trim()) return;
+
+            try {
+                // Create function with 'this' context = obj, and parameters
+                const func = new Function('other', 'collision', code);
+                func.call(obj, other, collision);
+            } catch (error) {
+                console.error(`Callback error in ${obj.name || 'Unnamed'}.on${type}:`, error.message);
+            }
         }
 
         function toggleGrid() {
@@ -4427,6 +4618,19 @@
             } else {
                 physicsOptions.style.display = 'none';
             }
+
+            // Callbacks
+            const hasCallbacks = selectedObject.userData.hasCallbacks || false;
+            document.getElementById('has-callbacks').checked = hasCallbacks;
+
+            // Show/hide callback editor
+            const callbacksEditor = document.getElementById('callbacks-editor');
+            if (hasCallbacks) {
+                callbacksEditor.style.display = 'block';
+                loadCallbacksUI();
+            } else {
+                callbacksEditor.style.display = 'none';
+            }
         }
 
         function updateObjectName() {
@@ -5062,6 +5266,32 @@
                         // Update object position/rotation from physics
                         obj.position.copy(body.position);
                         obj.quaternion.copy(body.quaternion);
+                    }
+                });
+
+                // Handle collision exit events
+                physicsBodies.forEach((body, uuid) => {
+                    const obj = sceneObjects.find(o => o.uuid === uuid);
+                    if (obj && obj.userData.physicsCollisions) {
+                        // Check which collisions from last frame are no longer happening
+                        const previousCollisions = new Set(obj.userData.physicsCollisions);
+                        obj.userData.physicsCollisions.clear();
+
+                        // The 'collide' event adds back current collisions
+                        // After a frame, anything still in previousCollisions but not in current = exit
+
+                        // We need to defer this check until after collide events fire
+                        setTimeout(() => {
+                            previousCollisions.forEach(otherUuid => {
+                                if (!obj.userData.physicsCollisions.has(otherUuid)) {
+                                    // Collision ended
+                                    const otherObj = sceneObjects.find(o => o.uuid === otherUuid);
+                                    if (otherObj) {
+                                        executeCallback(obj, 'exit', otherObj, null);
+                                    }
+                                }
+                            });
+                        }, 0);
                     }
                 });
             }
