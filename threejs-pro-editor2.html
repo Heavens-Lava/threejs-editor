@@ -2284,6 +2284,53 @@
                                 <option value="7">Custom 1</option>
                                 <option value="8">Custom 2</option>
                             </select>
+
+                            <!-- Collision Mask (Collides With) -->
+                            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                <div class="property-label" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span data-tooltip="Select which layers this object can collide with">Collides With</span>
+                                    <button onclick="toggleAllLayers()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">All</button>
+                                </div>
+                                <div id="collision-mask-checkboxes" style="margin-top: 8px; max-height: 150px; overflow-y: auto; font-size: 12px;">
+                                    <!-- Layer checkboxes will be generated here -->
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-0" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-0" style="font-size: 12px;">Default</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-1" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-1" style="font-size: 12px;">Player</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-2" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-2" style="font-size: 12px;">Enemy</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-3" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-3" style="font-size: 12px;">Environment</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-4" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-4" style="font-size: 12px;">Projectile</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-5" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-5" style="font-size: 12px;">Pickup</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-6" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-6" style="font-size: 12px;">Trigger</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-7" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-7" style="font-size: 12px;">Custom 1</label>
+                                    </div>
+                                    <div class="checkbox-wrapper" style="margin: 4px 0;">
+                                        <input type="checkbox" id="mask-layer-8" onchange="updateCollisionMask()" checked>
+                                        <label for="mask-layer-8" style="font-size: 12px;">Custom 2</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -3242,11 +3289,16 @@
                 if (selectedObject.userData.collisionLayer === undefined) {
                     selectedObject.userData.collisionLayer = 0;
                 }
+                if (selectedObject.userData.collisionMask === undefined) {
+                    // Default: collide with all layers (bits 0-8 set)
+                    selectedObject.userData.collisionMask = 0x1FF; // Binary: 111111111
+                }
 
                 // Update UI
                 document.getElementById('collision-shape').value = selectedObject.userData.collisionShape;
                 document.getElementById('is-trigger').checked = selectedObject.userData.isTrigger;
                 document.getElementById('collision-layer').value = selectedObject.userData.collisionLayer;
+                updateCollisionMaskUI();
 
                 rebuildColliderHelpers();
             } else {
@@ -3287,6 +3339,145 @@
             console.log(`Collision layer changed to: ${layer}`);
         }
 
+        // NEW: Update collision mask from checkboxes
+        function updateCollisionMask() {
+            if (!selectedObject) return;
+
+            let mask = 0;
+            // Check each layer checkbox and build the bitmask
+            for (let i = 0; i <= 8; i++) {
+                const checkbox = document.getElementById(`mask-layer-${i}`);
+                if (checkbox && checkbox.checked) {
+                    mask |= (1 << i); // Set bit i
+                }
+            }
+
+            selectedObject.userData.collisionMask = mask;
+            console.log(`Collision mask updated: ${mask.toString(2)} (${mask})`);
+        }
+
+        // NEW: Update collision mask UI from object's mask value
+        function updateCollisionMaskUI() {
+            if (!selectedObject) return;
+
+            const mask = selectedObject.userData.collisionMask || 0x1FF;
+
+            // Update checkboxes based on mask bits
+            for (let i = 0; i <= 8; i++) {
+                const checkbox = document.getElementById(`mask-layer-${i}`);
+                if (checkbox) {
+                    checkbox.checked = (mask & (1 << i)) !== 0;
+                }
+            }
+        }
+
+        // NEW: Toggle all layer checkboxes
+        function toggleAllLayers() {
+            if (!selectedObject) return;
+
+            // Check if all are currently selected
+            const allSelected = selectedObject.userData.collisionMask === 0x1FF;
+
+            // Toggle: if all selected, deselect all; otherwise select all
+            const newMask = allSelected ? 0 : 0x1FF;
+            selectedObject.userData.collisionMask = newMask;
+
+            // Update UI
+            for (let i = 0; i <= 8; i++) {
+                const checkbox = document.getElementById(`mask-layer-${i}`);
+                if (checkbox) {
+                    checkbox.checked = !allSelected;
+                }
+            }
+
+            console.log(`All layers toggled: ${allSelected ? 'OFF' : 'ON'}`);
+        }
+
+        // NEW: Check if two objects should collide based on layer/mask
+        function canObjectsCollide(obj1, obj2) {
+            if (!obj1.userData.hasCollision || !obj2.userData.hasCollision) {
+                return false;
+            }
+
+            const layer1 = obj1.userData.collisionLayer || 0;
+            const layer2 = obj2.userData.collisionLayer || 0;
+            const mask1 = obj1.userData.collisionMask !== undefined ? obj1.userData.collisionMask : 0x1FF;
+            const mask2 = obj2.userData.collisionMask !== undefined ? obj2.userData.collisionMask : 0x1FF;
+
+            // Check if obj1's mask includes obj2's layer AND obj2's mask includes obj1's layer
+            const obj1CanHitObj2 = (mask1 & (1 << layer2)) !== 0;
+            const obj2CanHitObj1 = (mask2 & (1 << layer1)) !== 0;
+
+            return obj1CanHitObj2 && obj2CanHitObj1;
+        }
+
+        // NEW: Get color for collision layer (visual differentiation)
+        function getLayerColor(layer, isTrigger) {
+            // Triggers always use cyan
+            if (isTrigger) return 0x00ffff;
+
+            // Layer-specific colors for better visual distinction
+            const layerColors = [
+                0x00ff00, // 0: Default - Green
+                0x0088ff, // 1: Player - Blue
+                0xff0044, // 2: Enemy - Red
+                0x888888, // 3: Environment - Gray
+                0xffaa00, // 4: Projectile - Orange
+                0xffff00, // 5: Pickup - Yellow
+                0xff00ff, // 6: Trigger - Magenta
+                0x00ffaa, // 7: Custom 1 - Aqua
+                0xaa00ff  // 8: Custom 2 - Purple
+            ];
+
+            return layerColors[layer] || 0x00ff00;
+        }
+
+        // NEW: Simple AABB collision detection (will be replaced by Cannon.js in Phase 3.2)
+        function detectCollisions() {
+            // Track current collisions
+            const currentCollisions = new Set();
+
+            // Check all pairs of collision objects
+            for (let i = 0; i < colliderObjects.length; i++) {
+                for (let j = i + 1; j < colliderObjects.length; j++) {
+                    const obj1 = colliderObjects[i];
+                    const obj2 = colliderObjects[j];
+
+                    // Check if these objects should collide based on layer/mask
+                    if (!canObjectsCollide(obj1, obj2)) {
+                        continue;
+                    }
+
+                    // Simple AABB collision check
+                    const box1 = new THREE.Box3().setFromObject(obj1);
+                    const box2 = new THREE.Box3().setFromObject(obj2);
+
+                    if (box1.intersectsBox(box2)) {
+                        const collisionKey = `${obj1.uuid}-${obj2.uuid}`;
+                        currentCollisions.add(collisionKey);
+
+                        // Fire collision events (will be enhanced in Phase 3.3)
+                        // For now, just log to console
+                        if (!obj1.userData.activeCollisions) obj1.userData.activeCollisions = new Set();
+                        if (!obj2.userData.activeCollisions) obj2.userData.activeCollisions = new Set();
+
+                        if (!obj1.userData.activeCollisions.has(obj2.uuid)) {
+                            console.log(`Collision: ${obj1.name || 'Unnamed'} <-> ${obj2.name || 'Unnamed'}`);
+                            obj1.userData.activeCollisions.add(obj2.uuid);
+                            obj2.userData.activeCollisions.add(obj1.uuid);
+                        }
+                    }
+                }
+            }
+
+            // Clean up old collisions
+            colliderObjects.forEach(obj => {
+                if (obj.userData.activeCollisions) {
+                    obj.userData.activeCollisions = new Set();
+                }
+            });
+        }
+
         function toggleAllColliders() {
             showColliderHelpers = !showColliderHelpers;
             rebuildColliderHelpers();
@@ -3310,7 +3501,8 @@
             colliderObjects.forEach(obj => {
                 const shape = obj.userData.collisionShape || 'box';
                 const isTrigger = obj.userData.isTrigger || false;
-                const color = isTrigger ? 0x00ffff : 0x00ff00; // Cyan for triggers, green for colliders
+                const layer = obj.userData.collisionLayer || 0;
+                const color = getLayerColor(layer, isTrigger); // Layer-specific colors
 
                 let helper;
 
@@ -3575,6 +3767,9 @@
                 // Update collision layer
                 const layer = selectedObject.userData.collisionLayer || 0;
                 document.getElementById('collision-layer').value = layer;
+
+                // Update collision mask checkboxes
+                updateCollisionMaskUI();
             } else {
                 collisionOptions.style.display = 'none';
             }
@@ -4204,6 +4399,11 @@
             // Update collider helpers
             if (showColliderHelpers) {
                 colliderHelpers.forEach(helper => helper.update());
+            }
+
+            // Basic collision detection (respects layer/mask filtering)
+            if (isPlayMode && colliderObjects.length > 0) {
+                detectCollisions();
             }
 
             // TEMPLATE ANIMATION SYSTEM
