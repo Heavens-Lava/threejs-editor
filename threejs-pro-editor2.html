@@ -2386,6 +2386,63 @@
                         </div>
                     </div>
 
+                    <!-- Physics / Rigidbody Section -->
+                    <div class="property-group" id="physics-section">
+                        <div class="property-label">Physics (Rigidbody)</div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="has-physics" onchange="toggleObjectPhysics()">
+                            <label for="has-physics" data-tooltip="Add realistic physics simulation to this object">Enable Physics</label>
+                        </div>
+
+                        <!-- Physics Options (shown only when physics is enabled) -->
+                        <div id="physics-options" style="margin-top: 10px; display: none;">
+                            <!-- Body Type -->
+                            <div class="property-label" style="margin-top: 10px;">Body Type</div>
+                            <select class="property-input" id="physics-body-type" onchange="updatePhysicsBodyType()">
+                                <option value="dynamic">Dynamic (Moves with physics)</option>
+                                <option value="static">Static (Never moves)</option>
+                                <option value="kinematic">Kinematic (Script controlled)</option>
+                            </select>
+
+                            <!-- Mass -->
+                            <div id="physics-mass-group" style="margin-top: 10px;">
+                                <div class="property-label">Mass (kg)</div>
+                                <input type="number" class="property-input" id="physics-mass" value="1.0" step="0.1" min="0.1" onchange="updatePhysicsMass()">
+                            </div>
+
+                            <!-- Use Gravity -->
+                            <div class="checkbox-wrapper" style="margin-top: 10px;">
+                                <input type="checkbox" id="physics-use-gravity" onchange="updatePhysicsGravity()" checked>
+                                <label for="physics-use-gravity">Use Gravity</label>
+                            </div>
+
+                            <!-- Friction -->
+                            <div class="property-label" style="margin-top: 10px;">Friction</div>
+                            <input type="range" class="property-input" id="physics-friction" min="0" max="1" step="0.05" value="0.5" oninput="updatePhysicsFriction()">
+                            <div style="font-size: 11px; color: #888; margin-top: 2px;">
+                                <span id="physics-friction-value">0.5</span> (0 = ice, 1 = sticky)
+                            </div>
+
+                            <!-- Bounciness (Restitution) -->
+                            <div class="property-label" style="margin-top: 10px;">Bounciness</div>
+                            <input type="range" class="property-input" id="physics-bounciness" min="0" max="1" step="0.05" value="0.3" oninput="updatePhysicsBounciness()">
+                            <div style="font-size: 11px; color: #888; margin-top: 2px;">
+                                <span id="physics-bounciness-value">0.3</span> (0 = no bounce, 1 = super bouncy)
+                            </div>
+
+                            <!-- Physics Material Presets -->
+                            <div class="property-label" style="margin-top: 15px;">Material Preset</div>
+                            <select class="property-input" id="physics-material-preset" onchange="applyPhysicsMaterialPreset()">
+                                <option value="custom">Custom</option>
+                                <option value="wood">Wood</option>
+                                <option value="metal">Metal</option>
+                                <option value="rubber">Rubber</option>
+                                <option value="ice">Ice</option>
+                                <option value="bouncy">Super Bouncy</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="property-group">
                         <button class="btn btn-danger" onclick="deleteSelectedObject()">
                             <i class="fas fa-trash"></i> Delete Object
@@ -2445,6 +2502,9 @@
     <!-- Three.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 
+    <!-- Cannon.js Physics Library -->
+    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"></script>
+
     <script>
         // ============================================
         // GLOBAL VARIABLES
@@ -2457,6 +2517,13 @@
         let colliderObjects = [];
         let colliderHelpers = [];
         let showColliderHelpers = false;
+
+        // Physics (Cannon.js)
+        let physicsWorld = null;
+        let physicsBodies = new Map(); // Maps THREE.Object3D.uuid -> CANNON.Body
+        let physicsEnabled = true;
+        let physicsTimeScale = 1.0; // For slow-motion/fast-forward
+        const DEFAULT_GRAVITY = -9.82;
 
         // Scene elements
         let gridHelper, ambientLight, directionalLight;
@@ -2512,6 +2579,7 @@
 
             setupLighting();
             setupGround();
+            initPhysicsWorld();
             loadEditorControls();
 
             // Events
@@ -2569,6 +2637,286 @@
 
             // Add ground to colliders
             addCollider(ground);
+        }
+
+        // ============================================
+        // PHYSICS SYSTEM (CANNON.JS)
+        // ============================================
+
+        function initPhysicsWorld() {
+            // Create physics world
+            physicsWorld = new CANNON.World({
+                gravity: new CANNON.Vec3(0, DEFAULT_GRAVITY, 0)
+            });
+
+            // Set solver iterations for stability
+            physicsWorld.solver.iterations = 10;
+
+            // Use SAPBroadphase for better performance
+            physicsWorld.broadphase = new CANNON.SAPBroadphase(physicsWorld);
+
+            // Allow sleeping for performance
+            physicsWorld.allowSleep = true;
+
+            // Create ground physics body
+            const groundShape = new CANNON.Plane();
+            const groundBody = new CANNON.Body({
+                mass: 0, // Static body
+                shape: groundShape,
+                material: new CANNON.Material({ friction: 0.5, restitution: 0.3 })
+            });
+            groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0); // Rotate to horizontal
+            physicsWorld.addBody(groundBody);
+
+            console.log('✅ Physics World initialized (Cannon.js)');
+        }
+
+        function updateGravity(x, y, z) {
+            if (!physicsWorld) return;
+            physicsWorld.gravity.set(x, y, z);
+            console.log(`Gravity set to (${x}, ${y}, ${z})`);
+        }
+
+        function setPhysicsTimeScale(scale) {
+            physicsTimeScale = Math.max(0.1, Math.min(scale, 5.0)); // Clamp between 0.1x and 5.0x
+            console.log(`Physics time scale: ${physicsTimeScale}x`);
+        }
+
+        function togglePhysics() {
+            physicsEnabled = !physicsEnabled;
+            console.log(`Physics ${physicsEnabled ? 'enabled' : 'disabled'}`);
+        }
+
+        // ============================================
+        // RIGIDBODY SYSTEM
+        // ============================================
+
+        function toggleObjectPhysics() {
+            if (!selectedObject) return;
+
+            const enabled = document.getElementById('has-physics').checked;
+            const optionsDiv = document.getElementById('physics-options');
+
+            if (enabled) {
+                // Initialize physics properties
+                selectedObject.userData.hasPhysics = true;
+                selectedObject.userData.bodyType = 'dynamic';
+                selectedObject.userData.mass = 1.0;
+                selectedObject.userData.friction = 0.5;
+                selectedObject.userData.restitution = 0.3;
+                selectedObject.userData.useGravity = true;
+
+                // Create physics body
+                createPhysicsBody(selectedObject);
+
+                // Show UI options
+                optionsDiv.style.display = 'block';
+                updatePhysicsUI();
+            } else {
+                // Remove physics
+                selectedObject.userData.hasPhysics = false;
+                removePhysicsBody(selectedObject);
+
+                // Hide UI options
+                optionsDiv.style.display = 'none';
+            }
+        }
+
+        function createPhysicsBody(obj) {
+            if (!physicsWorld || !obj.geometry) return;
+
+            // Remove existing body if any
+            removePhysicsBody(obj);
+
+            const userData = obj.userData;
+            const bodyType = userData.bodyType || 'dynamic';
+            const mass = bodyType === 'dynamic' ? (userData.mass || 1.0) : 0;
+
+            // Create shape based on collision shape or geometry
+            let shape;
+            const collisionShape = userData.collisionShape || 'box';
+
+            switch(collisionShape) {
+                case 'sphere':
+                    const box = new THREE.Box3().setFromObject(obj);
+                    const size = box.getSize(new THREE.Vector3());
+                    const radius = Math.max(size.x, size.y, size.z) / 2;
+                    shape = new CANNON.Sphere(radius);
+                    break;
+                case 'capsule':
+                    // Cannon.js doesn't have capsule, use cylinder
+                    const boxCap = new THREE.Box3().setFromObject(obj);
+                    const sizeCap = boxCap.getSize(new THREE.Vector3());
+                    const height = Math.max(sizeCap.x, sizeCap.y, sizeCap.z);
+                    const radiusCap = (Math.min(sizeCap.x, sizeCap.z) + Math.max(sizeCap.x, sizeCap.z)) / 4;
+                    shape = new CANNON.Cylinder(radiusCap, radiusCap, height, 8);
+                    break;
+                case 'box':
+                default:
+                    const boxDef = new THREE.Box3().setFromObject(obj);
+                    const sizeDef = boxDef.getSize(new THREE.Vector3());
+                    shape = new CANNON.Box(new CANNON.Vec3(sizeDef.x / 2, sizeDef.y / 2, sizeDef.z / 2));
+                    break;
+            }
+
+            // Create physics body
+            const body = new CANNON.Body({
+                mass: mass,
+                shape: shape,
+                position: new CANNON.Vec3(obj.position.x, obj.position.y, obj.position.z),
+                quaternion: new CANNON.Quaternion(obj.quaternion.x, obj.quaternion.y, obj.quaternion.z, obj.quaternion.w),
+                material: new CANNON.Material({
+                    friction: userData.friction || 0.5,
+                    restitution: userData.restitution || 0.3
+                })
+            });
+
+            // Apply gravity setting
+            body.allowGravity = userData.useGravity !== false;
+
+            // Add to physics world
+            physicsWorld.addBody(body);
+            physicsBodies.set(obj.uuid, body);
+
+            console.log(`Physics body created for ${obj.name || 'Unnamed'} (${bodyType}, mass: ${mass})`);
+        }
+
+        function removePhysicsBody(obj) {
+            if (!physicsWorld) return;
+
+            const body = physicsBodies.get(obj.uuid);
+            if (body) {
+                physicsWorld.removeBody(body);
+                physicsBodies.delete(obj.uuid);
+            }
+        }
+
+        function updatePhysicsBodyType() {
+            if (!selectedObject) return;
+
+            const bodyType = document.getElementById('physics-body-type').value;
+            selectedObject.userData.bodyType = bodyType;
+
+            // Show/hide mass for non-dynamic bodies
+            document.getElementById('physics-mass-group').style.display =
+                bodyType === 'dynamic' ? 'block' : 'none';
+
+            // Recreate physics body
+            if (selectedObject.userData.hasPhysics) {
+                createPhysicsBody(selectedObject);
+            }
+
+            console.log(`Body type: ${bodyType}`);
+        }
+
+        function updatePhysicsMass() {
+            if (!selectedObject) return;
+
+            const mass = parseFloat(document.getElementById('physics-mass').value) || 1.0;
+            selectedObject.userData.mass = mass;
+
+            // Update physics body
+            const body = physicsBodies.get(selectedObject.uuid);
+            if (body && selectedObject.userData.bodyType === 'dynamic') {
+                body.mass = mass;
+                body.updateMassProperties();
+            }
+        }
+
+        function updatePhysicsGravity() {
+            if (!selectedObject) return;
+
+            const useGravity = document.getElementById('physics-use-gravity').checked;
+            selectedObject.userData.useGravity = useGravity;
+
+            // Update physics body
+            const body = physicsBodies.get(selectedObject.uuid);
+            if (body) {
+                body.allowGravity = useGravity;
+            }
+        }
+
+        function updatePhysicsFriction() {
+            if (!selectedObject) return;
+
+            const friction = parseFloat(document.getElementById('physics-friction').value);
+            selectedObject.userData.friction = friction;
+            document.getElementById('physics-friction-value').textContent = friction.toFixed(2);
+
+            // Update physics body material
+            const body = physicsBodies.get(selectedObject.uuid);
+            if (body && body.material) {
+                body.material.friction = friction;
+            }
+        }
+
+        function updatePhysicsBounciness() {
+            if (!selectedObject) return;
+
+            const bounciness = parseFloat(document.getElementById('physics-bounciness').value);
+            selectedObject.userData.restitution = bounciness;
+            document.getElementById('physics-bounciness-value').textContent = bounciness.toFixed(2);
+
+            // Update physics body material
+            const body = physicsBodies.get(selectedObject.uuid);
+            if (body && body.material) {
+                body.material.restitution = bounciness;
+            }
+        }
+
+        function applyPhysicsMaterialPreset() {
+            if (!selectedObject) return;
+
+            const preset = document.getElementById('physics-material-preset').value;
+
+            const presets = {
+                wood: { friction: 0.4, restitution: 0.2 },
+                metal: { friction: 0.3, restitution: 0.4 },
+                rubber: { friction: 0.8, restitution: 0.9 },
+                ice: { friction: 0.05, restitution: 0.1 },
+                bouncy: { friction: 0.5, restitution: 0.95 }
+            };
+
+            if (presets[preset]) {
+                const { friction, restitution } = presets[preset];
+
+                // Update sliders
+                document.getElementById('physics-friction').value = friction;
+                document.getElementById('physics-bounciness').value = restitution;
+                document.getElementById('physics-friction-value').textContent = friction.toFixed(2);
+                document.getElementById('physics-bounciness-value').textContent = restitution.toFixed(2);
+
+                // Update object data
+                selectedObject.userData.friction = friction;
+                selectedObject.userData.restitution = restitution;
+
+                // Update physics body
+                const body = physicsBodies.get(selectedObject.uuid);
+                if (body && body.material) {
+                    body.material.friction = friction;
+                    body.material.restitution = restitution;
+                }
+
+                console.log(`Applied ${preset} material preset`);
+            }
+        }
+
+        function updatePhysicsUI() {
+            if (!selectedObject) return;
+
+            const userData = selectedObject.userData;
+
+            document.getElementById('physics-body-type').value = userData.bodyType || 'dynamic';
+            document.getElementById('physics-mass').value = userData.mass || 1.0;
+            document.getElementById('physics-use-gravity').checked = userData.useGravity !== false;
+            document.getElementById('physics-friction').value = userData.friction || 0.5;
+            document.getElementById('physics-bounciness').value = userData.restitution || 0.3;
+            document.getElementById('physics-friction-value').textContent = (userData.friction || 0.5).toFixed(2);
+            document.getElementById('physics-bounciness-value').textContent = (userData.restitution || 0.3).toFixed(2);
+
+            // Show/hide mass for non-dynamic bodies
+            document.getElementById('physics-mass-group').style.display =
+                userData.bodyType === 'dynamic' ? 'block' : 'none';
         }
 
         function toggleGrid() {
@@ -4066,6 +4414,19 @@
             } else {
                 collisionOptions.style.display = 'none';
             }
+
+            // Physics
+            const hasPhysics = selectedObject.userData.hasPhysics || false;
+            document.getElementById('has-physics').checked = hasPhysics;
+
+            // Show/hide physics options
+            const physicsOptions = document.getElementById('physics-options');
+            if (hasPhysics) {
+                physicsOptions.style.display = 'block';
+                updatePhysicsUI();
+            } else {
+                physicsOptions.style.display = 'none';
+            }
         }
 
         function updateObjectName() {
@@ -4687,6 +5048,22 @@
                 camera.translateZ(velocity.z * delta);
             } else {
                 if (orbitControls) orbitControls.update();
+            }
+
+            // Update physics simulation
+            if (physicsWorld && physicsEnabled) {
+                const physicsStep = delta * physicsTimeScale;
+                physicsWorld.step(1 / 60, physicsStep, 3);
+
+                // Sync THREE.js objects with physics bodies
+                physicsBodies.forEach((body, uuid) => {
+                    const obj = sceneObjects.find(o => o.uuid === uuid);
+                    if (obj && obj.userData.hasPhysics && obj.userData.bodyType === 'dynamic') {
+                        // Update object position/rotation from physics
+                        obj.position.copy(body.position);
+                        obj.quaternion.copy(body.quaternion);
+                    }
+                });
             }
 
             // Update collider helpers
