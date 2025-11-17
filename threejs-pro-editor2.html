@@ -5431,7 +5431,7 @@ console.log('No longer colliding with:', other.name);`
         let tooltipTimeout = null;
 
         function showTooltip(text, element, position = 'top') {
-            if (!text || !element) return;
+            if (!text || !element || !tooltipElement) return;
 
             clearTimeout(tooltipTimeout);
 
@@ -5476,7 +5476,9 @@ console.log('No longer colliding with:', other.name);`
 
         function hideTooltip() {
             clearTimeout(tooltipTimeout);
-            tooltipElement.classList.remove('show');
+            if (tooltipElement) {
+                tooltipElement.classList.remove('show');
+            }
         }
 
         // Initialize tooltips on all elements with data-tooltip attribute
