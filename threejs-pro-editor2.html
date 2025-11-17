@@ -3175,6 +3175,11 @@
                         // onCollisionEnter
                         obj.userData.physicsCollisions.add(otherObj.uuid);
                         executeCallback(obj, 'enter', otherObj, event.contact);
+
+                        // Execute Blueprint on collision enter
+                        if (obj.userData.blueprint && obj.userData.blueprint.enabled) {
+                            executeBlueprint(obj, 'On Collision Enter', { otherObject: otherObj });
+                        }
                     } else {
                         // onCollisionStay
                         executeCallback(obj, 'stay', otherObj, event.contact);
@@ -4527,6 +4532,11 @@ console.log('No longer colliding with:', other.name);`
             if (eventType === 'enter') {
                 executeTriggerBehavior(trigger, other, behavior, params);
             }
+
+            // Execute Blueprint if enabled
+            if (trigger.userData.blueprint && trigger.userData.blueprint.enabled) {
+                executeBlueprint(trigger, 'On Trigger Enter', { otherObject: other });
+            }
         }
 
         // NEW: Execute trigger behavior based on type
@@ -4756,8 +4766,6 @@ console.log('No longer colliding with:', other.name);`
         // OBJECT SELECTION & MANIPULATION
         // ============================================
         function onCanvasClick(event) {
-            if (!transformControls || isPlayMode) return;
-
             const rect = renderer.domElement.getBoundingClientRect();
             mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
             mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -4776,11 +4784,23 @@ console.log('No longer colliding with:', other.name);`
                     object = object.parent;
                 }
 
+                // In play mode, execute "On Click" blueprints
+                if (isPlayMode) {
+                    if (object.userData.blueprint && object.userData.blueprint.enabled) {
+                        executeBlueprint(object, 'On Click', {});
+                    }
+                    return;
+                }
+
+                // In edit mode, select object
+                if (!transformControls) return;
                 if (isSelectableObject(object)) {
                     selectObject(object);
                 }
             } else {
-                deselectObject();
+                if (!isPlayMode) {
+                    deselectObject();
+                }
             }
         }
 
@@ -5481,6 +5501,9 @@ console.log('No longer colliding with:', other.name);`
             // Make node draggable
             makeNodeDraggable(nodeEl, node);
 
+            // Add pin connection listeners
+            addPinConnectionListeners(nodeEl, node);
+
             // Right-click to delete
             nodeEl.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
@@ -5490,6 +5513,174 @@ console.log('No longer colliding with:', other.name);`
             });
 
             return nodeEl;
+        }
+
+        function addPinConnectionListeners(nodeEl, node) {
+            const pins = nodeEl.querySelectorAll('.blueprint-pin');
+
+            pins.forEach(pin => {
+                pin.addEventListener('mousedown', (e) => {
+                    e.stopPropagation(); // Don't trigger node drag
+
+                    const direction = pin.dataset.direction;
+                    const pinName = pin.dataset.pin;
+                    const pinType = pin.classList.contains('exec') ? 'exec' : 'data';
+
+                    if (direction === 'output') {
+                        // Start dragging a connection from output pin
+                        startConnectionDrag(node, pinName, pinType, pin);
+                    } else if (direction === 'input') {
+                        // Check if we're completing a connection
+                        if (blueprintDragConnection) {
+                            completeConnection(node, pinName, pinType);
+                        }
+                    }
+                });
+
+                // Highlight pins on hover during drag
+                pin.addEventListener('mouseenter', () => {
+                    if (blueprintDragConnection && pin.dataset.direction === 'input') {
+                        pin.style.transform = 'scale(1.5)';
+                    }
+                });
+
+                pin.addEventListener('mouseleave', () => {
+                    pin.style.transform = '';
+                });
+            });
+        }
+
+        function startConnectionDrag(sourceNode, pinName, pinType, pinElement) {
+            blueprintDragConnection = {
+                sourceNode: sourceNode,
+                sourcePinName: pinName,
+                pinType: pinType,
+                pinElement: pinElement
+            };
+
+            // Create temporary connection line
+            const canvas = document.getElementById('blueprint-canvas');
+            canvas.style.cursor = 'crosshair';
+
+            // Add mousemove listener to draw temp line
+            const onMouseMove = (e) => {
+                if (!blueprintDragConnection) return;
+
+                updateTempConnectionLine(e);
+            };
+
+            const onMouseUp = (e) => {
+                // Check if we released on a valid input pin
+                const targetPin = e.target.closest('.blueprint-pin');
+
+                if (targetPin && targetPin.dataset.direction === 'input') {
+                    const targetNodeEl = targetPin.closest('.blueprint-node');
+                    const targetNodeId = targetNodeEl.dataset.nodeId;
+                    const targetNode = selectedObject.userData.blueprint.nodes.find(n => n.id === targetNodeId);
+                    const targetPinName = targetPin.dataset.pin;
+                    const targetPinType = targetPin.classList.contains('exec') ? 'exec' : 'data';
+
+                    completeConnection(targetNode, targetPinName, targetPinType);
+                } else {
+                    cancelConnectionDrag();
+                }
+
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                canvas.style.cursor = 'grab';
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        }
+
+        function updateTempConnectionLine(e) {
+            if (!blueprintDragConnection) return;
+
+            const connectionsGroup = document.getElementById('blueprint-connections');
+
+            // Remove old temp line
+            const oldTemp = connectionsGroup.querySelector('.blueprint-connection.temp');
+            if (oldTemp) oldTemp.remove();
+
+            // Get source pin position
+            const sourceNode = blueprintDragConnection.sourceNode;
+            const pinElement = blueprintDragConnection.pinElement;
+            const rect = pinElement.getBoundingClientRect();
+            const canvasRect = document.getElementById('blueprint-canvas').getBoundingClientRect();
+
+            const x1 = rect.left - canvasRect.left + rect.width / 2;
+            const y1 = rect.top - canvasRect.top + rect.height / 2;
+            const x2 = e.clientX - canvasRect.left;
+            const y2 = e.clientY - canvasRect.top;
+
+            // Create temp line
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const midX = (x1 + x2) / 2;
+
+            path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+            path.setAttribute('class', `blueprint-connection temp ${blueprintDragConnection.pinType}`);
+
+            connectionsGroup.appendChild(path);
+        }
+
+        function completeConnection(targetNode, targetPinName, targetPinType) {
+            if (!blueprintDragConnection) return;
+
+            const sourceNode = blueprintDragConnection.sourceNode;
+            const sourcePinName = blueprintDragConnection.sourcePinName;
+            const sourcePinType = blueprintDragConnection.pinType;
+
+            // Validate connection (can't connect to self, types must match)
+            if (sourceNode.id === targetNode.id) {
+                console.warn('Cannot connect node to itself');
+                cancelConnectionDrag();
+                return;
+            }
+
+            if (sourcePinType !== targetPinType) {
+                console.warn('Pin types must match (exec to exec, data to data)');
+                cancelConnectionDrag();
+                return;
+            }
+
+            // Check if connection already exists
+            const connectionKey = `${sourceNode.id}.${sourcePinName}`;
+            const targetKey = `${targetNode.id}.${targetPinName}`;
+
+            const blueprint = selectedObject.userData.blueprint;
+            const exists = blueprint.connections.some(conn =>
+                conn.from === connectionKey && conn.to === targetKey
+            );
+
+            if (exists) {
+                console.warn('Connection already exists');
+                cancelConnectionDrag();
+                return;
+            }
+
+            // Remove any existing connection to this input (inputs can only have one connection)
+            blueprint.connections = blueprint.connections.filter(conn => conn.to !== targetKey);
+
+            // Add new connection
+            blueprint.connections.push({
+                from: connectionKey,
+                to: targetKey
+            });
+
+            console.log('✅ Connected:', connectionKey, '→', targetKey);
+
+            cancelConnectionDrag();
+            renderBlueprintCanvas();
+        }
+
+        function cancelConnectionDrag() {
+            blueprintDragConnection = null;
+
+            // Remove temp line
+            const connectionsGroup = document.getElementById('blueprint-connections');
+            const tempLine = connectionsGroup.querySelector('.blueprint-connection.temp');
+            if (tempLine) tempLine.remove();
         }
 
         function makeNodeDraggable(element, node) {
@@ -5543,18 +5734,42 @@ console.log('No longer colliding with:', other.name);`
 
             if (!sourcePin || !targetPin) return null;
 
-            // Rough pin position calculation (simplified)
-            const x1 = sourceNode.position.x + 200;
-            const y1 = sourceNode.position.y + 50;
-            const x2 = targetNode.position.x;
-            const y2 = targetNode.position.y + 50;
+            // Get actual DOM pin positions
+            const sourcePinEl = document.querySelector(`[data-node-id="${sourceId}"] .blueprint-pin[data-pin="${sourcePinName}"][data-direction="output"]`);
+            const targetPinEl = document.querySelector(`[data-node-id="${targetId}"] .blueprint-pin[data-pin="${targetPinName}"][data-direction="input"]`);
 
-            // Create Bezier curve
+            if (!sourcePinEl || !targetPinEl) return null;
+
+            const canvasRect = document.getElementById('blueprint-canvas').getBoundingClientRect();
+            const sourceRect = sourcePinEl.getBoundingClientRect();
+            const targetRect = targetPinEl.getBoundingClientRect();
+
+            const x1 = sourceRect.left - canvasRect.left + sourceRect.width / 2;
+            const y1 = sourceRect.top - canvasRect.top + sourceRect.height / 2;
+            const x2 = targetRect.left - canvasRect.left + targetRect.width / 2;
+            const y2 = targetRect.top - canvasRect.top + targetRect.height / 2;
+
+            // Create Bezier curve with better control points
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            const midX = (x1 + x2) / 2;
+            const distance = Math.abs(x2 - x1);
+            const controlPointOffset = Math.min(distance * 0.5, 150);
 
-            path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+            const cx1 = x1 + controlPointOffset;
+            const cy1 = y1;
+            const cx2 = x2 - controlPointOffset;
+            const cy2 = y2;
+
+            path.setAttribute('d', `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`);
             path.setAttribute('class', `blueprint-connection ${sourcePin.type}`);
+
+            // Add click to delete connection
+            path.style.cursor = 'pointer';
+            path.addEventListener('click', () => {
+                if (confirm('Delete this connection?')) {
+                    blueprint.connections = blueprint.connections.filter(c => c !== connection);
+                    renderBlueprintCanvas();
+                }
+            });
 
             return path;
         }
@@ -5749,6 +5964,13 @@ console.log('No longer colliding with:', other.name);`
                     camera.position.y += 1.6;
                     camera.rotation.y = spawnPoint.rotation.y;
                 }
+
+                // Execute "On Start" blueprints for all objects
+                sceneObjects.forEach(obj => {
+                    if (obj.userData.blueprint && obj.userData.blueprint.enabled) {
+                        executeBlueprint(obj, 'On Start', {});
+                    }
+                });
 
                 renderer.domElement.addEventListener('click', requestPointerLock);
             } else {
@@ -6057,6 +6279,11 @@ console.log('No longer colliding with:', other.name);`
 
                                 if (data.userData.hasCollision) {
                                     addCollider(object);
+                                }
+
+                                // Recreate physics body if object has physics
+                                if (data.userData.hasPhysics) {
+                                    createPhysicsBody(object);
                                 }
 
                                 scene.add(object);
