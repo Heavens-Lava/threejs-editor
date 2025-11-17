@@ -3995,6 +3995,7 @@
             requestAnimationFrame(animate);
 
             const delta = 0.016; // ~60fps
+            const time = performance.now() * 0.001; // Time in seconds
 
             if (isPlayMode && isLocked) {
                 // Play mode movement
@@ -4019,6 +4020,14 @@
             if (showColliderHelpers) {
                 colliderHelpers.forEach(helper => helper.update());
             }
+
+            // TEMPLATE ANIMATION SYSTEM
+            // Animate objects with custom animation functions
+            sceneObjects.forEach(obj => {
+                if (obj && obj.userData && obj.userData.animate && typeof obj.userData.animate === 'function') {
+                    obj.userData.animate.call(obj, time, delta);
+                }
+            });
 
             renderer.render(scene, camera);
 
@@ -4973,39 +4982,222 @@
                 badge: 'popular',
                 icon: 'fa-crosshairs',
                 setup: function() {
-                    // Floor
+                    // ENHANCED FPS ARENA - Production Ready Template
+                    // This template creates a game-ready FPS arena with proper materials,
+                    // spawn points, cover system, and lighting
+
+                    // Arena Floor - Concrete texture style
                     const floor = createAsset('floor');
                     if (floor) {
-                        floor.scale.set(30, 1, 30);
+                        floor.scale.set(30, 0.5, 30);
+                        floor.position.y = -0.25;
+                        floor.material.color.setHex(0x4a4a4a); // Dark gray concrete
+                        floor.material.roughness = 0.9;
+                        floor.material.metalness = 0.1;
+                        floor.name = 'Arena Floor';
                         floor.userData.hasCollision = true;
+                        floor.userData.isGround = true;
                     }
 
-                    // Walls
-                    for (let i = 0; i < 4; i++) {
+                    // Perimeter Walls - Industrial metal look
+                    const wallPositions = [
+                        {x: 0, z: -15, ry: 0},      // North wall
+                        {x: 0, z: 15, ry: Math.PI}, // South wall
+                        {x: -15, z: 0, ry: Math.PI/2}, // West wall
+                        {x: 15, z: 0, ry: -Math.PI/2}  // East wall
+                    ];
+
+                    wallPositions.forEach((pos, i) => {
                         const wall = createAsset('wall');
                         if (wall) {
-                            const angle = (Math.PI / 2) * i;
-                            wall.position.set(Math.cos(angle) * 15, 2.5, Math.sin(angle) * 15);
-                            wall.rotation.y = angle;
+                            wall.position.set(pos.x, 2.5, pos.z);
+                            wall.rotation.y = pos.ry;
                             wall.scale.set(30, 5, 1);
+                            wall.material.color.setHex(0x6b7280); // Cool gray
+                            wall.material.roughness = 0.7;
+                            wall.material.metalness = 0.3;
+                            wall.name = `Arena Wall ${['North', 'South', 'West', 'East'][i]}`;
                             wall.userData.hasCollision = true;
                         }
+                    });
+
+                    // Team Spawn Points with visual markers
+                    const spawnPoints = [
+                        {x: -10, z: -10, team: 'Red', color: 0xff4444},
+                        {x: 10, z: 10, team: 'Blue', color: 0x4444ff},
+                        {x: -10, z: 10, team: 'Red', color: 0xff4444},
+                        {x: 10, z: -10, team: 'Blue', color: 0x4444ff}
+                    ];
+
+                    spawnPoints.forEach(spawn => {
+                        // Spawn platform
+                        const platform = createAsset('cylinder');
+                        if (platform) {
+                            platform.scale.set(2, 0.1, 2);
+                            platform.position.set(spawn.x, 0.05, spawn.z);
+                            platform.material.color.setHex(spawn.color);
+                            platform.material.roughness = 0.4;
+                            platform.material.metalness = 0.6;
+                            platform.material.emissive.setHex(spawn.color);
+                            platform.material.emissiveIntensity = 0.3;
+                            platform.name = `${spawn.team} Spawn Platform`;
+                            platform.userData.spawnPoint = true;
+                            platform.userData.team = spawn.team;
+
+                            // Add pulsing animation
+                            platform.userData.animate = function(time) {
+                                this.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.2;
+                            };
+                        }
+
+                        // Spawn indicator light
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(spawn.x, 3, spawn.z);
+                            light.color.setHex(spawn.color);
+                            light.intensity = 0.8;
+                            light.distance = 8;
+                            light.name = `${spawn.team} Spawn Light`;
+                        }
+                    });
+
+                    // Tactical Cover - Crates and barriers
+                    const coverPositions = [
+                        {x: 0, z: 0, type: 'crate'},     // Center
+                        {x: -5, z: -5, type: 'barrier'},  // Northwest
+                        {x: 5, z: -5, type: 'barrier'},   // Northeast
+                        {x: -5, z: 5, type: 'crate'},     // Southwest
+                        {x: 5, z: 5, type: 'crate'},      // Southeast
+                        {x: 0, z: -8, type: 'barrier'},   // North center
+                        {x: 0, z: 8, type: 'barrier'}     // South center
+                    ];
+
+                    coverPositions.forEach((cover, i) => {
+                        if (cover.type === 'crate') {
+                            // Wooden crates
+                            const crate = createAsset('box');
+                            if (crate) {
+                                crate.position.set(cover.x, 0.75, cover.z);
+                                crate.scale.set(1.5, 1.5, 1.5);
+                                crate.rotation.y = Math.random() * Math.PI * 2;
+                                crate.material.color.setHex(0x8b7355); // Wood brown
+                                crate.material.roughness = 0.85;
+                                crate.material.metalness = 0.05;
+                                crate.name = `Cover Crate ${i + 1}`;
+                                crate.userData.hasCollision = true;
+                                crate.userData.cover = true;
+                                crate.userData.coverHeight = 1.5;
+                            }
+                        } else {
+                            // Metal barriers
+                            const barrier = createAsset('box');
+                            if (barrier) {
+                                barrier.position.set(cover.x, 0.6, cover.z);
+                                barrier.scale.set(3, 1.2, 0.3);
+                                barrier.rotation.y = cover.x === 0 ? 0 : Math.PI / 2;
+                                barrier.material.color.setHex(0x5a6268); // Dark metal
+                                barrier.material.roughness = 0.6;
+                                barrier.material.metalness = 0.7;
+                                barrier.name = `Cover Barrier ${i + 1}`;
+                                barrier.userData.hasCollision = true;
+                                barrier.userData.cover = true;
+                                barrier.userData.coverHeight = 1.2;
+                            }
+                        }
+                    });
+
+                    // Elevated Platform - High ground advantage
+                    const platform = createAsset('box');
+                    if (platform) {
+                        platform.position.set(0, 1, 0);
+                        platform.scale.set(4, 0.3, 4);
+                        platform.material.color.setHex(0x2d3748);
+                        platform.material.roughness = 0.8;
+                        platform.material.metalness = 0.2;
+                        platform.name = 'Central Platform';
+                        platform.userData.hasCollision = true;
+                        platform.userData.platform = true;
                     }
 
-                    // Spawn point
-                    const spawn = createAsset('spawnPoint');
-                    if (spawn) {
-                        spawn.position.set(0, 1, 10);
-                    }
-
-                    // Some cover boxes
-                    for (let i = 0; i < 5; i++) {
-                        const box = createAsset('box');
-                        if (box) {
-                            box.position.set((Math.random() - 0.5) * 20, 0.5, (Math.random() - 0.5) * 20);
-                            box.userData.hasCollision = true;
+                    // Platform supports
+                    for (let i = 0; i < 4; i++) {
+                        const support = createAsset('cylinder');
+                        if (support) {
+                            const angle = (Math.PI / 2) * i + Math.PI / 4;
+                            support.position.set(
+                                Math.cos(angle) * 1.5,
+                                0.5,
+                                Math.sin(angle) * 1.5
+                            );
+                            support.scale.set(0.15, 1, 0.15);
+                            support.material.color.setHex(0x1a202c);
+                            support.material.roughness = 0.7;
+                            support.material.metalness = 0.4;
+                            support.name = `Platform Support ${i + 1}`;
                         }
                     }
+
+                    // Arena Lighting - Dramatic overhead lights
+                    const lightPositions = [
+                        {x: -8, z: -8}, {x: 8, z: -8},
+                        {x: -8, z: 8}, {x: 8, z: 8},
+                        {x: 0, z: 0}  // Center light
+                    ];
+
+                    lightPositions.forEach((pos, i) => {
+                        // Main light
+                        const areaLight = createAsset('pointLight');
+                        if (areaLight) {
+                            areaLight.position.set(pos.x, 8, pos.z);
+                            areaLight.color.setHex(0xffffff);
+                            areaLight.intensity = 1.2;
+                            areaLight.distance = 15;
+                            areaLight.name = `Arena Light ${i + 1}`;
+                        }
+
+                        // Light fixture (visual only)
+                        const fixture = createAsset('cylinder');
+                        if (fixture) {
+                            fixture.position.set(pos.x, 7.5, pos.z);
+                            fixture.scale.set(0.3, 0.5, 0.3);
+                            fixture.material.color.setHex(0x1a1a1a);
+                            fixture.material.emissive.setHex(0xffaa00);
+                            fixture.material.emissiveIntensity = 0.5;
+                            fixture.name = `Light Fixture ${i + 1}`;
+                        }
+                    });
+
+                    // Weapon/Item spawn points (marked locations)
+                    const itemSpawns = [
+                        {x: -8, z: 0, item: 'Weapon'},
+                        {x: 8, z: 0, item: 'Weapon'},
+                        {x: 0, z: -8, item: 'Health'},
+                        {x: 0, z: 8, item: 'Ammo'}
+                    ];
+
+                    itemSpawns.forEach(item => {
+                        const marker = createAsset('torus');
+                        if (marker) {
+                            marker.position.set(item.x, 0.1, item.z);
+                            marker.scale.set(0.8, 0.8, 0.8);
+                            marker.rotation.x = Math.PI / 2;
+                            marker.material.color.setHex(0x00ff88);
+                            marker.material.emissive.setHex(0x00ff88);
+                            marker.material.emissiveIntensity = 0.5;
+                            marker.name = `${item.item} Spawn`;
+                            marker.userData.itemSpawn = true;
+                            marker.userData.itemType = item.item;
+
+                            // Rotating animation
+                            marker.userData.animate = function(time) {
+                                this.rotation.z = time * 0.5;
+                                this.material.emissiveIntensity = 0.5 + Math.sin(time * 3) * 0.3;
+                            };
+                        }
+                    });
+
+                    console.log('✓ FPS Arena template loaded - Ready for game development!');
+                    console.log('Features: Team spawns, cover system, item spawns, tactical platform');
                 }
             },
             {
@@ -5094,29 +5286,220 @@
                 badge: 'popular',
                 icon: 'fa-box-open',
                 setup: function() {
-                    // Pedestal
+                    // ENHANCED PRODUCT SHOWCASE - E-commerce Ready
+                    // Professional product display with studio lighting, rotating platform,
+                    // and backdrop for perfect product visualization
+
+                    // Studio Background - Gradient backdrop
+                    const backdrop = createAsset('plane');
+                    if (backdrop) {
+                        backdrop.scale.set(15, 10, 1);
+                        backdrop.position.set(0, 5, -6);
+                        backdrop.material.color.setHex(0xf5f5f5); // Light gray
+                        backdrop.material.roughness = 1.0;
+                        backdrop.material.metalness = 0.0;
+                        backdrop.name = 'Backdrop';
+                    }
+
+                    // Studio Floor - Reflective surface
+                    const studioFloor = createAsset('plane');
+                    if (studioFloor) {
+                        studioFloor.rotation.x = -Math.PI / 2;
+                        studioFloor.scale.set(15, 15, 1);
+                        studioFloor.position.y = -0.01;
+                        studioFloor.material.color.setHex(0xffffff);
+                        studioFloor.material.roughness = 0.3;
+                        studioFloor.material.metalness = 0.5;
+                        studioFloor.name = 'Studio Floor';
+                        studioFloor.receiveShadow = true;
+                    }
+
+                    // Rotating Pedestal - Main platform
                     const pedestal = createAsset('cylinder');
                     if (pedestal) {
-                        pedestal.scale.set(2, 0.3, 2);
-                        pedestal.position.y = 0;
+                        pedestal.scale.set(2.5, 0.4, 2.5);
+                        pedestal.position.set(0, 0.2, 0);
+                        pedestal.material.color.setHex(0x1a1a1a); // Dark elegant
+                        pedestal.material.roughness = 0.2;
+                        pedestal.material.metalness = 0.8;
+                        pedestal.name = 'Pedestal';
+                        pedestal.userData.rotatingPlatform = true;
+
+                        // Smooth rotation animation
+                        pedestal.userData.animate = function(time) {
+                            this.rotation.y = time * 0.3; // Slow elegant rotation
+                        };
                     }
 
-                    // Product placeholder
-                    const product = createAsset('box');
-                    if (product) {
-                        product.position.set(0, 1, 0);
+                    // Pedestal accent ring
+                    const ring = createAsset('torus');
+                    if (ring) {
+                        ring.scale.set(2.6, 2.6, 2.6);
+                        ring.position.set(0, 0.4, 0);
+                        ring.rotation.x = Math.PI / 2;
+                        ring.material.color.setHex(0xffd700); // Gold
+                        ring.material.roughness = 0.3;
+                        ring.material.metalness = 0.9;
+                        ring.material.emissive.setHex(0xffd700);
+                        ring.material.emissiveIntensity = 0.2;
+                        ring.name = 'Accent Ring';
+
+                        // Gentle pulsing effect
+                        ring.userData.animate = function(time) {
+                            this.rotation.z = time * 0.3;
+                            this.material.emissiveIntensity = 0.2 + Math.sin(time * 2) * 0.1;
+                        };
                     }
 
-                    // Lighting
-                    const light1 = createAsset('spotLight');
-                    if (light1) {
-                        light1.position.set(3, 4, 3);
+                    // Product Display - Premium box product
+                    const productBase = createAsset('box');
+                    if (productBase) {
+                        productBase.position.set(0, 1.5, 0);
+                        productBase.scale.set(1.5, 1.5, 1.5);
+                        productBase.material.color.setHex(0x4a90e2); // Premium blue
+                        productBase.material.roughness = 0.3;
+                        productBase.material.metalness = 0.7;
+                        productBase.material.emissive.setHex(0x2563eb);
+                        productBase.material.emissiveIntensity = 0.1;
+                        productBase.name = 'Product';
+                        productBase.userData.product = true;
+                        productBase.castShadow = true;
+
+                        // Floating animation
+                        productBase.userData.animate = function(time) {
+                            this.position.y = 1.5 + Math.sin(time * 1.5) * 0.1;
+                            this.rotation.y = time * 0.5;
+                        };
                     }
 
-                    const light2 = createAsset('spotLight');
-                    if (light2) {
-                        light2.position.set(-3, 4, -3);
+                    // Product accent details
+                    for (let i = 0; i < 4; i++) {
+                        const accent = createAsset('sphere');
+                        if (accent) {
+                            const angle = (Math.PI * 2 * i) / 4;
+                            accent.scale.set(0.15, 0.15, 0.15);
+                            accent.material.color.setHex(0xffd700);
+                            accent.material.roughness = 0.2;
+                            accent.material.metalness = 0.9;
+                            accent.material.emissive.setHex(0xffd700);
+                            accent.material.emissiveIntensity = 0.3;
+                            accent.name = `Product Accent ${i + 1}`;
+
+                            accent.userData.orbitAngle = angle;
+                            accent.userData.animate = function(time) {
+                                const orbitTime = time * 0.8;
+                                this.position.x = Math.cos(orbitTime + this.userData.orbitAngle) * 1.2;
+                                this.position.y = 1.5 + Math.sin(time * 1.5) * 0.1;
+                                this.position.z = Math.sin(orbitTime + this.userData.orbitAngle) * 1.2;
+                            };
+                        }
                     }
+
+                    // Studio Lighting Setup - Professional 3-point lighting
+
+                    // Key Light (main light)
+                    const keyLight = createAsset('spotLight');
+                    if (keyLight) {
+                        keyLight.position.set(5, 6, 5);
+                        keyLight.intensity = 1.5;
+                        keyLight.angle = Math.PI / 4;
+                        keyLight.penumbra = 0.3;
+                        keyLight.distance = 30;
+                        keyLight.color.setHex(0xffffff);
+                        keyLight.name = 'Key Light';
+                        keyLight.target.position.set(0, 1, 0);
+                        scene.add(keyLight.target);
+                    }
+
+                    // Fill Light (softer, opposite side)
+                    const fillLight = createAsset('spotLight');
+                    if (fillLight) {
+                        fillLight.position.set(-4, 5, 3);
+                        fillLight.intensity = 0.8;
+                        fillLight.angle = Math.PI / 3;
+                        fillLight.penumbra = 0.5;
+                        fillLight.distance = 25;
+                        fillLight.color.setHex(0xe0e7ff); // Slight blue tint
+                        fillLight.name = 'Fill Light';
+                        fillLight.target.position.set(0, 1, 0);
+                        scene.add(fillLight.target);
+                    }
+
+                    // Back Light (rim light for depth)
+                    const backLight = createAsset('spotLight');
+                    if (backLight) {
+                        backLight.position.set(0, 4, -4);
+                        backLight.intensity = 1.2;
+                        backLight.angle = Math.PI / 5;
+                        backLight.penumbra = 0.2;
+                        backLight.distance = 20;
+                        backLight.color.setHex(0xffffee);
+                        backLight.name = 'Back Light';
+                        backLight.target.position.set(0, 1, 0);
+                        scene.add(backLight.target);
+                    }
+
+                    // Accent Rim Lights (colored highlights)
+                    const rimColors = [0xff6b6b, 0x4ecdc4];
+                    rimColors.forEach((color, i) => {
+                        const rimLight = createAsset('pointLight');
+                        if (rimLight) {
+                            rimLight.position.set(i === 0 ? 3 : -3, 3, -2);
+                            rimLight.intensity = 0.5;
+                            rimLight.distance = 12;
+                            rimLight.color.setHex(color);
+                            rimLight.name = `Rim Light ${i + 1}`;
+                        }
+                    });
+
+                    // Information Cards (for product details)
+                    const infoPositions = [
+                        {x: -4, z: 2, label: 'Features'},
+                        {x: 4, z: 2, label: 'Specs'},
+                        {x: 0, z: 4, label: 'Price'}
+                    ];
+
+                    infoPositions.forEach(info => {
+                        const card = createAsset('box');
+                        if (card) {
+                            card.scale.set(1.5, 1, 0.05);
+                            card.position.set(info.x, 2.5, info.z);
+                            card.material.color.setHex(0xffffff);
+                            card.material.roughness = 0.4;
+                            card.material.metalness = 0.1;
+                            card.material.emissive.setHex(0x3b82f6);
+                            card.material.emissiveIntensity = 0.05;
+                            card.name = `Info Card - ${info.label}`;
+                            card.userData.infoCard = true;
+
+                            // Subtle float animation
+                            card.userData.animate = function(time) {
+                                this.position.y = 2.5 + Math.sin(time * 1.2 + this.position.x) * 0.05;
+                            };
+                        }
+                    });
+
+                    // Price tag (floating above product)
+                    const priceTag = createAsset('plane');
+                    if (priceTag) {
+                        priceTag.scale.set(1.2, 0.4, 1);
+                        priceTag.position.set(0, 3.5, 0);
+                        priceTag.material.color.setHex(0x10b981); // Green
+                        priceTag.material.roughness = 0.3;
+                        priceTag.material.metalness = 0.2;
+                        priceTag.material.side = THREE.DoubleSide;
+                        priceTag.material.emissive.setHex(0x10b981);
+                        priceTag.material.emissiveIntensity = 0.3;
+                        priceTag.name = 'Price Tag';
+
+                        priceTag.userData.animate = function(time) {
+                            this.rotation.y = Math.sin(time) * 0.1;
+                            this.position.y = 3.5 + Math.sin(time * 2) * 0.05;
+                        };
+                    }
+
+                    console.log('✓ Product Showcase loaded - E-commerce ready!');
+                    console.log('Features: Studio lighting, rotating platform, animated product, info cards');
                 }
             },
             {
@@ -5168,26 +5551,227 @@
                 badge: 'popular',
                 icon: 'fa-layer-group',
                 setup: function() {
-                    // Floating geometric shapes
-                    for (let i = 0; i < 10; i++) {
-                        const shapes = ['box', 'sphere', 'torus', 'cone'];
-                        const shape = createAsset(shapes[Math.floor(Math.random() * shapes.length)]);
+                    // ENHANCED 3D HERO BACKGROUND - Modern Website Design
+                    // Animated floating geometric shapes with gradient colors,
+                    // perfect for modern landing pages and hero sections
+
+                    // Color palette - Modern gradient colors
+                    const colorPalette = [
+                        0x667eea, // Purple
+                        0x764ba2, // Deep purple
+                        0xf093fb, // Pink
+                        0x4facfe, // Blue
+                        0x00f2fe, // Cyan
+                        0xa8edea  // Mint
+                    ];
+
+                    // Large floating shapes (background layer)
+                    const largeShapes = [
+                        {type: 'sphere', pos: {x: -8, y: 3, z: -10}, scale: 3},
+                        {type: 'torus', pos: {x: 10, y: -2, z: -12}, scale: 4},
+                        {type: 'box', pos: {x: -5, y: -4, z: -8}, scale: 2.5}
+                    ];
+
+                    largeShapes.forEach((config, i) => {
+                        const shape = createAsset(config.type);
                         if (shape) {
+                            shape.position.set(config.pos.x, config.pos.y, config.pos.z);
+                            shape.scale.setScalar(config.scale);
+                            shape.material.color.setHex(colorPalette[i % colorPalette.length]);
+                            shape.material.roughness = 0.3;
+                            shape.material.metalness = 0.6;
+                            shape.material.emissive.setHex(colorPalette[i % colorPalette.length]);
+                            shape.material.emissiveIntensity = 0.2;
+                            shape.material.transparent = true;
+                            shape.material.opacity = 0.7;
+                            shape.name = `BG Shape Large ${i + 1}`;
+
+                            // Slow rotation and float
+                            shape.userData.floatSpeed = 0.2 + Math.random() * 0.3;
+                            shape.userData.rotSpeed = (Math.random() - 0.5) * 0.2;
+                            shape.userData.initialY = config.pos.y;
+                            shape.userData.animate = function(time) {
+                                this.rotation.x += this.userData.rotSpeed * 0.01;
+                                this.rotation.y += this.userData.rotSpeed * 0.015;
+                                this.position.y = this.userData.initialY + Math.sin(time * this.userData.floatSpeed) * 1.5;
+
+                                // Pulsing glow
+                                this.material.emissiveIntensity = 0.2 + Math.sin(time * 2) * 0.1;
+                            };
+                        }
+                    });
+
+                    // Medium floating shapes (mid layer) - More dynamic
+                    for (let i = 0; i < 8; i++) {
+                        const shapes = ['box', 'sphere', 'torus'];
+                        const shape = createAsset(shapes[i % shapes.length]);
+                        if (shape) {
+                            const angle = (Math.PI * 2 * i) / 8;
+                            const radius = 12 + Math.random() * 5;
+
                             shape.position.set(
-                                (Math.random() - 0.5) * 20,
-                                (Math.random() - 0.5) * 10,
-                                (Math.random() - 0.5) * 15
+                                Math.cos(angle) * radius,
+                                (Math.random() - 0.5) * 8,
+                                Math.sin(angle) * radius - 5
                             );
-                            shape.scale.setScalar(Math.random() * 0.5 + 0.5);
-                            shape.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, 0);
+
+                            const size = 0.8 + Math.random() * 1.2;
+                            shape.scale.setScalar(size);
+                            shape.material.color.setHex(colorPalette[i % colorPalette.length]);
+                            shape.material.roughness = 0.4;
+                            shape.material.metalness = 0.5;
+                            shape.material.emissive.setHex(colorPalette[i % colorPalette.length]);
+                            shape.material.emissiveIntensity = 0.15;
+                            shape.material.transparent = true;
+                            shape.material.opacity = 0.6;
+                            shape.name = `BG Shape Medium ${i + 1}`;
+
+                            // Orbital + rotation animation
+                            shape.userData.orbitRadius = radius;
+                            shape.userData.orbitSpeed = 0.1 + Math.random() * 0.1;
+                            shape.userData.orbitOffset = angle;
+                            shape.userData.initialY = shape.position.y;
+                            shape.userData.animate = function(time) {
+                                const orbitAngle = time * this.userData.orbitSpeed + this.userData.orbitOffset;
+                                this.position.x = Math.cos(orbitAngle) * this.userData.orbitRadius;
+                                this.position.z = Math.sin(orbitAngle) * this.userData.orbitRadius - 5;
+                                this.position.y = this.userData.initialY + Math.sin(time * 0.5) * 2;
+
+                                this.rotation.x = time * 0.3;
+                                this.rotation.y = time * 0.2;
+                            };
                         }
                     }
 
-                    // Lighting
-                    const light = createAsset('pointLight');
-                    if (light) {
-                        light.position.set(0, 5, 5);
+                    // Small accent shapes (foreground) - Fast moving particles
+                    for (let i = 0; i < 15; i++) {
+                        const shape = createAsset('sphere');
+                        if (shape) {
+                            shape.position.set(
+                                (Math.random() - 0.5) * 25,
+                                (Math.random() - 0.5) * 12,
+                                Math.random() * 8 - 2
+                            );
+
+                            const size = 0.2 + Math.random() * 0.4;
+                            shape.scale.setScalar(size);
+                            shape.material.color.setHex(colorPalette[Math.floor(Math.random() * colorPalette.length)]);
+                            shape.material.roughness = 0.2;
+                            shape.material.metalness = 0.8;
+                            shape.material.emissive.setHex(shape.material.color.getHex());
+                            shape.material.emissiveIntensity = 0.5;
+                            shape.material.transparent = true;
+                            shape.material.opacity = 0.8;
+                            shape.name = `Particle ${i + 1}`;
+
+                            // Fast floating particle effect
+                            shape.userData.floatSpeed = 1 + Math.random() * 2;
+                            shape.userData.driftSpeed = {
+                                x: (Math.random() - 0.5) * 0.5,
+                                y: (Math.random() - 0.5) * 0.3,
+                                z: (Math.random() - 0.5) * 0.2
+                            };
+                            shape.userData.initialPos = shape.position.clone();
+                            shape.userData.animate = function(time) {
+                                // Floating drift
+                                this.position.x = this.userData.initialPos.x + Math.sin(time * this.userData.driftSpeed.x) * 3;
+                                this.position.y = this.userData.initialPos.y + Math.sin(time * this.userData.floatSpeed) * 2;
+                                this.position.z = this.userData.initialPos.z + Math.sin(time * this.userData.driftSpeed.z) * 2;
+
+                                // Pulsing glow
+                                const pulse = Math.sin(time * 3) * 0.3 + 0.7;
+                                this.material.emissiveIntensity = 0.5 * pulse;
+                                this.scale.setScalar(this.scale.x * (1 + pulse * 0.1));
+                            };
+                        }
                     }
+
+                    // Connecting Lines - Network effect
+                    for (let i = 0; i < 5; i++) {
+                        const lineGeo = createAsset('cylinder');
+                        if (lineGeo) {
+                            const start = {
+                                x: (Math.random() - 0.5) * 15,
+                                y: (Math.random() - 0.5) * 8,
+                                z: -8
+                            };
+                            const end = {
+                                x: (Math.random() - 0.5) * 15,
+                                y: (Math.random() - 0.5) * 8,
+                                z: -8
+                            };
+
+                            const dx = end.x - start.x;
+                            const dy = end.y - start.y;
+                            const dz = end.z - start.z;
+                            const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+                            lineGeo.scale.set(0.02, distance / 2, 0.02);
+                            lineGeo.position.set(
+                                (start.x + end.x) / 2,
+                                (start.y + end.y) / 2,
+                                (start.z + end.z) / 2
+                            );
+
+                            const angle = Math.atan2(dz, dx);
+                            const elevation = Math.atan2(dy, Math.sqrt(dx*dx + dz*dz));
+                            lineGeo.rotation.z = elevation;
+                            lineGeo.rotation.y = angle - Math.PI/2;
+
+                            lineGeo.material.color.setHex(0x667eea);
+                            lineGeo.material.emissive.setHex(0x667eea);
+                            lineGeo.material.emissiveIntensity = 0.3;
+                            lineGeo.material.transparent = true;
+                            lineGeo.material.opacity = 0.3;
+                            lineGeo.name = `Connection Line ${i + 1}`;
+
+                            // Pulsing line effect
+                            lineGeo.userData.animate = function(time) {
+                                this.material.emissiveIntensity = 0.3 + Math.sin(time * 2 + i) * 0.2;
+                                this.material.opacity = 0.3 + Math.sin(time * 2 + i) * 0.15;
+                            };
+                        }
+                    }
+
+                    // Dynamic Lighting - Colored lights
+                    const lightColors = [
+                        {color: 0x667eea, pos: {x: -10, y: 8, z: 5}},
+                        {color: 0xf093fb, pos: {x: 10, y: 6, z: 3}},
+                        {color: 0x4facfe, pos: {x: 0, y: 10, z: 8}}
+                    ];
+
+                    lightColors.forEach((config, i) => {
+                        const light = createAsset('pointLight');
+                        if (light) {
+                            light.position.set(config.pos.x, config.pos.y, config.pos.z);
+                            light.color.setHex(config.color);
+                            light.intensity = 0.8;
+                            light.distance = 25;
+                            light.name = `Accent Light ${i + 1}`;
+
+                            // Moving light effect
+                            light.userData.initialPos = light.position.clone();
+                            light.userData.moveSpeed = 0.5 + i * 0.2;
+                            light.userData.animate = function(time) {
+                                this.position.x = this.userData.initialPos.x + Math.sin(time * this.userData.moveSpeed) * 3;
+                                this.position.y = this.userData.initialPos.y + Math.cos(time * this.userData.moveSpeed * 0.7) * 2;
+                                this.intensity = 0.8 + Math.sin(time * 2) * 0.3;
+                            };
+                        }
+                    });
+
+                    // Rim light for depth
+                    const rimLight = createAsset('pointLight');
+                    if (rimLight) {
+                        rimLight.position.set(0, 0, -15);
+                        rimLight.color.setHex(0xa8edea);
+                        rimLight.intensity = 1.2;
+                        rimLight.distance = 30;
+                        rimLight.name = 'Rim Light';
+                    }
+
+                    console.log('✓ 3D Hero Background loaded - Modern & Animated!');
+                    console.log('Features: Floating shapes, particle effects, dynamic lighting, network connections');
                 }
             },
             {
