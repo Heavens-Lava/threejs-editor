@@ -742,6 +742,193 @@
         }
 
         /* ============================================ */
+        /* PHASE 4: BLUEPRINT SYSTEM */
+        /* ============================================ */
+
+        /* Blueprint Node Palette */
+        .node-palette-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: #2a2a2a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .node-palette-btn:hover {
+            background: #353535;
+            border-color: #505050;
+            transform: translateX(4px);
+        }
+
+        .node-palette-btn:active {
+            background: #404040;
+        }
+
+        /* Blueprint Node */
+        .blueprint-node {
+            position: absolute;
+            min-width: 200px;
+            background: #2a2a2a;
+            border: 2px solid #404040;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            cursor: move;
+            user-select: none;
+        }
+
+        .blueprint-node.selected {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.3);
+        }
+
+        .blueprint-node.executing {
+            border-color: #fbbf24;
+            animation: pulse-node 0.5s ease-in-out;
+        }
+
+        @keyframes pulse-node {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+        }
+
+        .blueprint-node-header {
+            padding: 10px 12px;
+            font-weight: 600;
+            font-size: 12px;
+            color: white;
+            background: #2a5a2a;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .blueprint-node-header.event {
+            background: #2a5a2a;
+        }
+
+        .blueprint-node-header.action {
+            background: #2a3a5a;
+        }
+
+        .blueprint-node-header.flow {
+            background: #5a4a2a;
+        }
+
+        .blueprint-node-body {
+            padding: 10px 12px;
+        }
+
+        .blueprint-node-pin {
+            display: flex;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 11px;
+            color: #aaa;
+        }
+
+        .blueprint-node-pin.input {
+            justify-content: flex-start;
+        }
+
+        .blueprint-node-pin.output {
+            justify-content: flex-end;
+        }
+
+        .blueprint-pin {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #555;
+            border: 2px solid #888;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .blueprint-pin.exec {
+            background: white;
+            border-color: white;
+        }
+
+        .blueprint-pin.data {
+            background: #4a9eff;
+            border-color: #4a9eff;
+        }
+
+        .blueprint-pin:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .blueprint-node-pin.input .blueprint-pin {
+            margin-right: 8px;
+        }
+
+        .blueprint-node-pin.output .blueprint-pin {
+            margin-left: 8px;
+        }
+
+        .blueprint-node-param {
+            margin: 8px 0;
+            font-size: 11px;
+        }
+
+        .blueprint-node-param label {
+            display: block;
+            margin-bottom: 4px;
+            color: #999;
+        }
+
+        .blueprint-node-param input,
+        .blueprint-node-param select {
+            width: 100%;
+            padding: 6px 8px;
+            background: #1a1a1a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 11px;
+        }
+
+        .blueprint-node-param input[type="color"] {
+            height: 30px;
+            padding: 2px;
+        }
+
+        /* Blueprint Connections */
+        .blueprint-connection {
+            stroke: rgba(255, 255, 255, 0.4);
+            stroke-width: 2;
+            fill: none;
+            pointer-events: stroke;
+            cursor: pointer;
+        }
+
+        .blueprint-connection.exec {
+            stroke: rgba(255, 255, 255, 0.6);
+        }
+
+        .blueprint-connection.data {
+            stroke: rgba(74, 158, 255, 0.6);
+        }
+
+        .blueprint-connection:hover {
+            stroke-width: 3;
+            filter: brightness(1.5);
+        }
+
+        .blueprint-connection.temp {
+            stroke-dasharray: 5, 5;
+            stroke: #fbbf24;
+        }
+
+        /* ============================================ */
         /* PHASE 1.3: UI ORGANIZATION & ENHANCEMENT */
         /* ============================================ */
 
@@ -2146,6 +2333,9 @@
             <div class="sidebar-tab" onclick="switchRightTab('scene')">
                 <i class="fas fa-globe"></i><br>Scene
             </div>
+            <div class="sidebar-tab" onclick="switchRightTab('blueprint')">
+                <i class="fas fa-project-diagram"></i><br>Blueprint
+            </div>
         </div>
 
         <div class="sidebar-content">
@@ -2553,6 +2743,137 @@
                     <div class="property-label">Spawn Point Info</div>
                     <div class="spawn-point-info" id="spawn-info">
                         No spawn point in scene. Add one from the Assets panel.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blueprint Panel -->
+            <div class="sidebar-panel" id="panel-blueprint">
+                <div class="no-selection" id="blueprint-no-selection">
+                    <i class="fas fa-project-diagram" style="font-size: 32px; color: #444; margin-bottom: 10px; display: block;"></i>
+                    Select an object to create Blueprints
+                </div>
+
+                <div id="blueprint-content" style="display: none;">
+                    <div class="property-group">
+                        <div class="property-label">Blueprint System</div>
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="has-blueprint" onchange="toggleBlueprint()">
+                            <label for="has-blueprint">Enable Blueprint</label>
+                        </div>
+                    </div>
+
+                    <div id="blueprint-editor" style="display: none;">
+                        <!-- Node Palette -->
+                        <div class="property-group" style="margin-bottom: 10px;">
+                            <div class="property-label" style="margin-bottom: 8px;">
+                                Add Nodes
+                                <button class="btn btn-secondary" onclick="clearBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
+                                    <i class="fas fa-trash"></i> Clear All
+                                </button>
+                            </div>
+
+                            <!-- Event Nodes -->
+                            <details style="margin-bottom: 8px;">
+                                <summary style="background: #2a5a2a; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                                    📍 Events
+                                </summary>
+                                <div class="node-palette" id="event-nodes" style="padding: 8px 0;">
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Start')">
+                                        📍 On Start
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Collision Enter')">
+                                        📍 On Collision Enter
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Trigger Enter')">
+                                        📍 On Trigger Enter
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('On Click')">
+                                        📍 On Click
+                                    </button>
+                                </div>
+                            </details>
+
+                            <!-- Action Nodes -->
+                            <details style="margin-bottom: 8px;">
+                                <summary style="background: #2a3a5a; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                                    ⚡ Actions
+                                </summary>
+                                <div class="node-palette" id="action-nodes" style="padding: 8px 0;">
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Change Color')">
+                                        ⚡ Change Color
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Move Object')">
+                                        ⚡ Move Object
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Destroy Object')">
+                                        ⚡ Destroy Object
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Log Message')">
+                                        ⚡ Log Message
+                                    </button>
+                                </div>
+                            </details>
+
+                            <!-- Flow Nodes -->
+                            <details style="margin-bottom: 8px;">
+                                <summary style="background: #5a4a2a; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600;">
+                                    🔀 Flow Control
+                                </summary>
+                                <div class="node-palette" id="flow-nodes" style="padding: 8px 0;">
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Branch')">
+                                        🔀 Branch (If)
+                                    </button>
+                                    <button class="node-palette-btn" onclick="addBlueprintNode('Delay')">
+                                        🔀 Delay
+                                    </button>
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- Blueprint Canvas -->
+                        <div class="property-group">
+                            <div class="property-label" style="margin-bottom: 8px;">
+                                Blueprint Graph
+                                <button class="btn" onclick="testBlueprint()" style="float: right; padding: 4px 8px; font-size: 11px;">
+                                    <i class="fas fa-play"></i> Test
+                                </button>
+                            </div>
+                            <div id="blueprint-canvas-container" style="
+                                background: #1a1a1a;
+                                border: 2px solid #333;
+                                border-radius: 6px;
+                                height: 400px;
+                                overflow: auto;
+                                position: relative;
+                                cursor: grab;
+                            ">
+                                <svg id="blueprint-canvas" style="
+                                    width: 100%;
+                                    height: 100%;
+                                    min-width: 800px;
+                                    min-height: 600px;
+                                ">
+                                    <!-- Connection lines will be drawn here -->
+                                    <g id="blueprint-connections"></g>
+                                    <!-- Nodes will be rendered here -->
+                                    <foreignObject id="blueprint-nodes" x="0" y="0" width="100%" height="100%">
+                                        <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; position: relative;">
+                                            <!-- Nodes rendered dynamically -->
+                                        </div>
+                                    </foreignObject>
+                                </svg>
+                            </div>
+
+                            <!-- Blueprint Info -->
+                            <div style="margin-top: 8px; font-size: 11px; color: #888; padding: 8px; background: #222; border-radius: 4px;">
+                                <strong>Tips:</strong><br>
+                                • Click nodes from palette to add<br>
+                                • Drag pins to create connections<br>
+                                • Right-click node to delete<br>
+                                • Test runs the blueprint
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4836,6 +5157,562 @@ console.log('No longer colliding with:', other.name);`
 
             event.target.closest('.sidebar-tab').classList.add('active');
             document.getElementById('panel-' + tab).classList.add('active');
+
+            // Update Blueprint panel visibility
+            if (tab === 'blueprint') {
+                const noSelection = document.getElementById('blueprint-no-selection');
+                const content = document.getElementById('blueprint-content');
+
+                if (selectedObject) {
+                    noSelection.style.display = 'none';
+                    content.style.display = 'block';
+                    loadBlueprintUI();
+                } else {
+                    noSelection.style.display = 'block';
+                    content.style.display = 'none';
+                }
+            }
+        }
+
+        // ============================================
+        // BLUEPRINT SYSTEM
+        // ============================================
+
+        // Blueprint state
+        let blueprintNodeId = 0;
+        let blueprintDragNode = null;
+        let blueprintDragConnection = null;
+        let blueprintSelectedNode = null;
+
+        // Node Registry
+        const blueprintNodeRegistry = {
+            'On Start': {
+                type: 'event',
+                icon: '📍',
+                outputs: [
+                    { name: 'Execute', type: 'exec' }
+                ]
+            },
+            'On Collision Enter': {
+                type: 'event',
+                icon: '📍',
+                outputs: [
+                    { name: 'Execute', type: 'exec' },
+                    { name: 'Other Object', type: 'data' }
+                ]
+            },
+            'On Trigger Enter': {
+                type: 'event',
+                icon: '📍',
+                outputs: [
+                    { name: 'Execute', type: 'exec' },
+                    { name: 'Other Object', type: 'data' }
+                ]
+            },
+            'On Click': {
+                type: 'event',
+                icon: '📍',
+                outputs: [
+                    { name: 'Execute', type: 'exec' }
+                ]
+            },
+            'Change Color': {
+                type: 'action',
+                icon: '⚡',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'Then', type: 'exec' }
+                ],
+                params: [
+                    { name: 'color', label: 'Color', type: 'color', default: '#FF0000' }
+                ]
+            },
+            'Move Object': {
+                type: 'action',
+                icon: '⚡',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'Then', type: 'exec' }
+                ],
+                params: [
+                    { name: 'x', label: 'X Position', type: 'number', default: 0 },
+                    { name: 'y', label: 'Y Position', type: 'number', default: 1 },
+                    { name: 'z', label: 'Z Position', type: 'number', default: 0 }
+                ]
+            },
+            'Destroy Object': {
+                type: 'action',
+                icon: '⚡',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'Then', type: 'exec' }
+                ]
+            },
+            'Log Message': {
+                type: 'action',
+                icon: '⚡',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'Then', type: 'exec' }
+                ],
+                params: [
+                    { name: 'message', label: 'Message', type: 'text', default: 'Hello!' }
+                ]
+            },
+            'Branch': {
+                type: 'flow',
+                icon: '🔀',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'True', type: 'exec' },
+                    { name: 'False', type: 'exec' }
+                ],
+                params: [
+                    {
+                        name: 'condition',
+                        label: 'Condition',
+                        type: 'select',
+                        options: ['Is Player', 'Has Tag: Enemy', 'Has Tag: Collectible', 'Y Position > 0', 'Y Position < 0'],
+                        default: 'Is Player'
+                    }
+                ]
+            },
+            'Delay': {
+                type: 'flow',
+                icon: '🔀',
+                inputs: [
+                    { name: 'Execute', type: 'exec' }
+                ],
+                outputs: [
+                    { name: 'Then', type: 'exec' }
+                ],
+                params: [
+                    { name: 'duration', label: 'Duration (seconds)', type: 'number', default: 1.0 }
+                ]
+            }
+        };
+
+        function toggleBlueprint() {
+            if (!selectedObject) return;
+
+            const enabled = document.getElementById('has-blueprint').checked;
+            const editor = document.getElementById('blueprint-editor');
+
+            if (enabled) {
+                selectedObject.userData.blueprint = {
+                    enabled: true,
+                    nodes: [],
+                    connections: []
+                };
+                editor.style.display = 'block';
+                renderBlueprintCanvas();
+            } else {
+                selectedObject.userData.blueprint = null;
+                editor.style.display = 'none';
+            }
+        }
+
+        function addBlueprintNode(nodeName) {
+            if (!selectedObject || !selectedObject.userData.blueprint) return;
+
+            const nodeDefinition = blueprintNodeRegistry[nodeName];
+            if (!nodeDefinition) return;
+
+            const nodeId = 'node_' + (blueprintNodeId++);
+            const newNode = {
+                id: nodeId,
+                name: nodeName,
+                type: nodeDefinition.type,
+                icon: nodeDefinition.icon,
+                position: { x: 100 + Math.random() * 200, y: 100 + Math.random() * 200 },
+                inputs: nodeDefinition.inputs || [],
+                outputs: nodeDefinition.outputs || [],
+                params: {}
+            };
+
+            // Initialize parameters with defaults
+            if (nodeDefinition.params) {
+                nodeDefinition.params.forEach(param => {
+                    newNode.params[param.name] = param.default;
+                });
+            }
+
+            selectedObject.userData.blueprint.nodes.push(newNode);
+            renderBlueprintCanvas();
+        }
+
+        function clearBlueprint() {
+            if (!selectedObject || !selectedObject.userData.blueprint) return;
+
+            if (confirm('Clear all nodes from this Blueprint?')) {
+                selectedObject.userData.blueprint.nodes = [];
+                selectedObject.userData.blueprint.connections = [];
+                renderBlueprintCanvas();
+            }
+        }
+
+        function testBlueprint() {
+            if (!selectedObject || !selectedObject.userData.blueprint) return;
+
+            console.log('🎮 Testing Blueprint for:', selectedObject.name);
+            executeBlueprint(selectedObject, 'On Start', {});
+        }
+
+        function renderBlueprintCanvas() {
+            if (!selectedObject || !selectedObject.userData.blueprint) return;
+
+            const blueprint = selectedObject.userData.blueprint;
+            const canvas = document.querySelector('#blueprint-nodes > div');
+            const connectionsGroup = document.getElementById('blueprint-connections');
+
+            // Clear canvas
+            canvas.innerHTML = '';
+            connectionsGroup.innerHTML = '';
+
+            // Render nodes
+            blueprint.nodes.forEach(node => {
+                const nodeEl = createNodeElement(node);
+                canvas.appendChild(nodeEl);
+            });
+
+            // Render connections
+            blueprint.connections.forEach(conn => {
+                const line = createConnectionLine(conn);
+                if (line) connectionsGroup.appendChild(line);
+            });
+        }
+
+        function createNodeElement(node) {
+            const nodeEl = document.createElement('div');
+            nodeEl.className = `blueprint-node ${node.type}`;
+            nodeEl.style.left = node.position.x + 'px';
+            nodeEl.style.top = node.position.y + 'px';
+            nodeEl.dataset.nodeId = node.id;
+
+            // Header
+            const header = document.createElement('div');
+            header.className = `blueprint-node-header ${node.type}`;
+            header.textContent = `${node.icon} ${node.name}`;
+            nodeEl.appendChild(header);
+
+            // Body
+            const body = document.createElement('div');
+            body.className = 'blueprint-node-body';
+
+            // Input pins
+            node.inputs.forEach(input => {
+                const pinEl = document.createElement('div');
+                pinEl.className = `blueprint-node-pin input`;
+                pinEl.innerHTML = `
+                    <div class="blueprint-pin ${input.type}" data-pin="${input.name}" data-direction="input"></div>
+                    <span>${input.name}</span>
+                `;
+                body.appendChild(pinEl);
+            });
+
+            // Parameters
+            const nodeDefinition = blueprintNodeRegistry[node.name];
+            if (nodeDefinition.params) {
+                nodeDefinition.params.forEach(param => {
+                    const paramEl = document.createElement('div');
+                    paramEl.className = 'blueprint-node-param';
+
+                    const label = document.createElement('label');
+                    label.textContent = param.label;
+                    paramEl.appendChild(label);
+
+                    let input;
+                    if (param.type === 'select') {
+                        input = document.createElement('select');
+                        param.options.forEach(opt => {
+                            const option = document.createElement('option');
+                            option.value = opt;
+                            option.textContent = opt;
+                            if (opt === node.params[param.name]) option.selected = true;
+                            input.appendChild(option);
+                        });
+                    } else if (param.type === 'color') {
+                        input = document.createElement('input');
+                        input.type = 'color';
+                        input.value = node.params[param.name] || param.default;
+                    } else if (param.type === 'number') {
+                        input = document.createElement('input');
+                        input.type = 'number';
+                        input.step = '0.1';
+                        input.value = node.params[param.name] || param.default;
+                    } else {
+                        input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = node.params[param.name] || param.default;
+                    }
+
+                    input.addEventListener('change', () => {
+                        node.params[param.name] = param.type === 'number' ? parseFloat(input.value) : input.value;
+                    });
+
+                    paramEl.appendChild(input);
+                    body.appendChild(paramEl);
+                });
+            }
+
+            // Output pins
+            node.outputs.forEach(output => {
+                const pinEl = document.createElement('div');
+                pinEl.className = `blueprint-node-pin output`;
+                pinEl.innerHTML = `
+                    <span>${output.name}</span>
+                    <div class="blueprint-pin ${output.type}" data-pin="${output.name}" data-direction="output"></div>
+                `;
+                body.appendChild(pinEl);
+            });
+
+            nodeEl.appendChild(body);
+
+            // Make node draggable
+            makeNodeDraggable(nodeEl, node);
+
+            // Right-click to delete
+            nodeEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                if (confirm(`Delete node "${node.name}"?`)) {
+                    deleteNode(node.id);
+                }
+            });
+
+            return nodeEl;
+        }
+
+        function makeNodeDraggable(element, node) {
+            let isDragging = false;
+            let startX, startY;
+
+            element.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // Only left click
+                if (e.target.classList.contains('blueprint-pin')) return; // Don't drag when clicking pins
+
+                isDragging = true;
+                startX = e.clientX - node.position.x;
+                startY = e.clientY - node.position.y;
+                element.classList.add('selected');
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                node.position.x = e.clientX - startX;
+                node.position.y = e.clientY - startY;
+                element.style.left = node.position.x + 'px';
+                element.style.top = node.position.y + 'px';
+
+                renderBlueprintCanvas(); // Re-render to update connections
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.classList.remove('selected');
+                }
+            });
+        }
+
+        function createConnectionLine(connection) {
+            // Find source and target nodes
+            const blueprint = selectedObject.userData.blueprint;
+            const [sourceId, sourcePinName] = connection.from.split('.');
+            const [targetId, targetPinName] = connection.to.split('.');
+
+            const sourceNode = blueprint.nodes.find(n => n.id === sourceId);
+            const targetNode = blueprint.nodes.find(n => n.id === targetId);
+
+            if (!sourceNode || !targetNode) return null;
+
+            // Calculate pin positions
+            const sourcePin = sourceNode.outputs.find(p => p.name === sourcePinName);
+            const targetPin = targetNode.inputs.find(p => p.name === targetPinName);
+
+            if (!sourcePin || !targetPin) return null;
+
+            // Rough pin position calculation (simplified)
+            const x1 = sourceNode.position.x + 200;
+            const y1 = sourceNode.position.y + 50;
+            const x2 = targetNode.position.x;
+            const y2 = targetNode.position.y + 50;
+
+            // Create Bezier curve
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const midX = (x1 + x2) / 2;
+
+            path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+            path.setAttribute('class', `blueprint-connection ${sourcePin.type}`);
+
+            return path;
+        }
+
+        function deleteNode(nodeId) {
+            if (!selectedObject || !selectedObject.userData.blueprint) return;
+
+            const blueprint = selectedObject.userData.blueprint;
+
+            // Remove node
+            blueprint.nodes = blueprint.nodes.filter(n => n.id !== nodeId);
+
+            // Remove connections involving this node
+            blueprint.connections = blueprint.connections.filter(conn => {
+                return !conn.from.startsWith(nodeId + '.') && !conn.to.startsWith(nodeId + '.');
+            });
+
+            renderBlueprintCanvas();
+        }
+
+        function loadBlueprintUI() {
+            if (!selectedObject) return;
+
+            const hasBlueprint = selectedObject.userData.blueprint && selectedObject.userData.blueprint.enabled;
+            document.getElementById('has-blueprint').checked = hasBlueprint;
+
+            const editor = document.getElementById('blueprint-editor');
+            editor.style.display = hasBlueprint ? 'block' : 'none';
+
+            if (hasBlueprint) {
+                renderBlueprintCanvas();
+            }
+        }
+
+        function executeBlueprint(obj, eventName, context) {
+            if (!obj.userData.blueprint || !obj.userData.blueprint.enabled) return;
+
+            const blueprint = obj.userData.blueprint;
+            context.targetObject = obj;
+
+            // Find event node matching the event name
+            const eventNode = blueprint.nodes.find(node => node.name === eventName);
+            if (!eventNode) return;
+
+            console.log('📍 Blueprint Event:', eventName, 'on', obj.name);
+
+            // Execute from the event node
+            executeNode(eventNode, context);
+        }
+
+        function executeNode(node, context) {
+            if (!node) return;
+
+            console.log('⚡ Executing node:', node.name);
+
+            // Highlight node (visual feedback)
+            const nodeEl = document.querySelector(`[data-node-id="${node.id}"]`);
+            if (nodeEl) {
+                nodeEl.classList.add('executing');
+                setTimeout(() => nodeEl.classList.remove('executing'), 500);
+            }
+
+            // Execute node logic
+            switch (node.name) {
+                case 'Change Color':
+                    if (context.targetObject && context.targetObject.material) {
+                        const color = node.params.color || '#FF0000';
+                        context.targetObject.material.color.setHex(parseInt(color.replace('#', '0x')));
+                        console.log('  → Changed color to', color);
+                    }
+                    break;
+
+                case 'Move Object':
+                    if (context.targetObject) {
+                        const x = parseFloat(node.params.x) || 0;
+                        const y = parseFloat(node.params.y) || 0;
+                        const z = parseFloat(node.params.z) || 0;
+                        context.targetObject.position.set(x, y, z);
+                        console.log(`  → Moved to (${x}, ${y}, ${z})`);
+                    }
+                    break;
+
+                case 'Destroy Object':
+                    if (context.targetObject) {
+                        scene.remove(context.targetObject);
+                        sceneObjects = sceneObjects.filter(o => o !== context.targetObject);
+                        console.log('  → Destroyed object');
+                    }
+                    break;
+
+                case 'Log Message':
+                    const message = node.params.message || 'Hello!';
+                    console.log('  → Message:', message);
+                    break;
+
+                case 'Branch':
+                    const condition = node.params.condition || 'Is Player';
+                    let result = false;
+                    const checkObj = context.otherObject || context.targetObject;
+
+                    if (checkObj) {
+                        switch (condition) {
+                            case 'Is Player':
+                                result = checkObj.name === 'Player' || checkObj.userData.isPlayer;
+                                break;
+                            case 'Has Tag: Enemy':
+                                result = checkObj.userData.tag === 'Enemy';
+                                break;
+                            case 'Has Tag: Collectible':
+                                result = checkObj.userData.tag === 'Collectible';
+                                break;
+                            case 'Y Position > 0':
+                                result = checkObj.position.y > 0;
+                                break;
+                            case 'Y Position < 0':
+                                result = checkObj.position.y < 0;
+                                break;
+                        }
+                    }
+                    console.log(`  → Branch: ${condition} = ${result}`);
+
+                    // Execute appropriate output
+                    const branchOutput = result ? 'True' : 'False';
+                    const nextNodes = findConnectedNodes(node.id, branchOutput);
+                    nextNodes.forEach(nextNode => executeNode(nextNode, context));
+                    return; // Don't continue to default flow
+
+                case 'Delay':
+                    const duration = parseFloat(node.params.duration) || 1.0;
+                    console.log(`  → Waiting ${duration}s...`);
+                    const nextDelayNodes = findConnectedNodes(node.id, 'Then');
+                    setTimeout(() => {
+                        nextDelayNodes.forEach(nextNode => executeNode(nextNode, context));
+                    }, duration * 1000);
+                    return; // Don't continue synchronously
+            }
+
+            // Find and execute connected nodes (default flow)
+            const outputPinNames = node.outputs ? node.outputs.map(o => o.name) : [];
+            outputPinNames.forEach(pinName => {
+                const nextNodes = findConnectedNodes(node.id, pinName);
+                nextNodes.forEach(nextNode => executeNode(nextNode, context));
+            });
+        }
+
+        function findConnectedNodes(nodeId, outputPinName) {
+            if (!selectedObject || !selectedObject.userData.blueprint) return [];
+
+            const blueprint = selectedObject.userData.blueprint;
+            const connectionKey = `${nodeId}.${outputPinName}`;
+
+            const connectedNodeIds = blueprint.connections
+                .filter(conn => conn.from === connectionKey)
+                .map(conn => conn.to.split('.')[0]);
+
+            return connectedNodeIds
+                .map(id => blueprint.nodes.find(n => n.id === id))
+                .filter(n => n !== undefined);
         }
 
         // ============================================
