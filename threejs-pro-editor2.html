@@ -9189,9 +9189,577 @@ console.log('No longer colliding with:', other.name);`,
       }
 
       function exportCode() {
-        alert(
-          "Code export feature coming soon! This will generate a standalone HTML file with your scene."
-        );
+        // Get scene data (same as saveScene)
+        const sceneData = {
+          version: "1.0",
+          objects: sceneObjects.map((obj) => {
+            const data = {
+              type: obj.type,
+              name: obj.name,
+              position: obj.position.toArray(),
+              rotation: obj.rotation.toArray(),
+              scale: obj.scale.toArray(),
+              userData: obj.userData,
+              isLight: obj.isLight || false,
+            };
+
+            if (obj.geometry) {
+              data.geometryType = obj.geometry.type;
+              data.geometryParams = obj.geometry.parameters;
+            }
+
+            if (obj.material) {
+              data.material = {
+                color: obj.material.color.getHex(),
+                roughness: obj.material.roughness,
+                metalness: obj.material.metalness,
+                side: obj.material.side,
+              };
+            }
+
+            if (obj.isLight) {
+              data.lightColor = obj.color.getHex();
+              data.lightIntensity = obj.intensity;
+              data.lightDistance = obj.distance;
+            }
+
+            return data;
+          }),
+          scene: {
+            backgroundColor: "#" + scene.background.getHexString(),
+            fog: scene.fog
+              ? {
+                  enabled: true,
+                  distance: document.getElementById("fog-distance").value,
+                }
+              : { enabled: false },
+            ambientLightIntensity: ambientLight.intensity,
+            sunLightIntensity: directionalLight.intensity,
+          },
+          camera: {
+            position: camera.position.toArray(),
+            rotation: camera.rotation.toArray(),
+          },
+        };
+
+        // Generate standalone HTML
+        const html = generateStandaloneHTML(sceneData);
+
+        // Download the file
+        const blob = new Blob([html], { type: "text/html" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "game-" + Date.now() + ".html";
+        link.click();
+        URL.revokeObjectURL(url);
+
+        alert("✅ Game exported successfully! Open the HTML file in your browser to play.");
+      }
+
+      function generateStandaloneHTML(sceneData) {
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Three.js Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      background: #000;
+    }
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #instructions {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+      z-index: 1000;
+    }
+    #instructions h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    #instructions p {
+      margin: 10px 0;
+    }
+    #instructions button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #instructions button:hover {
+      background: #45a049;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div id="instructions">
+    <h1>🎮 Game Controls</h1>
+    <p><strong>WASD</strong> - Move</p>
+    <p><strong>Mouse</strong> - Look around</p>
+    <p><strong>ESC</strong> - Exit game</p>
+    <button id="startBtn">Click to Start</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
+
+  <script>
+    // Scene data embedded from editor
+    const SCENE_DATA = ${JSON.stringify(sceneData, null, 2)};
+
+    // Global variables
+    let scene, camera, renderer;
+    let sceneObjects = [];
+    let physicsWorld, physicsBodies = new Map();
+    let isLocked = false;
+
+    // Movement controls
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    let velocity = new THREE.Vector3();
+    let direction = new THREE.Vector3();
+
+    // Initialize the game
+    function init() {
+      // Create scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(SCENE_DATA.scene.backgroundColor);
+
+      // Add fog if enabled
+      if (SCENE_DATA.scene.fog && SCENE_DATA.scene.fog.enabled) {
+        scene.fog = new THREE.Fog(scene.background, 1, SCENE_DATA.scene.fog.distance);
+      }
+
+      // Create camera
+      camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.fromArray(SCENE_DATA.camera.position);
+      camera.rotation.fromArray(SCENE_DATA.camera.rotation);
+
+      // Create renderer
+      const canvas = document.getElementById('canvas');
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      // Add ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, SCENE_DATA.scene.ambientLightIntensity);
+      scene.add(ambientLight);
+
+      // Add directional light (sun)
+      const directionalLight = new THREE.DirectionalLight(0xffffff, SCENE_DATA.scene.sunLightIntensity);
+      directionalLight.position.set(10, 20, 10);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.camera.left = -50;
+      directionalLight.shadow.camera.right = 50;
+      directionalLight.shadow.camera.top = 50;
+      directionalLight.shadow.camera.bottom = -50;
+      directionalLight.shadow.mapSize.width = 2048;
+      directionalLight.shadow.mapSize.height = 2048;
+      scene.add(directionalLight);
+
+      // Initialize physics
+      physicsWorld = new CANNON.World();
+      physicsWorld.gravity.set(0, -9.82, 0);
+      physicsWorld.broadphase = new CANNON.SAPBroadphase(physicsWorld);
+
+      // Load scene objects
+      loadSceneObjects();
+
+      // Setup controls
+      setupControls();
+
+      // Handle window resize
+      window.addEventListener('resize', onWindowResize);
+
+      // Start animation loop
+      animate();
+    }
+
+    function loadSceneObjects() {
+      SCENE_DATA.objects.forEach(objData => {
+        let obj;
+
+        // Create lights
+        if (objData.isLight) {
+          if (objData.name.includes('Point')) {
+            obj = new THREE.PointLight(
+              objData.lightColor,
+              objData.lightIntensity,
+              objData.lightDistance
+            );
+          } else if (objData.name.includes('Spot')) {
+            obj = new THREE.SpotLight(
+              objData.lightColor,
+              objData.lightIntensity,
+              objData.lightDistance
+            );
+          }
+          obj.castShadow = true;
+        }
+        // Create meshes
+        else if (objData.geometryType) {
+          let geometry;
+          const params = objData.geometryParams || {};
+
+          switch (objData.geometryType) {
+            case 'BoxGeometry':
+              geometry = new THREE.BoxGeometry(
+                params.width || 1,
+                params.height || 1,
+                params.depth || 1
+              );
+              break;
+            case 'SphereGeometry':
+              geometry = new THREE.SphereGeometry(
+                params.radius || 0.5,
+                params.widthSegments || 32,
+                params.heightSegments || 32
+              );
+              break;
+            case 'CylinderGeometry':
+              geometry = new THREE.CylinderGeometry(
+                params.radiusTop || 0.5,
+                params.radiusBottom || 0.5,
+                params.height || 1,
+                params.radialSegments || 32
+              );
+              break;
+            case 'PlaneGeometry':
+              geometry = new THREE.PlaneGeometry(
+                params.width || 1,
+                params.height || 1
+              );
+              break;
+            case 'ConeGeometry':
+              geometry = new THREE.ConeGeometry(
+                params.radius || 0.5,
+                params.height || 1,
+                params.radialSegments || 32
+              );
+              break;
+            case 'TorusGeometry':
+              geometry = new THREE.TorusGeometry(
+                params.radius || 0.5,
+                params.tube || 0.2,
+                params.radialSegments || 16,
+                params.tubularSegments || 100
+              );
+              break;
+            default:
+              geometry = new THREE.BoxGeometry(1, 1, 1);
+          }
+
+          const material = new THREE.MeshStandardMaterial({
+            color: objData.material.color,
+            roughness: objData.material.roughness,
+            metalness: objData.material.metalness,
+            side: objData.material.side
+          });
+
+          obj = new THREE.Mesh(geometry, material);
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+
+        if (obj) {
+          obj.name = objData.name;
+          obj.position.fromArray(objData.position);
+          obj.rotation.fromArray(objData.rotation);
+          obj.scale.fromArray(objData.scale);
+          obj.userData = objData.userData || {};
+
+          scene.add(obj);
+          sceneObjects.push(obj);
+
+          // Add physics body if needed
+          if (obj.userData.hasPhysics) {
+            addPhysicsBody(obj);
+          }
+        }
+      });
+
+      // Execute "On Start" blueprints
+      sceneObjects.forEach(obj => {
+        if (obj.userData.blueprint && obj.userData.blueprint.enabled) {
+          executeBlueprint(obj, "On Start", {});
+        }
+      });
+    }
+
+    function addPhysicsBody(obj) {
+      let shape;
+
+      if (obj.geometry) {
+        if (obj.geometry.type === 'BoxGeometry') {
+          const params = obj.geometry.parameters;
+          shape = new CANNON.Box(new CANNON.Vec3(
+            (params.width || 1) / 2,
+            (params.height || 1) / 2,
+            (params.depth || 1) / 2
+          ));
+        } else if (obj.geometry.type === 'SphereGeometry') {
+          const params = obj.geometry.parameters;
+          shape = new CANNON.Sphere(params.radius || 0.5);
+        } else {
+          // Default to box
+          shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
+        }
+      } else {
+        shape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
+      }
+
+      const body = new CANNON.Body({
+        mass: obj.userData.bodyType === 'dynamic' ? 1 : 0,
+        shape: shape,
+        position: new CANNON.Vec3(
+          obj.position.x,
+          obj.position.y,
+          obj.position.z
+        )
+      });
+
+      physicsWorld.addBody(body);
+      physicsBodies.set(obj.uuid, body);
+    }
+
+    function setupControls() {
+      // Keyboard controls
+      document.addEventListener('keydown', (e) => {
+        switch (e.code) {
+          case 'KeyW': moveForward = true; break;
+          case 'KeyS': moveBackward = true; break;
+          case 'KeyA': moveLeft = true; break;
+          case 'KeyD': moveRight = true; break;
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        switch (e.code) {
+          case 'KeyW': moveForward = false; break;
+          case 'KeyS': moveBackward = false; break;
+          case 'KeyA': moveLeft = false; break;
+          case 'KeyD': moveRight = false; break;
+        }
+      });
+
+      // Pointer lock
+      const startBtn = document.getElementById('startBtn');
+      const instructions = document.getElementById('instructions');
+
+      startBtn.addEventListener('click', () => {
+        document.body.requestPointerLock();
+      });
+
+      document.addEventListener('pointerlockchange', () => {
+        isLocked = document.pointerLockElement === document.body;
+        instructions.classList.toggle('hidden', isLocked);
+      });
+
+      // Mouse movement
+      document.addEventListener('mousemove', (e) => {
+        if (!isLocked) return;
+
+        const movementX = e.movementX || 0;
+        const movementY = e.movementY || 0;
+
+        camera.rotation.y -= movementX * 0.002;
+        camera.rotation.x -= movementY * 0.002;
+        camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+      });
+    }
+
+    function executeBlueprint(obj, eventName, context) {
+      if (!obj.userData.blueprint || !obj.userData.blueprint.enabled) return;
+
+      const blueprint = obj.userData.blueprint;
+      context.targetObject = obj;
+
+      const eventNode = blueprint.nodes.find(node => node.name === eventName);
+      if (!eventNode) return;
+
+      executeNode(eventNode, context);
+    }
+
+    function executeNode(node, context) {
+      if (!node) return;
+
+      switch (node.name) {
+        case "Change Color":
+          if (context.targetObject && context.targetObject.material) {
+            const color = node.params.color || "#FF0000";
+            context.targetObject.material.color.setHex(
+              parseInt(color.replace("#", "0x"))
+            );
+          }
+          break;
+
+        case "Move Object":
+          if (context.targetObject) {
+            const x = parseFloat(node.params.x) || 0;
+            const y = parseFloat(node.params.y) || 0;
+            const z = parseFloat(node.params.z) || 0;
+            context.targetObject.position.set(x, y, z);
+          }
+          break;
+
+        case "Destroy Object":
+          if (context.targetObject) {
+            scene.remove(context.targetObject);
+            sceneObjects = sceneObjects.filter(o => o !== context.targetObject);
+          }
+          break;
+
+        case "Log Message":
+          const message = node.params.message || "Hello!";
+          console.log("Blueprint:", message);
+          break;
+
+        case "Branch":
+          const condition = node.params.condition || "Is Player";
+          let result = false;
+          const checkObj = context.otherObject || context.targetObject;
+
+          if (checkObj) {
+            switch (condition) {
+              case "Is Player":
+                result = checkObj.name === "Player" || checkObj.userData.isPlayer;
+                break;
+              case "Has Tag: Enemy":
+                result = checkObj.userData.tag === "Enemy";
+                break;
+              case "Has Tag: Collectible":
+                result = checkObj.userData.tag === "Collectible";
+                break;
+              case "Y Position > 0":
+                result = checkObj.position.y > 0;
+                break;
+              case "Y Position < 0":
+                result = checkObj.position.y < 0;
+                break;
+            }
+          }
+
+          const branchOutput = result ? "True" : "False";
+          const nextNodes = findConnectedNodes(node.id, branchOutput);
+          nextNodes.forEach(nextNode => executeNode(nextNode, context));
+          return;
+
+        case "Delay":
+          const delay = parseFloat(node.params.delay) || 1.0;
+          setTimeout(() => {
+            const nextNodes = findConnectedNodes(node.id, "Execute");
+            nextNodes.forEach(nextNode => executeNode(nextNode, context));
+          }, delay * 1000);
+          return;
+      }
+
+      // Continue to next connected node
+      const nextNodes = findConnectedNodes(node.id, "Execute");
+      nextNodes.forEach(nextNode => executeNode(nextNode, context));
+    }
+
+    function findConnectedNodes(nodeId, outputPin) {
+      const blueprint = sceneObjects.find(obj =>
+        obj.userData.blueprint &&
+        obj.userData.blueprint.nodes.some(n => n.id === nodeId)
+      )?.userData.blueprint;
+
+      if (!blueprint) return [];
+
+      const connections = blueprint.connections.filter(conn =>
+        conn.from === nodeId + "." + outputPin
+      );
+
+      return connections.map(conn => {
+        const targetNodeId = conn.to.split('.')[0];
+        return blueprint.nodes.find(n => n.id === targetNodeId);
+      }).filter(Boolean);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = 0.016;
+
+      if (isLocked) {
+        // Movement
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+
+        direction.z = Number(moveForward) - Number(moveBackward);
+        direction.x = Number(moveLeft) - Number(moveRight);
+        direction.normalize();
+
+        const speed = 50;
+        if (moveForward || moveBackward) velocity.z -= direction.z * speed * delta;
+        if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+
+        camera.translateX(velocity.x * delta);
+        camera.translateZ(velocity.z * delta);
+      }
+
+      // Update physics
+      if (physicsWorld) {
+        physicsWorld.step(1/60, delta, 3);
+
+        physicsBodies.forEach((body, uuid) => {
+          const obj = sceneObjects.find(o => o.uuid === uuid);
+          if (obj && obj.userData.hasPhysics && obj.userData.bodyType === 'dynamic') {
+            obj.position.copy(body.position);
+            obj.quaternion.copy(body.quaternion);
+          }
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // Start the game
+    init();
+  </script>
+</body>
+</html>`;
       }
 
       // ============================================
