@@ -9288,7 +9288,7 @@ console.log('No longer colliding with:', other.name);`,
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
   <script>
-    const SCENE_DATA = ` + '__SCENE_DATA__' + `;
+    const SCENE_DATA = ###SCENE_DATA_PLACEHOLDER###;
     let scene, camera, renderer, sceneObjects = [], physicsWorld, physicsBodies = new Map(), isLocked = false;
     let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
     let velocity = new THREE.Vector3(), direction = new THREE.Vector3();
@@ -9457,7 +9457,7 @@ console.log('No longer colliding with:', other.name);`,
 </html>
 `;
         const sceneJSON = JSON.stringify(sceneData, null, 2);
-        return template.replace('__SCENE_DATA__', sceneJSON);
+        return template.replace('###SCENE_DATA_PLACEHOLDER###', sceneJSON);
       }
 
       // ============================================
